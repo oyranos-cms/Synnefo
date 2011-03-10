@@ -5,18 +5,19 @@
 #include <QSignalMapper>
 #include <QWidget>
 
-#include "ui_syfoMain.h"
+// Qt Designer code translation.
+#include "ui_synnefo-main.h"          
 
 class Synnefo : public QMainWindow
 {
     Q_OBJECT
     
   public:
-    Synnefo (QWidget * parent = 0);
+    Synnefo (QWidget * parent);
+    ~Synnefo();
     
   private:
-    Ui::Synnefo_Main syfo_ui;
-    
+    Ui::syMainWindow syInterface;            
 };
 
 #endif
