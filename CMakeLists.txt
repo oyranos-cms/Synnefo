@@ -17,7 +17,4 @@ include_directories(${OYRANOS_INCLUDE_DIR} ${OYRANOS_INCLUDE_DIR}/alpha/object)
 
 SET( ${CMAKE_BUILD_TYPE} Debug)
 
-SUBDIRS(src modules)
- 
-
- 
+add_subdirectory(src)

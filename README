@@ -1,0 +1,27 @@
+README (draft)
+
+Synnefo Development (3-10)
+by Joseph Simon
+
+************************************
+
+
+
+--BUILDING SYNNEFO--
+Type the following in Synnefo's root directory:
+
+mkdir build
+cd build
+
+cmake ../
+make
+
+
+
+
+--TESTING--
+After building, do the following (from the build directory):
+
+cd src
+./synnefo
+

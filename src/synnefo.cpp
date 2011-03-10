@@ -3,7 +3,7 @@
 Synnefo::Synnefo(QWidget * parent)
     : QMainWindow(parent)
 {       
-    syInterface.setupUi(this);
+    syMainUi.setupUi(this);
 
 }
 

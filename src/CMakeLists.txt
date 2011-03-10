@@ -1,29 +1,51 @@
- 
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
+project (synnefo)
 
-INCLUDE(   ${QT_USE_FILE}   )
+find_package(Qt4)
 
-set(synnefo_SRCS
-    main.cpp
-)
- 
-set(synnefo_PART_SRCS
+INCLUDE(${QT_USE_FILE})
+
+set( synnefo_SRCS
+    # core sources
+    main.cpp    
     synnefo.cpp   
-)
 
-SET(synnefo_MOC_HDRS
+    # synnefo modules
+    modules/devices/sy_devices.cpp
+    modules/information/sy_info.cpp
+    modules/settings/sy_settings.cpp    
+)
+ 
+SET( synnefo_MOC_HEADERS
+    # main window
     synnefo.h
+
+    # modules
+    modules/devices/sy_devices.h
+    modules/information/sy_info.h
+    modules/settings/sy_settings.h
 )
 
-set(synnefo_UIS
-    ui/synnefo-main.ui
+set( synnefo_UIs
+    # main ui file
+    ui/synnefo.ui
+    # module UI files
+    modules/devices/sy_devices.ui
+    modules/information/sy_info.ui
+    modules/settings/sy_settings.ui
 )
 
-#QT4_AUTOMOC(${synnefo_PART_SRCS})
+INCLUDE_DIRECTORIES(
+    ${CMAKE_SOURCE_DIR}
+    # modules
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/devices"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/settings"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/information"
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
 
-QT4_WRAP_UI (synnefo_UIS_H ${synnefo_UIS})
+QT4_WRAP_UI (synnefo_SRCS ${synnefo_UIs})
 
-QT4_WRAP_CPP(synnefo_MOC_SRCS ${synnefo_MOC_HDRS})
+QT4_WRAP_CPP(synnefo_SRCS ${synnefo_MOC_HEADERS})
 
 
 #set(synnefo_RCCS
@@ -32,8 +54,17 @@ QT4_WRAP_CPP(synnefo_MOC_SRCS ${synnefo_MOC_HDRS})
 
 #QT4_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
 
-add_executable(synnefo ${synnefo_SRCS} ${synnefo_PART_SRCS} ${synnefo_UIS} ${synnefo_MOC_HDRS})
-target_link_libraries(synnefo ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} )
 
-#install(TARGETS kmdevices DESTINATION ${PLUGIN_INSTALL_DIR})
-#install( FILES kmdevices.desktop  DESTINATION  ${SERVICES_INSTALL_DIR} )
+IF(UNIX)
+  add_executable(synnefo ${synnefo_SRCS})
+ELSEIF(APPLE)
+  add_executable(synnefo MACOSX_BUNDLE ${synnefo_SRCS})
+ELSEIF (WIN32)
+  add_executable(synnefo WIN32 ${synnefo_SRCS})
+ENDIF ()
+
+IF(WIN32)
+  target_link_libraries(synnefo ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
+ELSE()
+  target_link_libraries(synnefo ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+ENDIF()

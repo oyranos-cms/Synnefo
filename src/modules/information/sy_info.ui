@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>kminfo</class>
- <widget class="QWidget" name="kminfo">
+ <class>syInfoWidget</class>
+ <widget class="QWidget" name="syInfoWidget">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -218,8 +218,8 @@
           <rect>
            <x>0</x>
            <y>0</y>
-           <width>399</width>
-           <height>522</height>
+           <width>383</width>
+           <height>507</height>
           </rect>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">

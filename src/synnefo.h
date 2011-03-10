@@ -6,7 +6,7 @@
 #include <QWidget>
 
 // Qt Designer code translation.
-#include "ui_synnefo-main.h"          
+#include "ui_synnefo.h"          
 
 class Synnefo : public QMainWindow
 {
@@ -17,7 +17,7 @@ class Synnefo : public QMainWindow
     ~Synnefo();
     
   private:
-    Ui::syMainWindow syInterface;            
+    Ui::syMainWindow syMainUi;
 };
 
 #endif
