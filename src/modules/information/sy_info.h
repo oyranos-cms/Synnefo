@@ -1,6 +1,6 @@
  
-#ifndef SY_DEVICES_H
-#define SY_DEVICES_H
+#ifndef SY_INFO_H
+#define SY_INFO_H
 
 #include <QApplication>
 #include <QSignalMapper>
