@@ -2,6 +2,5 @@
 
 SyModule::SyModule()
 {
-   moduleName = "";
+    moduleName = "";
 }
-

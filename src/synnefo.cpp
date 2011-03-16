@@ -16,16 +16,10 @@ Synnefo::Synnefo(QWidget * parent)
 
 void Synnefo::loadSyModules()
 {
-    // Load modules.
-    QWidget * sdwidget = new QWidget;
-    devicesModule = new SyDevices(sdwidget);
+    devicesModule = new SyDevices(0);
+    infoModule = new SyInfo(0);
+    settingsModule = new SySettings(0);
     
-    QWidget * siwidget = new QWidget;
-    infoModule = new SyInfo(siwidget); 
-    
-    QWidget * sswidget = new QWidget;
-    settingsModule = new SySettings(sswidget); 
-     
     // Insert additional modules here...
     syMainUi.syModuleListView->addItem(devicesModule->getName());
     syMainUi.syModuleListView->addItem(infoModule->getName());
@@ -42,18 +36,13 @@ void Synnefo::changeModuleSelection (QListWidgetItem * moduleSelection)
     syMainUi.syModuleWidget->removeWidget(previousWidget);
         
     // Update the module widget based on user selection.
-    if (moduleSelection->text() == "Devices") {
-      devicesModule->show();
-      syMainUi.syModuleWidget->addWidget(devicesModule);
-      
-    } else if (moduleSelection->text() == "Information") {            
-      infoModule->show();
+    if (moduleSelection->text() == "Devices") 
+      syMainUi.syModuleWidget->addWidget(devicesModule);      
+    else if (moduleSelection->text() == "Information") 
       syMainUi.syModuleWidget->addWidget(infoModule);
-      
-    } else if (moduleSelection->text() == "Settings") {            
-      settingsModule->show();
+    else if (moduleSelection->text() == "Settings") 
       syMainUi.syModuleWidget->addWidget(settingsModule);      
-    }    
+        
 }
 
 

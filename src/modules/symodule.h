@@ -4,15 +4,18 @@
 
 #include <QString>
 #include <QIcon>
+#include <QWidget>
 
 class SyModule
 {
   public:
+
     QString moduleName;
     QIcon icon;
         
     SyModule();
-    QString getName(){ return moduleName; }     
+    QString getName(){ return moduleName; } 
+
 };
 
 #endif

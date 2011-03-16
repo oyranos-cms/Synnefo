@@ -1,1 +1,0 @@
-SUBDIRS (devices information settings) 
