@@ -9,6 +9,9 @@ set( synnefo_SRCS
     main.cpp    
     synnefo.cpp   
 
+    # synnefo class
+    modules/symodule.cpp
+
     # synnefo modules
     modules/devices/sy_devices.cpp
     modules/information/sy_info.cpp
@@ -37,6 +40,7 @@ set( synnefo_UIs
 INCLUDE_DIRECTORIES(
     ${CMAKE_SOURCE_DIR}
     # modules
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/devices"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/settings"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/information"

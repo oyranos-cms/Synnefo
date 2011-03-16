@@ -6,10 +6,12 @@
 #include <QSignalMapper>
 #include <QWidget>
 
+#include "symodule.h"
+
 // Qt Designer code translation.
 #include "ui_sy_settings.h"          
 
-class SySettings : public QWidget
+class SySettings : public QWidget, public SyModule
 {
     Q_OBJECT
     

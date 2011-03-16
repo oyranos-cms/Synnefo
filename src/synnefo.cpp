@@ -25,11 +25,11 @@ void Synnefo::loadSyModules()
     
     QWidget * sswidget = new QWidget;
     settingsModule = new SySettings(sswidget); 
-    
+     
     // Insert additional modules here...
-    syMainUi.syModuleListView->addItem(tr("Devices"));
-    syMainUi.syModuleListView->addItem(tr("Information"));
-    syMainUi.syModuleListView->addItem(tr("Settings"));
+    syMainUi.syModuleListView->addItem(devicesModule->getName());
+    syMainUi.syModuleListView->addItem(infoModule->getName());
+    syMainUi.syModuleListView->addItem(settingsModule->getName());
 }    
 
 
