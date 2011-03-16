@@ -48,13 +48,13 @@ SyDevices::SyDevices(QWidget * parent)
 // small helper to obtain a profile from a device
 int syDeviceGetProfile( oyConfig_s * device, oyProfile_s ** profile )
 {
-  oyOptions_s * options = 0;
-  oyOptions_SetFromText( &options,
-                   "//"OY_TYPE_STD"/config/icc_profile.net_color_region_target",
-                         "yes", OY_CREATE_NEW );
-  int error = oyDeviceGetProfile( device, options, profile );
-  oyOptions_Release( &options );
-  return error;
+    oyOptions_s * options = 0;
+    oyOptions_SetFromText( &options,
+                     "//"OY_TYPE_STD"/config/icc_profile.net_color_region_target",
+                           "yes", OY_CREATE_NEW );
+    int error = oyDeviceGetProfile( device, options, profile );
+    oyOptions_Release( &options );
+    return error;
 }
 
 
@@ -157,6 +157,7 @@ void SyDevices::openProfile(int /*index*/)
           temp_item = profileAssociationList->item(i);
           if(temp_item->text() == baseFileName)
           {
+	          // TODO Return some message here.
                   return;
           }
     }
@@ -425,7 +426,7 @@ void SyDevices::updateProfileList(oyConfig_s * device)
     oyConfigs_Release( &db_list );
 }
 
-
+// Populate "Assign Profile" combobox.  Depending on the device selected, the profile list will vary.
 void SyDevices::populateDeviceComboBox( icProfileClassSignature deviceSignature )
 {
     int size, i, current = -1, current_tmp, pos = 0;

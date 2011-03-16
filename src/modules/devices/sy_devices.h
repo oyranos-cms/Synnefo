@@ -15,6 +15,11 @@
 #include <alpha/oyranos_cmm.h>
 
 
+
+/*****************************************************************
+          Synnefo Devices Module Class Definition                *
+******************************************************************/
+
 class SyDevices : public QWidget, public SyModule, Ui::syDevicesWidget
 {
     Q_OBJECT
@@ -39,10 +44,16 @@ private slots:
     
 private:
     
+    // get the actual device from currentDevice
     oyConfig_s * getCurrentDevice( void );
     
+    // General device detection 
     int detectDevices( const char * device_type );
+    
+    // set the new profile to a Oyranos device
     void assignProfile( QString & profile_name );
+    
+    // Populate device-specified profile combo box listing.
     void populateDeviceComboBox( icProfileClassSignature deviceSignature );
     
     // Function to detect all devices/directories.
@@ -51,6 +62,7 @@ private:
     // Refresh current profile list.
     void updateProfileList(oyConfig_s * device);
     
+    // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
     
     
