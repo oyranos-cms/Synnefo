@@ -12,6 +12,8 @@ SyDevices::SyDevices(QWidget * parent)
     this->moduleName = "Devices";
     this->setParent(parent);
     
+    setEditable(true);
+    
     current_device_name = 0;
     current_device_class = 0;
 

@@ -3,11 +3,13 @@
 Synnefo::Synnefo(QWidget * parent)
     : QMainWindow(parent)
 {       
-    syMainUi.setupUi(this);  
+    setupUi(this);  
+    
+    Frame->hide();
     
     loadSyModules();
     
-    connect (syMainUi.syModuleListView, SIGNAL (itemActivated (QListWidgetItem *)),
+    connect (syModuleListView, SIGNAL (itemActivated (QListWidgetItem *)),
                this, SLOT (changeModuleSelection (QListWidgetItem *)));
 }
 
@@ -21,9 +23,9 @@ void Synnefo::loadSyModules()
     settingsModule = new SySettings(0);
     
     // Insert additional modules here...
-    syMainUi.syModuleListView->addItem(devicesModule->getName());
-    syMainUi.syModuleListView->addItem(infoModule->getName());
-    syMainUi.syModuleListView->addItem(settingsModule->getName());
+    syModuleListView->addItem(devicesModule->getName());
+    syModuleListView->addItem(infoModule->getName());
+    syModuleListView->addItem(settingsModule->getName());
 }    
 
 
@@ -32,17 +34,26 @@ void Synnefo::loadSyModules()
 void Synnefo::changeModuleSelection (QListWidgetItem * moduleSelection)
 {   
     // Pop the previous widget off the stackedWidget.
-    QWidget * previousWidget = syMainUi.syModuleWidget->currentWidget();    
-    syMainUi.syModuleWidget->removeWidget(previousWidget);
+    QWidget * previousWidget = syModuleWidget->currentWidget();    
+    syModuleWidget->removeWidget(previousWidget);
         
     // Update the module widget based on user selection.
     if (moduleSelection->text() == "Devices") 
-      syMainUi.syModuleWidget->addWidget(devicesModule);      
+    {
+      syModuleWidget->addWidget(devicesModule);      
+      Frame->setVisible(devicesModule->isEditable());
+    }
+    
     else if (moduleSelection->text() == "Information") 
-      syMainUi.syModuleWidget->addWidget(infoModule);
+    {
+      syModuleWidget->addWidget(infoModule);
+      Frame->setVisible(infoModule->isEditable());
+    }
     else if (moduleSelection->text() == "Settings") 
-      syMainUi.syModuleWidget->addWidget(settingsModule);      
-        
+    {
+      syModuleWidget->addWidget(settingsModule);     
+      Frame->setVisible(settingsModule->isEditable());
+    }
 }
 
 

@@ -13,6 +13,8 @@ SyInfo::SyInfo(QWidget * parent)
     this->moduleName = "Settings";
     setupUi(this);                  // Load Gui.
     
+    setEditable(false);
+        
     installedProfilesTree->setColumnWidth(0, 350);
     installedProfilesTree->setColumnWidth(1, 150);
 

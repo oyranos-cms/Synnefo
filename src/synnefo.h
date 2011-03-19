@@ -14,7 +14,7 @@
 #include "sy_settings.h"
 
 
-class Synnefo : public QMainWindow
+class Synnefo : public QMainWindow, Ui::syMainWindow
 {
     Q_OBJECT
     
@@ -28,11 +28,7 @@ class Synnefo : public QMainWindow
     // Updates module widget.
     void changeModuleSelection (QListWidgetItem *);
     
-    
   private:
-    
-    // Synnefo main window interface.
-    Ui::syMainWindow syMainUi;
     
     // Synnefo module interfaces.
     SyDevices * devicesModule;

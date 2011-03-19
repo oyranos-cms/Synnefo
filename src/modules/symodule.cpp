@@ -2,5 +2,18 @@
 
 SyModule::SyModule()
 {
-    moduleName = "";
+    moduleName = "module";
+    moduleDescription = "A Synnefo Module";  
+    
+    modified = false;
+}
+
+void SyModule::save()
+{
+    
+}
+
+void SyModule::load()
+{
+  
 }
