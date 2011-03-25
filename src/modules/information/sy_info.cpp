@@ -10,6 +10,8 @@
 SyInfo::SyInfo(QWidget * parent)
     : QWidget(parent), SyModule()
 {       
+    current_profile = NULL;
+  
     this->moduleName = "Settings";
     setupUi(this);                  // Load Gui.
     
