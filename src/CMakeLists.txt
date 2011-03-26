@@ -1,6 +1,9 @@
 project (synnefo)
 
 find_package(Qt4)
+INCLUDE(   ${QT_USE_FILE}   )
+
+
 
 INCLUDE(${QT_USE_FILE})
 
@@ -16,6 +19,9 @@ set( synnefo_SRCS
     modules/devices/sy_devices.cpp
     modules/information/sy_info.cpp
     modules/settings/sy_settings.cpp    
+
+    modules/devices/sy_devices_item.cpp
+    modules/information/sy_info_dialog.cpp
 )
  
 SET( synnefo_MOC_HEADERS
@@ -26,6 +32,8 @@ SET( synnefo_MOC_HEADERS
     modules/devices/sy_devices.h
     modules/information/sy_info.h
     modules/settings/sy_settings.h
+
+    modules/information/sy_info_dialog.h
 )
 
 set( synnefo_UIs
@@ -35,6 +43,8 @@ set( synnefo_UIs
     modules/devices/sy_devices.ui
     modules/information/sy_info.ui
     modules/settings/sy_settings.ui
+
+    modules/information/sy_info_dialog.ui
 )
 
 INCLUDE_DIRECTORIES(
@@ -47,20 +57,20 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
+set(synnefo_RCCS
+      modules/devices/icons.qrc
+      modules/information/icons.qrc      
+      )
+
+QT4_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
+
 QT4_WRAP_UI (synnefo_SRCS ${synnefo_UIs})
 
 QT4_WRAP_CPP(synnefo_SRCS ${synnefo_MOC_HEADERS})
 
 
-#set(synnefo_RCCS
-#      main_resources.qrc
-#      )
-
-#QT4_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
-
-
 IF(UNIX)
-  add_executable(synnefo ${synnefo_SRCS})
+  add_executable(synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF(APPLE)
   add_executable(synnefo MACOSX_BUNDLE ${synnefo_SRCS})
 ELSEIF (WIN32)
