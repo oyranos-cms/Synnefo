@@ -5,59 +5,59 @@ Synnefo::Synnefo(QWidget * parent)
 {       
     setupUi(this);  
     
-    Frame->hide();
-    
     loadSyModules();
     
-    connect (syModuleListView, SIGNAL (itemActivated (QListWidgetItem *)),
-               this, SLOT (changeModuleSelection (QListWidgetItem *)));
+    connect ( syModuleListView, SIGNAL ( currentRowChanged ( int )),
+               this, SLOT ( changeModuleSelection ( int )));
 }
 
 
-// Initialize Synnefo modules.
 
+// Initialize Synnefo modules.
 void Synnefo::loadSyModules()
 {
-    devicesModule = new SyDevices(0);
-    infoModule = new SyInfo(0);
-    settingsModule = new SySettings(0);
+    // TODO Find solution to automatically check for # of modules.
+    module_n = 3;
     
-    // Insert additional modules here...
-    syModuleListView->addItem(devicesModule->getName());
-    syModuleListView->addItem(infoModule->getName());
-    syModuleListView->addItem(settingsModule->getName());
+    syModules = new SyModule*[3];
+    
+    devicesModule = new SyDevices( NULL );
+    infoModule = new SyInfo( NULL );
+    settingsModule = new SySettings( NULL );
+    
+    //syModulars.insert((SyModule*) devicesModule);
+    
+    // "Module Registration"
+    syModules[0] = devicesModule;      /* Devices Module     */ 
+    syModules[1] = infoModule;         /* Information Module */ 
+    syModules[2] = settingsModule;     /* Settings Module    */ 
+        
+    int i;
+    // Populate Module Selection List 
+    for (i = 0; i < module_n; i++)
+       syModuleListView->addItem(syModules[i]->getName());
 }    
 
 
 // Changes module widget whenever user clicks on a selection.
-
-void Synnefo::changeModuleSelection (QListWidgetItem * moduleSelection)
+void Synnefo::changeModuleSelection ( int moduleIndex )
 {   
-    // Pop the previous widget off the stackedWidget.
-    QWidget * previousWidget = syModuleWidget->currentWidget();    
-    syModuleWidget->removeWidget(previousWidget);
-        
-    // Update the module widget based on user selection.
-    if (moduleSelection->text() == "Devices") 
+    if (moduleIndex != -1) 
     {
-      syModuleWidget->addWidget(devicesModule);      
-      Frame->setVisible(devicesModule->isEditable());
-    }
+      // Pop the previous widget off the stackedWidget.
+      QWidget * previousWidget = syModuleWidget->currentWidget();    
+      syModuleWidget->removeWidget( previousWidget );
     
-    else if (moduleSelection->text() == "Information") 
-    {
-      syModuleWidget->addWidget(infoModule);
-      Frame->setVisible(infoModule->isEditable());
+      syModules[ moduleIndex ]->attachModule( syModuleWidget );    
+      Frame->setVisible( syModules[ moduleIndex ]->isEditable() );
     }
-    else if (moduleSelection->text() == "Settings") 
-    {
-      syModuleWidget->addWidget(settingsModule);     
-      Frame->setVisible(settingsModule->isEditable());
-    }
+    // TODO Failure case.
 }
 
 
 Synnefo::~Synnefo()
 {
-  
+    int i;
+    for (i = 0; i < module_n; i++)
+      delete syModules[i];
 }

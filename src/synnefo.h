@@ -13,7 +13,6 @@
 #include "sy_info.h"
 #include "sy_settings.h"
 
-
 class Synnefo : public QMainWindow, Ui::syMainWindow
 {
     Q_OBJECT
@@ -23,19 +22,28 @@ class Synnefo : public QMainWindow, Ui::syMainWindow
     Synnefo (QWidget * parent);
     ~Synnefo();
     
+    SyModule ** syModules;
+
   private slots:
     
     // Updates module widget.
-    void changeModuleSelection (QListWidgetItem *);
+    void changeModuleSelection ( int );
     
   private:
     
+    int insertModule( SyModule *, QStackedWidget * );
+    
+    void loadSyModules();
+    
     // Synnefo module interfaces.
-    SyDevices * devicesModule;
+    SyDevices * devicesModule;    
     SyInfo * infoModule;
     SySettings * settingsModule;
     
-    void loadSyModules();
+    QList <SyModule*> syModulars;
+    
+    int module_n;
+    
 };
 
 #endif

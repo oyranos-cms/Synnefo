@@ -5,7 +5,9 @@
 #include <QString>
 #include <QIcon>
 #include <QWidget>
+#include <QSettings>
 
+#include <QStackedWidget>
 
 
 /** Synnefo Module class **************************************************
@@ -20,15 +22,20 @@ DESCRIPTION:
 ******************************************************************************/
 
 
-class SyModule 
+class SyModule : public QWidget
 {
   
 public:
      
-    SyModule();
+    SyModule(QWidget * parent);
     
+    SyModule ** insertModule( SyModule );
+
     
 /*** Public Functions ****************/    
+
+    // Attach module to an appropriate QStackedWidget.
+    int attachModule( QStackedWidget * );
     
     // Get module name.
     QString getName(){ return moduleName; } 
@@ -36,11 +43,11 @@ public:
     // Returns current 'editable' state; 
     bool isEditable() {return editable;}    
     
-    // Sets 'editable' state.
-    void setEditable (bool b) { editable = b; }    
-    
     // Returns current 'modified' state.
     bool isModified(void) { return modified; }
+    
+    // Sets 'editable' state.
+    void setEditable (bool b) { editable = b; }        
     
     // Sets 'modified' state.
     void setModified(bool b) { modified = b; }
@@ -60,6 +67,8 @@ protected:
     QString moduleDescription;
     
     QIcon icon;
+    
+    QSettings * config;     // Module UI settings
     
     bool editable;
     bool modified;
