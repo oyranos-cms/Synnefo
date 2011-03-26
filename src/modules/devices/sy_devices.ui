@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>801</width>
-    <height>600</height>
+    <width>955</width>
+    <height>516</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout_4">
@@ -34,8 +34,14 @@
      <layout class="QGridLayout" name="gridLayout_3">
       <item row="1" column="0">
        <widget class="QTreeWidget" name="deviceList">
+        <property name="acceptDrops">
+         <bool>false</bool>
+        </property>
         <property name="toolTip">
          <string>List of installed input/output devices and their default profiles.</string>
+        </property>
+        <property name="alternatingRowColors">
+         <bool>false</bool>
         </property>
         <property name="iconSize">
          <size>
@@ -52,24 +58,28 @@
         <property name="headerHidden">
          <bool>false</bool>
         </property>
+        <property name="columnCount">
+         <number>3</number>
+        </property>
+        <attribute name="headerVisible">
+         <bool>true</bool>
+        </attribute>
+        <attribute name="headerVisible">
+         <bool>true</bool>
+        </attribute>
         <column>
          <property name="text">
-          <string>Device Name</string>
+          <string>*ICON*</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Designation</string>
+          <string notr="true">*DEVICE INFORMATION*</string>
          </property>
         </column>
         <column>
          <property name="text">
-          <string>Profile Description</string>
-         </property>
-        </column>
-        <column>
-         <property name="text">
-          <string>Profile Filename</string>
+          <string>*ASSOCIATED PROFILE COMBO*</string>
          </property>
         </column>
        </widget>
@@ -77,13 +87,19 @@
      </layout>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QGroupBox" name="groupBox_2">
+   <item row="0" column="1">
+    <widget class="QGroupBox" name="profileAssociationGroupBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Ignored">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>247</width>
+       <height>16777215</height>
+      </size>
      </property>
      <property name="title">
       <string>Profiles Associated with Device</string>
@@ -115,7 +131,7 @@
         </property>
         <layout class="QGridLayout" name="gridLayout">
          <item row="0" column="0">
-          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5,3">
+          <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="5">
            <item>
             <widget class="QComboBox" name="deviceProfileComboBox">
              <property name="sizePolicy">
@@ -132,22 +148,22 @@
              </property>
             </widget>
            </item>
-           <item>
-            <widget class="QCheckBox" name="relatedDeviceCheckBox">
-             <property name="text">
-              <string>Show only device related ICC profiles</string>
-             </property>
-             <property name="checked">
-              <bool>true</bool>
-             </property>
-             <property name="tristate">
-              <bool>false</bool>
-             </property>
-            </widget>
-           </item>
           </layout>
          </item>
         </layout>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="relatedDeviceCheckBox">
+        <property name="text">
+         <string>Show only device related ICC profiles</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="tristate">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
      </layout>

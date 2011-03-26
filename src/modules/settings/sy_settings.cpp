@@ -10,9 +10,9 @@
 #include <locale.h>
 
 SySettings::SySettings(QWidget * parent)
-    : QWidget(parent), SyModule()
+    : SyModule(parent)
 {       
-    this->moduleName = "Information";
+    this->moduleName = "Settings";
     
     setupUi(this);
     
@@ -246,6 +246,7 @@ void SySettings::removeCustomPolicy()
     file.remove();
     if(full_name) free( full_name );
 }
+
 
 
 // ****** Private Functions ******

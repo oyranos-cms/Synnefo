@@ -1,4 +1,4 @@
- 
+
 #include "sy_devices.h"
 
 #include <oyranos.h>
@@ -7,8 +7,9 @@
 #include <alpha/oyranos_cmm.h>
 
 SyDevices::SyDevices(QWidget * parent)
-    : QWidget(parent), SyModule()
+    : SyModule(parent)
 {       
+  
     this->moduleName = "Devices";
     this->setParent(parent);
     
@@ -21,15 +22,18 @@ SyDevices::SyDevices(QWidget * parent)
     
     setupUi(this);
     
+    // Disable for now.
+    // NOTE Will eventually be removed from base widget.
+    profileAssociationGroupBox->setVisible(false);
+    
     // Disable all buttons
-    deviceProfileComboBox->setEnabled(false);    
-
+    deviceProfileComboBox->setEnabled(false); 
+    
     // Set column width of device list.
-    deviceList->setColumnWidth(0, 350);
-    deviceList->setColumnWidth(1, 175);
+    deviceList->setColumnWidth(0, 100);
+    deviceList->setColumnWidth(1, 275);
     deviceList->setColumnWidth(2, 175);
-    deviceList->setColumnWidth(3, 175);
-
+    
     // Load directories and device listing.
     populateDeviceListing();   
     
@@ -278,10 +282,10 @@ int SyDevices::detectDevices(const char * device_type)
         deviceList->insertTopLevelItem(0, parent_item);
 
         QIcon device_icon;
-        QSize icon_size(30, 30);
-        QString icon;
-        icon = QString(":/resources/") + device_class + ".png";
-        device_icon.addFile( icon, icon_size , QIcon::Normal, QIcon::On);
+        QSize icon_size(122, 132);
+        QString iconPath;
+        iconPath = QString(":/resources/") + device_class + ".png";
+        device_icon.addFile( iconPath, icon_size , QIcon::Normal, QIcon::On);
 
         // Traverse through the available devices 
         for (j = 0; j < device_num; j++)
@@ -302,6 +306,8 @@ int SyDevices::detectDevices(const char * device_type)
             device_manufacturer = oyConfig_FindString( device,"manufacturer",0);
             device_model = oyConfig_FindString( device, "model", 0);
             device_serial = oyConfig_FindString( device, "serial", 0);
+    
+            
 
             // Get device designation.
             error = oyDeviceGetInfo(device, oyNAME_NICK, 0, &device_designation, malloc);
@@ -320,7 +326,7 @@ int SyDevices::detectDevices(const char * device_type)
             error = syDeviceGetProfile(device, &profile);
             profile_filename = oyProfile_GetFileName(profile, 0);
  
-            deviceListPointer = new QTreeWidgetItem();
+            deviceListPointer = new SyDevicesItem(0);
 
             if (profile_filename == NULL)
             {
@@ -331,14 +337,28 @@ int SyDevices::detectDevices(const char * device_type)
             }
             else
                 deviceProfileDescription = convertFilenameToDescription(profile_filename);
- 
+
+            // TODO Fix resources--icons are not showing.
             deviceListPointer->setIcon(0, device_icon);
-            deviceListPointer->setText(DEVICE_DESCRIPTION, deviceItemString);
-            deviceListPointer->setText(DEVICE_NAME, device_designation);
-            deviceListPointer->setText(PROFILE_DESCRIPTION, deviceProfileDescription);   
-            deviceListPointer->setText(PROFILE_FILENAME, profile_filename);
-        
+
+            deviceListPointer->addText(DEVICE_DESCRIPTION, deviceItemString);
+            deviceListPointer->addText(DEVICE_NAME, device_designation);
+            deviceListPointer->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
+            deviceListPointer->addText(PROFILE_FILENAME, profile_filename);
+    
+            // NOTE New code to add association combo box in tree widget.
+	    QComboBox * newProfileAssociationCB = new QComboBox(0);
+   
+	    QBoxLayout *layout = new QBoxLayout(QBoxLayout::LeftToRight);
+	    layout->addWidget (newProfileAssociationCB);
+	    
+	    QWidget * w = new QWidget();
+	    w->setLayout(layout);
+     
             parent_item->addChild(deviceListPointer);
+            deviceList->setItemWidget ( deviceListPointer, 2, w);
+	    
+	    // TODO Populate profile association combobox.
 
             oyConfig_Release(&device);
         }

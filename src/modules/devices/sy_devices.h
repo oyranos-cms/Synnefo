@@ -7,6 +7,7 @@
 #include <QWidget>
 
 #include "symodule.h"
+#include "sy_devices_item.h"
 
 // Qt Designer code translation.
 #include "ui_sy_devices.h"          
@@ -20,7 +21,7 @@
           Synnefo Devices Module Class Definition                *
 ******************************************************************/
 
-class SyDevices : public QWidget, public SyModule, Ui::syDevicesWidget
+class SyDevices : public SyModule, Ui::syDevicesWidget
 {
     Q_OBJECT
     
@@ -75,13 +76,8 @@ private:
     // Directory name variables.
     QString profileDirectoryDefault;
     
-    QTreeWidgetItem * deviceListPointer;
-    enum {
-      DEVICE_DESCRIPTION,
-      DEVICE_NAME,
-      PROFILE_DESCRIPTION,
-      PROFILE_FILENAME
-    };
+    //QTreeWidgetItem * deviceListPointer;
+    SyDevicesItem * deviceListPointer;
     
     // Pointer used to store address of 'recently clicked' device item widget.
     QTreeWidgetItem * currentDevice;
@@ -98,5 +94,6 @@ private:
     { if(current_device_name) free(current_device_class);
       current_device_class = strdup(name); };
 };
+
 
 #endif

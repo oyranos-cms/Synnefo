@@ -8,17 +8,22 @@
 #include "sy_info.h"
 
 SyInfo::SyInfo(QWidget * parent)
-    : QWidget(parent), SyModule()
+    : SyModule(parent)
 {       
     current_profile = NULL;
+    
+    infoDialog = new SyInfoDialog(0);
   
-    this->moduleName = "Settings";
+    this->moduleName = "Information";
     setupUi(this);                  // Load Gui.
     
     setEditable(false);
         
     installedProfilesTree->setColumnWidth(0, 350);
     installedProfilesTree->setColumnWidth(1, 150);
+    
+    boldFont = QFont( "Sans Serif", 11, QFont::Bold);
+    normalFont = QFont( "Sans Serif", 11, QFont::Normal);
 
     // Save tree list parents to QTreeWidgetItem pointers.
     devicesParentTree = installedProfilesTree->topLevelItem(0);
@@ -41,27 +46,40 @@ SyInfo::SyInfo(QWidget * parent)
     
     // Display oyEDITING_XYZ info for now. 
     populateInstalledProfileList();
-    profileInfoGroupBox -> setEnabled(false);
-
+//    profileInfoGroupBox -> setEnabled(false);
+#if 0
     if (iccExaminIsInstalled(iccExaminCommand))
         launchICCExaminButton->show();
     else
         launchICCExaminButton->hide(); 
+#endif    
+    // scrollArea->setWidget(scrollAreaWidgetContents);
+//    scrollArea->setWidgetResizable(true);
     
-    scrollArea->setWidget(scrollAreaWidgetContents);
-    scrollArea->setWidgetResizable(true);
+    //profileInfoGroupBox->setVisible(false);
+    
+    
+    
+    
+    
+    config->beginGroup("ProfileTreeList");
+    //assumedCsTree->setExpanded(config->value("tree/assumed", true));
+    //assumedCsTree->setExpand("tree/assumed", assumedCsTree->isExpanded());
+    //config->setValue("tree/editing", editingCsTree->isExpanded());
+    //config->setValue("tree/devicesParentTree", devicesParentTree->isExpanded());
+    config->endGroup();
     
         // Whenever the user clicks on a QTreeWidget child, the description changes.
     connect( installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), 
                 this, SLOT(changeProfileTreeItem(QTreeWidgetItem*)));    
-    connect( launchICCExaminButton, SIGNAL(clicked()), this, SLOT(launchICCExamin())); 
+    // connect( launchICCExaminButton, SIGNAL(clicked()), this, SLOT(launchICCExamin())); 
 }
 
 //  ******** SIGNAL/SLOT Functions *****************
 
 void SyInfo::launchICCExamin()
 {
-    
+#if 0
     QString exec;
 
     if(!directoryListingTag->text().isNull())
@@ -86,6 +104,7 @@ void SyInfo::launchICCExamin()
         return;
     }
     system(exec.toLocal8Bit());
+    #endif
 }
 
 // Whenever a user clicks on a child in the tree list, the "profile information"
@@ -99,14 +118,14 @@ void SyInfo::changeProfileTreeItem(QTreeWidgetItem* currentProfileItem)
     if(p && p->type_ == oyOBJECT_PROFILE_S)
     {
       populateDeviceProfileDescriptions(p, true);    
-      profileInfoGroupBox->setEnabled(true);
+//      profileInfoGroupBox->setEnabled(true);
       return;
     }
 
     populateDeviceProfileDescriptions(NULL, false);
-    profileInfoGroupBox -> setEnabled(false);
+//    profileInfoGroupBox -> setEnabled(false);
     // set default frame size
-    frame -> setMinimumSize(QSize(250,250));
+//    frame -> setMinimumSize(QSize(250,250));
 }
 
 
@@ -169,12 +188,19 @@ void SyInfo::addProfileTreeItem( oyPROFILE_e profile_type, QString description,
       
     // Add new item.
     QTreeWidgetItem * new_child = new QTreeWidgetItem();
+        
+    QIcon dialogIcon = QIcon(":/resources/examine.png");          
+    
+    new_child->setText(2, ".");
+    new_child->setIcon(2, dialogIcon);
     new_child->setText(1, description);
     new_child->setText(0, text);
 
     // attach the profile to the widget
     QVariant v((qulonglong) oyProfile_Copy(profile,0));
     new_child->setData( 0, Qt::UserRole, v );
+    
+    
  
     parent_item->addChild(new_child);    
     oyProfile_Release( &profile );
@@ -288,6 +314,12 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
           // attach the profile to the widget
           QVariant v((qulonglong) oyProfile_Copy(p,0));
           profile_child->setData( 0, Qt::UserRole, v );
+
+	  QIcon dialogIcon("");
+          dialogIcon = QIcon(":/resources/examine.png");          
+
+          profile_child->setText(2, ".");
+          profile_child->setIcon(2, dialogIcon);
           device_child->addChild(profile_child);
         }
 
@@ -305,26 +337,23 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
     if (valid)
     {
         // Output Oyranos-specified profile descriptions.
-        setTagDescriptions(profile, icSigCopyrightTag, copyrightTagLabel);
-        
-	setTagDescriptions(profile, icSigDeviceMfgDescTag, mfgTagLabel);
-        
-	setTagDescriptions(profile, icSigDeviceModelDescTag, modelTagLabel);
-        
-	setTagDescriptions(profile, icSigProfileDescriptionTag, descriptionTagLabel);
+        setTagDescriptions(profile, icSigCopyrightTag, COPYRIGHT_TAG);        
+	setTagDescriptions(profile, icSigDeviceMfgDescTag, MANUFACTURER_TAG);        
+	setTagDescriptions(profile, icSigDeviceModelDescTag, MODEL_TAG);        
+	setTagDescriptions(profile, icSigProfileDescriptionTag, DESCRIPTION_TAG);
 
-        setDateTag(profile, dateTagLabel);
+        setDateTag(profile);
 	
-        setCSpaceTag(profile, colorspaceTagLabel);
+        setColorSpaceTag(profile);
 	
-        setIccsTag(profile, iccVerTagLabel);
+        setIccsTag(profile);
 	
-        setPcsTag(profile, pcsTagLabel);
+        setPcsTag(profile);
 	
-        setDeviceClassTag(profile, deviceClassTagLabel);
+        setDeviceClassTag(profile);
 
         QString profilePathName = oyProfile_GetFileName( profile, 0 );
-        directoryListingTag->setText(profilePathName);
+        infoDialog->setDialogText( FILENAME_TAG, profilePathName );
 
         oyProfile_Release( &current_profile );
         current_profile = oyProfile_Copy( profile, 0 );
@@ -332,26 +361,24 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
     else
     {
         // Set default descriptions.
-        descriptionTagLabel -> setText(tr("No Profile Selected"));
-        copyrightTagLabel -> setText(tr("(Copyright not available)"));
-        filenameTagLabel -> setText("");
-        mfgTagLabel -> setText("");
-        modelTagLabel -> setText("");
-
-        dateTagLabel -> setText("");
-        colorspaceTagLabel -> setText("");
-        iccVerTagLabel -> setText("");
-        pcsTagLabel -> setText("");
-        deviceClassTagLabel -> setText("");
-
-        directoryListingTag -> setText("");
+        infoDialog->setDialogText( COLORSPACE_TAG, "" );
+        infoDialog->setDialogText( COPYRIGHT_TAG, tr("(Copyright not available)") );
+        infoDialog->setDialogText( DATE_CREATED_TAG, "" );
+        infoDialog->setDialogText( DESCRIPTION_TAG, tr("No Profile Selected") );
+        infoDialog->setDialogText( DEVICE_TAG, "" );
+        infoDialog->setDialogText( FILENAME_TAG, "" );
+        infoDialog->setDialogText( ICC_VERSION_TAG, "" );
+        infoDialog->setDialogText( MANUFACTURER_TAG, "" );
+        infoDialog->setDialogText( MODEL_TAG, "" );
+        infoDialog->setDialogText( PCS_TAG, "" );
+        infoDialog->setDialogText( PROFILE_PATH_TAG, "" );
     }
   
 }
 
 
 // Function to write signature head, based on profile, tag type, and QT Label.
-void SyInfo::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagType, QLabel * tagLabel )
+void SyInfo::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagType, DialogString tag )
 {
      int text_n;
      bool error;
@@ -367,30 +394,31 @@ void SyInfo::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagTy
      if(!error)
          tagText = oyProfileTag_GetText( tagID, &text_n, 0,0, 0, 0 );
      
-     if(text_n && tagText && tagText[0])
-             tagLabel->setText(*tagText);          
+     if(text_n && tagText && tagText[0])                  
+         infoDialog->setDialogText(tag, *tagText);
      else
-        tagLabel->setText("-----");
+         infoDialog->setDialogText(tag, "");
 }
 
 
-void SyInfo::setPcsTag(oyProfile_s * profile, QLabel * pcsLabel)
+void SyInfo::setPcsTag(oyProfile_s * profile)
 {
      QString tagString;
      tagString = oyICCColourSpaceGetName( (icColorSpaceSignature)
                          oyProfile_GetSignature(profile, oySIGNATURE_PCS) );
-     pcsLabel->setText("CIE" + tagString.toLocal8Bit());
+     infoDialog->setDialogText( PCS_TAG, "CIE" + tagString.toLocal8Bit());
+     
 }
 
-void SyInfo::setCSpaceTag(oyProfile_s * profile, QLabel * cSpaceLabel)
+void SyInfo::setColorSpaceTag(oyProfile_s * profile)
 {
      QString tagString;
      tagString = oyICCColourSpaceGetName( (icColorSpaceSignature)
                          oyProfile_GetSignature(profile, oySIGNATURE_COLOUR_SPACE) );
-     cSpaceLabel->setText(tagString);
+     infoDialog->setDialogText( COLORSPACE_TAG, tagString);     
 }
 
-void SyInfo::setIccsTag(oyProfile_s * profile, QLabel * iccsLabel)
+void SyInfo::setIccsTag(oyProfile_s * profile)
 {
     QString field1, field2, field3;
 
@@ -400,21 +428,22 @@ void SyInfo::setIccsTag(oyProfile_s * profile, QLabel * iccsLabel)
     field1 = (((int)v[0]));
     field2 = ((int)v[1]/16);
     field3 = ((int)v[1]%16);
-
-    iccsLabel->setText(field1.setNum(((int)v[0])) + "." + field2.setNum(((int)v[1]/16)) + "." +
-                               field3.setNum(((int)v[1]%16)));
+    
+    infoDialog->setDialogText( ICC_VERSION_TAG,  field1.setNum(((int)v[0])) + "." 
+                                               + field2.setNum(((int)v[1]/16)) + "." 
+                                               + field3.setNum(((int)v[1]%16)));    
 }
 
-void SyInfo::setDeviceClassTag(oyProfile_s * profile, QLabel * devClassLabel)
+void SyInfo::setDeviceClassTag(oyProfile_s * profile)
 {
      QString string;
      string = oyICCDeviceClassDescription( (icProfileClassSignature)
                          oyProfile_GetSignature(profile, oySIGNATURE_CLASS) );
-     devClassLabel->setText(string.toLocal8Bit());
+     infoDialog->setDialogText( DEVICE_TAG, string.toLocal8Bit());     
 }
 
 
-void SyInfo::setDateTag(oyProfile_s * profile, QLabel * dateLabel)
+void SyInfo::setDateTag(oyProfile_s * profile)
 {
      uint year, month, day; 
      //uint hours, minutes, seconds;
@@ -429,7 +458,10 @@ void SyInfo::setDateTag(oyProfile_s * profile, QLabel * dateLabel)
       //minutes = oyProfile_GetSignature(profile, oySIGNATURE_DATETIME_MINUTES);
       //seconds = oyProfile_GetSignature(profile, oySIGNATURE_DATETIME_SECONDS);
 
-     dateLabel->setText(monthString.setNum(month) + "/" + dayString.setNum(day) + "/" + yearString.setNum(year));
+     infoDialog->setDialogText(DATE_CREATED_TAG, 
+                                 monthString.setNum(month) + "/" 
+                                 + dayString.setNum(day) + "/" 
+                                 + yearString.setNum(year));
 }
 
 
@@ -488,5 +520,9 @@ bool SyInfo::iccExaminIsInstalled(QString &iccExaminPath)
 
 SyInfo::~SyInfo()
 {
-  
+    config->beginGroup("ProfileTreeList");
+    config->setValue("tree/assumed", assumedCsTree->isExpanded());
+    config->setValue("tree/editing", editingCsTree->isExpanded());
+    config->setValue("tree/devicesParentTree", (devicesParentTree->isExpanded()));
+    config->endGroup();
 }

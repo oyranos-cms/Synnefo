@@ -9,11 +9,12 @@
 #include <alpha/oyranos_alpha.h>
 
 #include "symodule.h"          
+#include "sy_info_dialog.h"
 
 // Qt Designer code translation.
 #include "ui_sy_info.h"          
 
-class SyInfo : public QWidget, public SyModule, Ui::syInfoWidget
+class SyInfo : public SyModule, Ui::syInfoWidget
 {
     Q_OBJECT
     
@@ -50,21 +51,26 @@ private:
     void populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid);
     
     // Function to write tag descriptions to individual labels
-    void setTagDescriptions(oyProfile_s *, icTagSignature, QLabel *);
+    void setTagDescriptions(oyProfile_s *, icTagSignature, DialogString);
     
     // The following provide additonal tags to be displayed.
-    void setPcsTag(oyProfile_s * profile, QLabel * pcsLabel);
-    void setCSpaceTag(oyProfile_s * profile, QLabel * cSpaceLabel);
-    void setIccsTag(oyProfile_s * profile, QLabel * iccsLabel);
-    void setDeviceClassTag(oyProfile_s * profile, QLabel * devClassLabel);
+    void setPcsTag(oyProfile_s * profile);
+    void setColorSpaceTag(oyProfile_s * profile);
+    void setIccsTag(oyProfile_s * profile);
+    void setDeviceClassTag(oyProfile_s * profile);
     
     // Function to write date tag to a label.
-    void setDateTag(oyProfile_s *, QLabel *);
+    void setDateTag(oyProfile_s *);
     
     // Check for iccexamin functionality on user system.
     bool iccExaminIsInstalled(QString &iccExaminPath);
             
   /*** PRIVATE DATA MEMBERS ***/  
+  
+    SyInfoDialog * infoDialog;
+    
+    QFont boldFont;
+    QFont normalFont;
       
     // Pointers to current QTreeWidget parents (Devices, Editing Space, Assumed Space)
     QTreeWidgetItem * assumedCsTree;
