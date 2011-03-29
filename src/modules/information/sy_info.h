@@ -20,18 +20,13 @@ class SyInfo : public SyModule, Ui::syInfoWidget
     
 public:
     SyInfo (QWidget * parent);
-    ~SyInfo();
+    ~SyInfo();   
     
-    QString iccExaminCommand;
     
-    // User-defined QT slots.
+// User-defined QT slots.
 private slots:
-     
-    // Function to change profile information description
-    void changeProfileTreeItem(QTreeWidgetItem*);
-  
-    // If "Analyze profile" button is un-hidden, launch iccexamin.
-    void launchICCExamin();
+    
+    void profileExamineButtonClicked(QTreeWidgetItem *, int);
     
 private:
   
@@ -61,18 +56,21 @@ private:
     
     // Function to write date tag to a label.
     void setDateTag(oyProfile_s *);
-    
-    // Check for iccexamin functionality on user system.
-    bool iccExaminIsInstalled(QString &iccExaminPath);
             
   /*** PRIVATE DATA MEMBERS ***/  
   
     SyInfoDialog * infoDialog;
+    QIcon examineIcon;
     
     QFont boldFont;
     QFont normalFont;
       
     // Pointers to current QTreeWidget parents (Devices, Editing Space, Assumed Space)
+    enum {
+      ITEM_NAME,
+      ITEM_DESCRIPTION,
+      ITEM_ICON      
+    };
     QTreeWidgetItem * assumedCsTree;
     QTreeWidgetItem * editingCsTree;
     QTreeWidgetItem * devicesParentTree;

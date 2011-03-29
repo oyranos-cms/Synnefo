@@ -21,7 +21,7 @@ set( synnefo_SRCS
     modules/settings/sy_settings.cpp    
 
     modules/devices/sy_devices_item.cpp
-    modules/information/sy_info_dialog.cpp
+    modules/information/sy_info_dialog.cpp    
 )
  
 SET( synnefo_MOC_HEADERS
@@ -58,8 +58,8 @@ INCLUDE_DIRECTORIES(
 )
 
 set(synnefo_RCCS
-      modules/devices/icons.qrc
       modules/information/icons.qrc      
+      modules/devices/icons.qrc            
       )
 
 QT4_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
@@ -72,9 +72,9 @@ QT4_WRAP_CPP(synnefo_SRCS ${synnefo_MOC_HEADERS})
 IF(UNIX)
   add_executable(synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF(APPLE)
-  add_executable(synnefo MACOSX_BUNDLE ${synnefo_SRCS})
+  add_executable(synnefo MACOSX_BUNDLE ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF (WIN32)
-  add_executable(synnefo WIN32 ${synnefo_SRCS})
+  add_executable(synnefo WIN32 ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ENDIF ()
 
 IF(WIN32)

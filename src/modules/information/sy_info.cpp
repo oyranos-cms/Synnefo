@@ -1,5 +1,3 @@
-#include <QFile>
-#include <QFileInfo>
  
 #include <oyranos.h>
 #include <oyranos_config.h>
@@ -12,7 +10,7 @@ SyInfo::SyInfo(QWidget * parent)
 {       
     current_profile = NULL;
     
-    infoDialog = new SyInfoDialog(0);
+    infoDialog = new SyInfoDialog(this);
   
     this->moduleName = "Information";
     setupUi(this);                  // Load Gui.
@@ -22,9 +20,6 @@ SyInfo::SyInfo(QWidget * parent)
     installedProfilesTree->setColumnWidth(0, 350);
     installedProfilesTree->setColumnWidth(1, 150);
     
-    boldFont = QFont( "Sans Serif", 11, QFont::Bold);
-    normalFont = QFont( "Sans Serif", 11, QFont::Normal);
-
     // Save tree list parents to QTreeWidgetItem pointers.
     devicesParentTree = installedProfilesTree->topLevelItem(0);
     const char * g_name = NULL;
@@ -32,105 +27,56 @@ SyInfo::SyInfo(QWidget * parent)
     editingCsTree = installedProfilesTree->topLevelItem(1);
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_EDIT, NULL, &g_name,
                       NULL, NULL );
-    editingCsTree->setText(0, name.fromLatin1(g_name));
+    editingCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
     assumedCsTree = installedProfilesTree->topLevelItem(2);
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_ASSUMED, NULL, &g_name,
                       NULL, NULL );
-    assumedCsTree->setText(0, name.fromLatin1(g_name));
+    assumedCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
 
     // For convenience, we expand colorspace trees.
     installedProfilesTree->expandItem(editingCsTree);
     installedProfilesTree->expandItem(assumedCsTree);
 
     installedProfilesTree->expandAll();
+        
+    examineIcon.addFile(QString::fromUtf8(":/resources/examine.png"), 
+                                  QSize(10, 10), QIcon::Normal, QIcon::On);
+ 
+    examineIcon.addFile(QString::fromUtf8(":/resources/examine_select.png"), 
+                                  QSize(10, 10), QIcon::Active, QIcon::On);
     
     // Display oyEDITING_XYZ info for now. 
     populateInstalledProfileList();
-//    profileInfoGroupBox -> setEnabled(false);
-#if 0
-    if (iccExaminIsInstalled(iccExaminCommand))
-        launchICCExaminButton->show();
-    else
-        launchICCExaminButton->hide(); 
-#endif    
-    // scrollArea->setWidget(scrollAreaWidgetContents);
-//    scrollArea->setWidgetResizable(true);
-    
-    //profileInfoGroupBox->setVisible(false);
-    
-    
-    
-    
-    
-    config->beginGroup("ProfileTreeList");
-    //assumedCsTree->setExpanded(config->value("tree/assumed", true));
-    //assumedCsTree->setExpand("tree/assumed", assumedCsTree->isExpanded());
-    //config->setValue("tree/editing", editingCsTree->isExpanded());
-    //config->setValue("tree/devicesParentTree", devicesParentTree->isExpanded());
-    config->endGroup();
-    
-        // Whenever the user clicks on a QTreeWidget child, the description changes.
+
     connect( installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), 
-                this, SLOT(changeProfileTreeItem(QTreeWidgetItem*)));    
-    // connect( launchICCExaminButton, SIGNAL(clicked()), this, SLOT(launchICCExamin())); 
+                this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
+
 }
+
 
 //  ******** SIGNAL/SLOT Functions *****************
 
-void SyInfo::launchICCExamin()
+void SyInfo::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, int column)
 {
-#if 0
-    QString exec;
-
-    if(!directoryListingTag->text().isNull())
-      exec = iccExaminCommand + " \"" + directoryListingTag->text() + "\"&";
-    else
-    {
-      // Write to a temporary file.
-      size_t size = 0;
-      oyPointer data = oyProfile_GetMem( current_profile, &size, 0, malloc );
-      if(data)
-      {
-        // The disadvantage is, any previous ICC Examin session for the same
-        // file name will update its view to the newly written one.
-        QFile file("/tmp/icc_examin_temp.icc");
-        file.open( QIODevice::WriteOnly );
-        file.write( (const char*)data, size );
-        file.flush();
-        file.close();
-        free(data); data = 0;
-        exec = iccExaminCommand + " " + "/tmp/icc_examin_temp.icc" + "&";
-      } else
-        return;
-    }
-    system(exec.toLocal8Bit());
-    #endif
-}
-
-// Whenever a user clicks on a child in the tree list, the "profile information"
-// window is updated.
-void SyInfo::changeProfileTreeItem(QTreeWidgetItem* currentProfileItem)
-{     
-    // get the profile from the widget
+    if (column != ITEM_ICON)
+       return;
+    
+    infoDialog->showDialog();
+    
     QVariant v = currentProfileItem->data( 0, Qt::UserRole );
     oyProfile_s * p = (oyProfile_s *) v.toULongLong();
 
     if(p && p->type_ == oyOBJECT_PROFILE_S)
     {
       populateDeviceProfileDescriptions(p, true);    
-//      profileInfoGroupBox->setEnabled(true);
       return;
     }
 
-    populateDeviceProfileDescriptions(NULL, false);
-//    profileInfoGroupBox -> setEnabled(false);
-    // set default frame size
-//    frame -> setMinimumSize(QSize(250,250));
+    populateDeviceProfileDescriptions(NULL, false);    
 }
 
 
 // ************** Private Functions ********************
-
 
 // Populate the tree with detected profile items.
 void SyInfo::populateInstalledProfileList()
@@ -188,21 +134,20 @@ void SyInfo::addProfileTreeItem( oyPROFILE_e profile_type, QString description,
       
     // Add new item.
     QTreeWidgetItem * new_child = new QTreeWidgetItem();
-        
-    QIcon dialogIcon = QIcon(":/resources/examine.png");          
     
-    new_child->setText(2, ".");
-    new_child->setIcon(2, dialogIcon);
-    new_child->setText(1, description);
-    new_child->setText(0, text);
+    new_child->setIcon( ITEM_ICON, examineIcon );
+    new_child->setText( ITEM_DESCRIPTION, description );
+    new_child->setText( ITEM_NAME, text );
 
     // attach the profile to the widget
     QVariant v((qulonglong) oyProfile_Copy(profile,0));
-    new_child->setData( 0, Qt::UserRole, v );
+    new_child->setData( ITEM_NAME, Qt::UserRole, v );
     
+    installedProfilesTree->setUniformRowHeights(false);
+    installedProfilesTree->setAllColumnsShowFocus(false);;
     
- 
     parent_item->addChild(new_child);    
+    
     oyProfile_Release( &profile );
 } 
 
@@ -243,8 +188,8 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
       device_class = oyConfDomain_GetText( d, "device_class", oyNAME_NAME );
 
       QTreeWidgetItem * device_list_sub_tree = new QTreeWidgetItem;
-      device_list_sub_tree->setText(0, device_class);
-      deviceListTree->addChild(device_list_sub_tree);
+      device_list_sub_tree->setText( ITEM_NAME, device_class );
+      deviceListTree->addChild( device_list_sub_tree) ;
 
       for(j = 0; j < (uint32_t)n; ++j)
       {
@@ -287,9 +232,9 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
                                    + QString(device_info));
         else
 #endif
-        device_child->setText(0, QString(model));
+        device_child->setText( ITEM_NAME, QString(model) );
         if(model) free(model); model = 0;
-        device_child->setIcon(0, device_icon);
+        device_child->setIcon(ITEM_NAME, device_icon);
         device_list_sub_tree->addChild(device_child);   
 
         oyProfile_s * p = 0;
@@ -306,20 +251,16 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
           const char* profile_name = oyProfile_GetText( p, oyNAME_DESCRIPTION );
           const char* file_name = oyProfile_GetFileName( p, -1 );
           if(file_name)
-            profile_child->setText(1, QString(file_name));
+            profile_child->setText( ITEM_DESCRIPTION, QString(file_name) );
           else
-            profile_child->setText(1, "in memory");
-          profile_child->setText(0, profile_name);
+            profile_child->setText( ITEM_DESCRIPTION, "in memory" );
+          profile_child->setText( ITEM_NAME, profile_name );
 
           // attach the profile to the widget
           QVariant v((qulonglong) oyProfile_Copy(p,0));
           profile_child->setData( 0, Qt::UserRole, v );
 
-	  QIcon dialogIcon("");
-          dialogIcon = QIcon(":/resources/examine.png");          
-
-          profile_child->setText(2, ".");
-          profile_child->setIcon(2, dialogIcon);
+          profile_child->setIcon(ITEM_ICON, examineIcon);
           device_child->addChild(profile_child);
         }
 
@@ -353,7 +294,7 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
         setDeviceClassTag(profile);
 
         QString profilePathName = oyProfile_GetFileName( profile, 0 );
-        infoDialog->setDialogText( FILENAME_TAG, profilePathName );
+        infoDialog->setDialogText( PROFILE_PATH_TAG, profilePathName );
 
         oyProfile_Release( &current_profile );
         current_profile = oyProfile_Copy( profile, 0 );
@@ -410,6 +351,7 @@ void SyInfo::setPcsTag(oyProfile_s * profile)
      
 }
 
+
 void SyInfo::setColorSpaceTag(oyProfile_s * profile)
 {
      QString tagString;
@@ -417,6 +359,7 @@ void SyInfo::setColorSpaceTag(oyProfile_s * profile)
                          oyProfile_GetSignature(profile, oySIGNATURE_COLOUR_SPACE) );
      infoDialog->setDialogText( COLORSPACE_TAG, tagString);     
 }
+
 
 void SyInfo::setIccsTag(oyProfile_s * profile)
 {
@@ -433,6 +376,7 @@ void SyInfo::setIccsTag(oyProfile_s * profile)
                                                + field2.setNum(((int)v[1]/16)) + "." 
                                                + field3.setNum(((int)v[1]%16)));    
 }
+
 
 void SyInfo::setDeviceClassTag(oyProfile_s * profile)
 {
@@ -465,64 +409,7 @@ void SyInfo::setDateTag(oyProfile_s * profile)
 }
 
 
-// Detect iccexamin for integrated 3D Profile support.
-bool SyInfo::iccExaminIsInstalled(QString &iccExaminPath)
-{
-
-# ifdef __WIN32__
-     QChar pathSep = QChar::fromLatin1(';');
-     const QString iccExamin = QString::fromLocal8Bit("iccexamin.exe");
-#elif defined (__APPLE__)
-     QChar pathSep = QChar::fromLatin1(':'); 
-     const QString iccExamin = QString::fromLocal8Bit("iccexamin.app/Contents/MacOS/ICC Examin");
-# else
-     QChar pathSep = QChar::fromLatin1(':');  
-     const QString iccExamin = QString::fromLocal8Bit("iccexamin");
-# endif /* __WIN32__ */
-
-     QString Path = QString::fromLocal8Bit(getenv("PATH"));
-     QFileInfo fileinfo;
-
-     bool done = false;
-     bool found = false;
-
-     while (!done)
-     {
-          if (!Path.length() > 0) // still more paths to look at
-                 done=true;
-          else
-          {
-              // get next path
-              iccExaminPath = Path.left(Path.indexOf(pathSep, 0, Qt::CaseSensitive)) +
-              QString::fromLocal8Bit("/") + iccExamin ;
-              // remove the path we are about to check from path
-              Path = Path.right(Path.length() - Path.indexOf(pathSep, 0, Qt::CaseSensitive) - 1);
-              // apend executable name to path
-              fileinfo.setFile(iccExaminPath);
-              // check to see if it exists
-             if (fileinfo.exists())
-             {  
-                 done = true;
-                 found = true;
-                
-             }
-             // check to see if this was last path
-             if (Path.length() <= iccExaminPath.length())
-                 done = true;
-           }
-     }
-
-     return found;
-}
-
-
-
-
 SyInfo::~SyInfo()
 {
-    config->beginGroup("ProfileTreeList");
-    config->setValue("tree/assumed", assumedCsTree->isExpanded());
-    config->setValue("tree/editing", editingCsTree->isExpanded());
-    config->setValue("tree/devicesParentTree", (devicesParentTree->isExpanded()));
-    config->endGroup();
+    delete infoDialog;
 }
