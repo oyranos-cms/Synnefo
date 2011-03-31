@@ -2,7 +2,6 @@
 #define SYNNEFO_H
 
 #include <QApplication>
-#include <QSignalMapper>
 #include <QWidget>
 
 // Qt Designer code translation.
@@ -13,6 +12,8 @@
 #include "sy_info.h"
 #include "sy_settings.h"
 
+#include "syconfig.h"
+
 class Synnefo : public QMainWindow, Ui::syMainWindow
 {
     Q_OBJECT
@@ -21,8 +22,6 @@ class Synnefo : public QMainWindow, Ui::syMainWindow
     
     Synnefo (QWidget * parent);
     ~Synnefo();
-    
-    SyModule ** syModules;
 
   private slots:
     
@@ -31,7 +30,11 @@ class Synnefo : public QMainWindow, Ui::syMainWindow
     
     void closeSynnefo();
     
+    void openApplicationSettings();
+    
   private:
+    SyConfig * config;
+    SyModule ** syModules;
     
     int insertModule( SyModule *, QStackedWidget * );
     
@@ -41,8 +44,6 @@ class Synnefo : public QMainWindow, Ui::syMainWindow
     SyDevices * devicesModule;    
     SyInfo * infoModule;
     SySettings * settingsModule;
-    
-    QList <SyModule*> syModulars;
     
     int module_n;
     

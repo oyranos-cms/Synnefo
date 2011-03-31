@@ -1,8 +1,13 @@
 #include "synnefo.h"
 
+const int module_count = 3;
+
 Synnefo::Synnefo(QWidget * parent)
     : QMainWindow(parent)
 {       
+    QCoreApplication::setOrganizationName("OpenICC");
+    QCoreApplication::setApplicationName("Synnefo");
+      
     setupUi(this);  
     
     loadSyModules();
@@ -12,7 +17,7 @@ Synnefo::Synnefo(QWidget * parent)
     connect ( syModuleListView, SIGNAL ( currentRowChanged ( int )),
                this, SLOT ( changeModuleSelection ( int )));
     connect( exitButton, SIGNAL( clicked() ), this, SLOT( closeSynnefo() ));
-    
+    connect( appSettingsButton, SIGNAL( clicked() ), this, SLOT( openApplicationSettings() ));
 }
 
 
@@ -20,10 +25,8 @@ Synnefo::Synnefo(QWidget * parent)
 // Initialize Synnefo modules.
 void Synnefo::loadSyModules()
 {
-    // TODO Find solution to automatically check for # of modules.
-    module_n = 3;
-    
-    syModules = new SyModule*[3];
+    // TODO Find solution to automatically check for # of modules.    
+    syModules = new SyModule*[module_count];
     
     devicesModule = new SyDevices( NULL );
     infoModule = new SyInfo( NULL );
@@ -38,8 +41,10 @@ void Synnefo::loadSyModules()
         
     int i;
     // Populate Module Selection List 
-    for (i = 0; i < module_n; i++)
+    for (i = 0; i < module_count; i++)
        syModuleListView->addItem(syModules[i]->getName());
+    
+        config = new SyConfig(syModules, this);
 }    
 
 
@@ -65,6 +70,13 @@ void Synnefo::changeModuleSelection ( int moduleIndex )
     }
     // TODO Failure case.
 }
+
+
+void Synnefo::openApplicationSettings()
+{
+    config->setVisible(true);
+}
+
 
 void Synnefo::closeSynnefo()
 {

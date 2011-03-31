@@ -16,6 +16,7 @@ set( synnefo_SRCS
 
     # synnefo class
     modules/symodule.cpp
+    modules/symoduleconfig.cpp
 
     # synnefo modules
     modules/devices/sy_devices.cpp
@@ -24,11 +25,16 @@ set( synnefo_SRCS
 
     modules/devices/sy_devices_item.cpp
     modules/information/sy_info_dialog.cpp    
+
+    modules/settings/sy_settings_config.cpp
 )
  
 SET( synnefo_MOC_HEADERS
     # main window
     synnefo.h
+
+    # config 
+    classes/syconfig.h
 
     # modules
     modules/devices/sy_devices.h
@@ -36,17 +42,23 @@ SET( synnefo_MOC_HEADERS
     modules/settings/sy_settings.h
 
     modules/information/sy_info_dialog.h
+    modules/settings/sy_settings_config.h
 )
 
 set( synnefo_UIs
     # main ui file
     ui/synnefo.ui
+ 
+    # config ui files
+    ui/synnefo-config.ui
+
     # module UI files
     modules/devices/sy_devices.ui
     modules/information/sy_info.ui
     modules/settings/sy_settings.ui
 
     modules/information/sy_info_dialog.ui
+    modules/settings/sy_settings_config.ui
 )
 
 INCLUDE_DIRECTORIES(

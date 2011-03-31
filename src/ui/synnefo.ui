@@ -94,7 +94,7 @@
         <number>-1</number>
        </property>
        <item row="0" column="3">
-        <widget class="QPushButton" name="appSettingsButtn">
+        <widget class="QPushButton" name="appSettingsButton">
          <property name="maximumSize">
           <size>
            <width>16777215</width>
