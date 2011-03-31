@@ -12,6 +12,8 @@ set( synnefo_SRCS
     main.cpp    
     synnefo.cpp   
 
+    classes/syconfig.cpp
+
     # synnefo class
     modules/symodule.cpp
 
@@ -50,6 +52,7 @@ set( synnefo_UIs
 INCLUDE_DIRECTORIES(
     ${CMAKE_SOURCE_DIR}
     # modules
+    "${CMAKE_CURRENT_SOURCE_DIR}/classes"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/devices"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/settings"
@@ -58,6 +61,7 @@ INCLUDE_DIRECTORIES(
 )
 
 set(synnefo_RCCS
+      ui/resources.qrc
       modules/information/icons.qrc      
       modules/devices/icons.qrc            
       )
