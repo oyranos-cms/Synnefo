@@ -68,7 +68,7 @@
      </column>
      <column>
       <property name="text">
-       <string/>
+       <string>Examine</string>
       </property>
      </column>
      <item>

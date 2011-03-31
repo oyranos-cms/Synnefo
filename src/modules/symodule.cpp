@@ -8,6 +8,7 @@ SyModule::SyModule(QWidget * parent)
     moduleName = "module";
     moduleDescription = "A Synnefo Module";  
     
+    
     modified = false;
 }
 

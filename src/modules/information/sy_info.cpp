@@ -12,7 +12,9 @@ SyInfo::SyInfo(QWidget * parent)
     
     infoDialog = new SyInfoDialog(this);
   
-    this->moduleName = "Information";
+    setModuleName("Information");
+    setDescription("Analyze profile information on your system.");
+    
     setupUi(this);                  // Load Gui.
     
     setEditable(false);

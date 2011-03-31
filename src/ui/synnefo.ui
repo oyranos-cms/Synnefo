@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>683</width>
-    <height>413</height>
+    <width>792</width>
+    <height>536</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" rowspan="2">
+    <item row="0" column="0" rowspan="3">
      <widget class="QListWidget" name="syModuleListView">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Fixed" vsizetype="Expanding">
@@ -49,10 +49,10 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="1">
+    <item row="1" column="1">
      <widget class="QStackedWidget" name="syModuleWidget">
       <property name="sizePolicy">
-       <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+       <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -60,7 +60,7 @@
       <widget class="QWidget" name="syMainStackedWidgetPage1"/>
      </widget>
     </item>
-    <item row="1" column="1">
+    <item row="2" column="1">
      <widget class="QFrame" name="Frame">
       <property name="enabled">
        <bool>true</bool>
@@ -74,7 +74,7 @@
       <property name="maximumSize">
        <size>
         <width>16777215</width>
-        <height>50</height>
+        <height>42</height>
        </size>
       </property>
       <property name="layoutDirection">
@@ -93,30 +93,55 @@
        <property name="horizontalSpacing">
         <number>-1</number>
        </property>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="saveButton">
+       <item row="0" column="3">
+        <widget class="QPushButton" name="appSettingsButtn">
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>16590544</height>
+          </size>
+         </property>
          <property name="text">
-          <string>Save</string>
+          <string>Application Settings</string>
+         </property>
+         <property name="icon">
+          <iconset resource="resources.qrc">
+           <normaloff>:/resources/config.png</normaloff>:/resources/config.png</iconset>
+         </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+         <property name="default">
+          <bool>true</bool>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="0">
-        <widget class="QPushButton" name="applyButton">
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="exitButton">
          <property name="text">
-          <string>Apply</string>
+          <string>Exit</string>
+         </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+         <property name="default">
+          <bool>false</bool>
          </property>
          <property name="flat">
           <bool>false</bool>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
+       <item row="0" column="2">
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
@@ -126,10 +151,51 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="4">
-        <widget class="QPushButton" name="defaultButton">
+      </layout>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QFrame" name="moduleHeaderFrame">
+      <property name="frameShape">
+       <enum>QFrame::StyledPanel</enum>
+      </property>
+      <property name="frameShadow">
+       <enum>QFrame::Plain</enum>
+      </property>
+      <property name="lineWidth">
+       <number>1</number>
+      </property>
+      <property name="midLineWidth">
+       <number>5</number>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_3">
+       <item row="0" column="0">
+        <widget class="QLabel" name="moduleNameLabel">
+         <property name="font">
+          <font>
+           <pointsize>11</pointsize>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="autoFillBackground">
+          <bool>false</bool>
+         </property>
          <property name="text">
-          <string>Default</string>
+          <string>Module Name</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="moduleDescriptionLabel">
+         <property name="text">
+          <string>This is a description label for the currently-selected module.</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
          </property>
         </widget>
        </item>
@@ -138,8 +204,9 @@
     </item>
    </layout>
   </widget>
-  <widget class="QStatusBar" name="statusbar"/>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

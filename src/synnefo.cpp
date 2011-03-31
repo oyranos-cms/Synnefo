@@ -7,8 +7,12 @@ Synnefo::Synnefo(QWidget * parent)
     
     loadSyModules();
     
+    //Frame->setVisible(false);   // Save/Apply buttons set to FALSE.
+    
     connect ( syModuleListView, SIGNAL ( currentRowChanged ( int )),
                this, SLOT ( changeModuleSelection ( int )));
+    connect( exitButton, SIGNAL( clicked() ), this, SLOT( closeSynnefo() ));
+    
 }
 
 
@@ -47,11 +51,24 @@ void Synnefo::changeModuleSelection ( int moduleIndex )
       // Pop the previous widget off the stackedWidget.
       QWidget * previousWidget = syModuleWidget->currentWidget();    
       syModuleWidget->removeWidget( previousWidget );
+      
+      syModules[ moduleIndex ]->attachModule( syModuleWidget );   
+      
+      moduleDescriptionLabel->setText( syModules[moduleIndex]->getDescription() );
+      moduleNameLabel->setText( QString("Synnefo ") + syModules[moduleIndex]->getName() );
     
-      syModules[ moduleIndex ]->attachModule( syModuleWidget );    
+    /* NOTE: Save/Apply buttons reserved until functionality exists.
+      
+      
       Frame->setVisible( syModules[ moduleIndex ]->isEditable() );
+    */
     }
     // TODO Failure case.
+}
+
+void Synnefo::closeSynnefo()
+{
+    close();
 }
 
 

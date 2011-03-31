@@ -12,7 +12,8 @@
 SySettings::SySettings(QWidget * parent)
     : SyModule(parent)
 {       
-    this->moduleName = "Settings";
+    setModuleName("Settings");
+    setDescription("Set system-wide profile parameters.");
     
     setupUi(this);
     

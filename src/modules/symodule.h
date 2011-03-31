@@ -37,6 +37,8 @@ public:
     // Attach module to an appropriate QStackedWidget.
     int attachModule( QStackedWidget * );
     
+    QString getDescription() { return moduleDescription; }
+    
     // Get module name.
     QString getName(){ return moduleName; } 
     
@@ -51,6 +53,10 @@ public:
     
     // Sets 'modified' state.
     void setModified(bool b) { modified = b; }
+    
+    void setModuleName( QString name ) { moduleName = name; }
+    
+    void setDescription( QString name ) { moduleDescription = name; }
   
 protected:
     
@@ -65,6 +71,8 @@ protected:
 
     QString moduleName;
     QString moduleDescription;
+    
+    QString moduleHeader;
     
     QIcon icon;
     

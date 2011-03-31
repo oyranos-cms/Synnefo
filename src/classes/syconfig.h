@@ -2,18 +2,15 @@
 #ifndef SYCONFIG_H
 #define SYCONFIG_H
 
-#include <QDir>
+#include <QSettings>
+#include <QString>
 
-class SyConfig
+class SyConfig : public QSettings
 {
   public:
     
-    SyConfig();
+    SyConfig(QString org, QString application);
     ~SyConfig();
-    
-  private:
-    
-    int findModules();
    
   
 };

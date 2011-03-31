@@ -29,6 +29,8 @@ class Synnefo : public QMainWindow, Ui::syMainWindow
     // Updates module widget.
     void changeModuleSelection ( int );
     
+    void closeSynnefo();
+    
   private:
     
     int insertModule( SyModule *, QStackedWidget * );
