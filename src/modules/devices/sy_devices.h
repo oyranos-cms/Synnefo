@@ -55,7 +55,7 @@ private:
     void assignProfile( QString & profile_name );
     
     // Populate device-specified profile combo box listing.
-    void populateDeviceComboBox( icProfileClassSignature deviceSignature );
+    void populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature );
     
     // Function to detect all devices/directories.
     void populateDeviceListing();
@@ -76,7 +76,10 @@ private:
     // Directory name variables.
     QString profileDirectoryDefault;
     
-    //QTreeWidgetItem * deviceListPointer;
+    enum {
+      ITEM_MAIN,        // SyDevicesItem column '0' -- Main display area.
+      ITEM_COMBOBOX     // SyDevicesItem column '1' -- 'Profile Set' combobox.
+    };
     SyDevicesItem * deviceListPointer;
     
     // Pointer used to store address of 'recently clicked' device item widget.

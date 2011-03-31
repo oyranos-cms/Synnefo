@@ -35,7 +35,7 @@ void  SyDevicesItem::addText( ItemText e, QString appendedText )
        }     
     }
     
-    this->refreshText();
+    refreshText();
     
     return;
 }
@@ -72,5 +72,5 @@ void  SyDevicesItem::refreshText()
                      "\nProfile Name: " + profileFilename +
                      "\nProfile description: " + profileDescription;
 		     
-    this->setText (1, deviceItemText);
+    this->setText (0, deviceItemText);
 }

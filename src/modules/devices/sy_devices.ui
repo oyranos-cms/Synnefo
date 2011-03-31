@@ -56,16 +56,16 @@
          <bool>false</bool>
         </property>
         <property name="headerHidden">
-         <bool>false</bool>
+         <bool>true</bool>
         </property>
         <property name="columnCount">
-         <number>3</number>
+         <number>2</number>
         </property>
         <attribute name="headerVisible">
-         <bool>true</bool>
+         <bool>false</bool>
         </attribute>
         <attribute name="headerVisible">
-         <bool>true</bool>
+         <bool>false</bool>
         </attribute>
         <column>
          <property name="text">
@@ -74,14 +74,22 @@
         </column>
         <column>
          <property name="text">
-          <string notr="true">*DEVICE INFORMATION*</string>
+          <string notr="true">2</string>
          </property>
         </column>
-        <column>
-         <property name="text">
-          <string>*ASSOCIATED PROFILE COMBO*</string>
-         </property>
-        </column>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="relatedDeviceCheckBox">
+        <property name="text">
+         <string>Show only device related ICC profiles</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+        <property name="tristate">
+         <bool>false</bool>
+        </property>
        </widget>
       </item>
      </layout>
@@ -151,19 +159,6 @@
           </layout>
          </item>
         </layout>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="relatedDeviceCheckBox">
-        <property name="text">
-         <string>Show only device related ICC profiles</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-        <property name="tristate">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
      </layout>
