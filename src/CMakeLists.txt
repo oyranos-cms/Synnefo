@@ -58,15 +58,13 @@ set( synnefo_UIs
     ui/synnefo-config.ui
 
     # module UI files
-    modules/devices/sy_devices.ui
-    modules/information/sy_info.ui
-    modules/settings/sy_settings.ui
-
-    modules/information/sy_info_dialog.ui
-
-    modules/devices/sy_devices_config.ui
-    modules/information/sy_info_config.ui
-    modules/settings/sy_settings_config.ui
+    modules/devices/ui/sy_devices.ui
+    modules/devices/ui/sy_devices_config.ui
+    modules/information/ui/sy_info.ui
+    modules/information/ui/sy_info_config.ui
+    modules/information/ui/sy_info_dialog.ui    
+    modules/settings/ui/sy_settings.ui
+    modules/settings/ui/sy_settings_config.ui
 )
 
 INCLUDE_DIRECTORIES(
@@ -75,8 +73,11 @@ INCLUDE_DIRECTORIES(
     "${CMAKE_CURRENT_SOURCE_DIR}/classes"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/devices"
-    "${CMAKE_CURRENT_SOURCE_DIR}/modules/settings"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/devices/ui"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/information"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/information/ui"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/settings"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/settings/ui"
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
