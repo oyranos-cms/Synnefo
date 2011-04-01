@@ -78,7 +78,5 @@ void Synnefo::closeSynnefo()
 
 Synnefo::~Synnefo()
 {
-    int i;
-    for (i = 0; i < module_n; i++)
-      delete syModules[i];
+    moduleList.clear();
 }

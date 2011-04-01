@@ -4,7 +4,6 @@ const int module_count = 3;
 
 SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent) : QDialog(parent, 0)
 {
-  
     setupUi(this); 
     
     SyModule * tempItem = 0;
@@ -43,5 +42,5 @@ void SyConfig::closeDialog()
 
 SyConfig::~SyConfig() 
 {
-  
+    module_list.clear();
 }
