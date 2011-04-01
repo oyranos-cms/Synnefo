@@ -3,7 +3,7 @@
 
 SyModuleConfig::SyModuleConfig(QWidget * parent) : QWidget(parent)
 {
-    
+
 }
 
 SyModuleConfig::~SyModuleConfig()

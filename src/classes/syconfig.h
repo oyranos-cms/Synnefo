@@ -13,14 +13,16 @@ class SyConfig : public QDialog, Ui::syConfigDialog
   Q_OBJECT
   
   public:
-    SyConfig(SyModule ** modules, QWidget * parent);    
+    SyConfig( QList <SyModule*> modules, QWidget * parent);    
     ~SyConfig();
     
   private slots:
-    void closeDialog();
-   
+    void closeDialog();   
+    
+    void changeModuleConfig( int );
+    
   private:
-    QSettings config_;
+    QList <SyModule*> module_list;
 };
 
 #endif

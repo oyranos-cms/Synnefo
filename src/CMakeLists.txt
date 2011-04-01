@@ -26,6 +26,8 @@ set( synnefo_SRCS
     modules/devices/sy_devices_item.cpp
     modules/information/sy_info_dialog.cpp    
 
+    modules/devices/sy_devices_config.cpp
+    modules/information/sy_info_config.cpp
     modules/settings/sy_settings_config.cpp
 )
  
@@ -42,6 +44,9 @@ SET( synnefo_MOC_HEADERS
     modules/settings/sy_settings.h
 
     modules/information/sy_info_dialog.h
+
+    modules/devices/sy_devices_config.h
+    modules/information/sy_info_config.h
     modules/settings/sy_settings_config.h
 )
 
@@ -58,6 +63,9 @@ set( synnefo_UIs
     modules/settings/sy_settings.ui
 
     modules/information/sy_info_dialog.ui
+
+    modules/devices/sy_devices_config.ui
+    modules/information/sy_info_config.ui
     modules/settings/sy_settings_config.ui
 )
 

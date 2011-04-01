@@ -3,11 +3,14 @@
 #include <QInputDialog>
  
 #include "sy_settings.h"
+#include "sy_settings_config.h"
 
 #include <oyranos.h>
 #include <oyranos_config.h>
 #include <alpha/oyranos_alpha.h>
 #include <locale.h>
+
+
 
 SySettings::SySettings(QWidget * parent)
     : SyModule(parent)
@@ -16,6 +19,10 @@ SySettings::SySettings(QWidget * parent)
     setDescription("Set system-wide profile parameters.");
     
     setupUi(this);
+    
+    SySettingsConfig * settingConfig = new SySettingsConfig(0);
+    
+    setConfigWidget(settingConfig);
     
     setEditable(true);
     

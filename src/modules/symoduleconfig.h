@@ -16,7 +16,7 @@
 class SyModuleConfig : public QWidget
 {
   public:
-    SyModuleConfig(QWidget * parent);    
+    SyModuleConfig(QWidget * parent = 0);    
     ~SyModuleConfig();
     
   protected:

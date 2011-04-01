@@ -43,6 +43,8 @@ private slots:
     // When user clicks on a profile list item
     void profileListDoubleClicked( QListWidgetItem* );
     
+    void showProfileCombobox( QTreeWidgetItem * item, int column);
+    
 private:
     
     // get the actual device from currentDevice

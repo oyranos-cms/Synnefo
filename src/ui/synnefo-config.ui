@@ -137,12 +137,6 @@
       <string>Module Settings</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="0" column="0">
-       <widget class="QStackedWidget" name="stackedWidget">
-        <widget class="QWidget" name="page"/>
-        <widget class="QWidget" name="page_2"/>
-       </widget>
-      </item>
       <item row="1" column="0">
        <widget class="QRadioButton" name="radioButton">
         <property name="layoutDirection">
@@ -150,6 +144,13 @@
         </property>
         <property name="text">
          <string>Hide Module</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QStackedWidget" name="moduleConfigStack">
+        <property name="currentIndex">
+         <number>-1</number>
         </property>
        </widget>
       </item>

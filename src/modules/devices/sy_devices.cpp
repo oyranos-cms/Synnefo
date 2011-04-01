@@ -1,5 +1,6 @@
 
-#include <sy_devices.h>
+#include "sy_devices.h"
+#include "sy_devices_config.h"
 
 #include <oyranos.h>
 #include <oyranos_icc.h>
@@ -14,6 +15,9 @@ SyDevices::SyDevices(QWidget * parent)
     
     this->setParent(parent);
     
+    SyDevicesConfig * devicesConfig = new SyDevicesConfig(0);
+    setConfigWidget( devicesConfig );
+    
     setEditable(true);
     
     current_device_name = 0;
@@ -22,6 +26,8 @@ SyDevices::SyDevices(QWidget * parent)
     listModified = false;       // avoid action on signals
     
     setupUi(this);
+    
+    deviceList->setMouseTracking(true);
     
     // Disable for now.
     // NOTE Will eventually be removed from base widget.
@@ -47,6 +53,8 @@ SyDevices::SyDevices(QWidget * parent)
              this, SLOT( openProfile(int)) );
     connect( profileAssociationList, SIGNAL( itemDoubleClicked( QListWidgetItem* )),
              this, SLOT( profileListDoubleClicked( QListWidgetItem * )) );
+    connect( deviceList, SIGNAL( itemEntered( QTreeWidgetItem*, int )),
+             this, SLOT( showProfileCombobox( QTreeWidgetItem* , int )));
 }
 
 
@@ -75,6 +83,8 @@ void SyDevices::changeDeviceItem(int /*state*/)
 // When the user clicks on an item in the devices tree list.
 void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
 {  
+    currentDevice = selectedDeviceItem;
+  
   #if 0
     // The user modifies the list, but clicks away from the selected device item.
     listModified = false;
@@ -238,6 +248,22 @@ void SyDevices::profileListDoubleClicked( QListWidgetItem * item )
     oyOptions_Release( &options );
 }
 
+// Make comboboxes visible only when mouse is over an item.
+void SyDevices::showProfileCombobox( QTreeWidgetItem* item, int column)
+{
+  #if 0
+   if (column == ITEM_MAIN)
+     return;
+   else if ( (column == ITEM_COMBOBOX) && (item->childCount() == 0) ) {
+     QWidget * w = new QWidget();
+     
+     w = deviceList->itemWidget( item, column );
+     w->setVisible(true);
+     deviceList->setItemWidget( item, column, w );
+   }   
+   #endif
+   
+}
 
 
 // ************** Private Functions ********************
@@ -336,7 +362,7 @@ int SyDevices::detectDevices(const char * device_type)
             deviceListPointer->addText(PROFILE_FILENAME, profile_filename);
     
             // NOTE: New code to add association combo box in tree widget.
-            QComboBox * newProfileAssociationCB = new QComboBox(0);
+            QComboBox * newProfileAssociationCB = new QComboBox();
    
             QBoxLayout *layout = new QBoxLayout(QBoxLayout::LeftToRight);
             layout->addWidget (newProfileAssociationCB);
@@ -359,6 +385,8 @@ int SyDevices::detectDevices(const char * device_type)
               populateDeviceComboBox(*newProfileAssociationCB, icSigOutputClass);
             else if(icc_profile_class && strcmp(icc_profile_class,"input") == 0)
               populateDeviceComboBox(*newProfileAssociationCB, icSigInputClass);
+    
+            
 
             oyConfig_Release(&device);
         }

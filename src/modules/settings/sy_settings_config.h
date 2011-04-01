@@ -14,7 +14,7 @@ class SySettingsConfig : public SyModuleConfig, Ui::sySettingsConfig
   Q_OBJECT
   
   public:
-    SySettingsConfig(QWidget * parent);
+    SySettingsConfig(QWidget * parent = 0);
     ~SySettingsConfig();
     
   private:

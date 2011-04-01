@@ -11,16 +11,16 @@
 #include "symodule.h"
 
 // Qt Designer code translation.
-#include "ui_sy_settings.h"          
+#include "ui_sy_settings.h"    
 
 class SySettings : public SyModule, Ui::sySettingsWidget 
 {
     Q_OBJECT
     
 public:
-    SySettings (QWidget * parent);
+    SySettings (QWidget * parent = 0);
     ~SySettings();
-    
+        
     
 private slots:
     
@@ -100,6 +100,7 @@ private:
 
     // Variable to specify if current policy is a custom one.
     bool isCustom, settingsChanged;
+   
     
 };
 

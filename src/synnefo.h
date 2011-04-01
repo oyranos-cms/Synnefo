@@ -36,6 +36,8 @@ class Synnefo : public QMainWindow, Ui::syMainWindow
     SyConfig * config;
     SyModule ** syModules;
     
+    QList <SyModule*> moduleList;
+    
     int insertModule( SyModule *, QStackedWidget * );
     
     void loadSyModules();

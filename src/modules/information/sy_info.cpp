@@ -4,6 +4,7 @@
 #include <alpha/oyranos_alpha.h>
  
 #include "sy_info.h"
+#include "sy_info_config.h"
 
 SyInfo::SyInfo(QWidget * parent)
     : SyModule(parent)
@@ -16,6 +17,9 @@ SyInfo::SyInfo(QWidget * parent)
     setDescription("Analyze profile information on your system.");
     
     setupUi(this);                  // Load Gui.
+    
+    SyInfoConfig * infoConfig = new SyInfoConfig(0);
+    setConfigWidget( infoConfig );
     
     setEditable(false);
         

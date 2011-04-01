@@ -9,6 +9,8 @@
 
 #include <QStackedWidget>
 
+#include "symoduleconfig.h"
+
 
 /** Synnefo Module class **************************************************
 
@@ -31,12 +33,17 @@ public:
     
     SyModule ** insertModule( SyModule );
 
+
     
 /*** Public Functions ****************/    
 
     // Attach module to an appropriate QStackedWidget.
     int attachModule( QStackedWidget * );
     
+    void attachConfigWidget(QStackedWidget * sw);
+    
+    QWidget * getConfigWidget () { return config_; }
+        
     QString getDescription() { return moduleDescription; }
     
     // Get module name.
@@ -54,9 +61,6 @@ public:
     // Sets 'modified' state.
     void setModified(bool b) { modified = b; }
     
-    void setModuleName( QString name ) { moduleName = name; }
-    
-    void setDescription( QString name ) { moduleDescription = name; }
   
 protected:
     
@@ -65,9 +69,17 @@ protected:
     void save();
   
     void load();
+        
+    void setDescription( QString name ) { moduleDescription = name; }
+    
+    void setModuleName( QString name ) { moduleName = name; }    
+    
+    void setConfigWidget( SyModuleConfig * cfg );
     
   
 /*** Protected Data Members ****************/
+
+    SyModuleConfig * config_;     // Module config ui.
 
     QString moduleName;
     QString moduleDescription;
@@ -76,12 +88,8 @@ protected:
     
     QIcon icon;
     
-    QSettings * config;     // Module UI settings
-    
     bool editable;
-    bool modified;
-
-    
+    bool modified;    
     
 };
 

@@ -26,25 +26,21 @@ Synnefo::Synnefo(QWidget * parent)
 void Synnefo::loadSyModules()
 {
     // TODO Find solution to automatically check for # of modules.    
-    syModules = new SyModule*[module_count];
-    
+
     devicesModule = new SyDevices( NULL );
     infoModule = new SyInfo( NULL );
     settingsModule = new SySettings( NULL );
     
-    //syModulars.insert((SyModule*) devicesModule);
-    
-    // "Module Registration"
-    syModules[0] = devicesModule;      /* Devices Module     */ 
-    syModules[1] = infoModule;         /* Information Module */ 
-    syModules[2] = settingsModule;     /* Settings Module    */ 
+    moduleList.insert(module_count, devicesModule);
+    moduleList.insert(module_count, infoModule);
+    moduleList.insert(module_count, settingsModule);
         
     int i;
     // Populate Module Selection List 
     for (i = 0; i < module_count; i++)
-       syModuleListView->addItem(syModules[i]->getName());
-    
-        config = new SyConfig(syModules, this);
+    { 
+       syModuleListView->addItem( (moduleList.at(i))->getName() );       
+    }
 }    
 
 
@@ -57,16 +53,11 @@ void Synnefo::changeModuleSelection ( int moduleIndex )
       QWidget * previousWidget = syModuleWidget->currentWidget();    
       syModuleWidget->removeWidget( previousWidget );
       
-      syModules[ moduleIndex ]->attachModule( syModuleWidget );   
+      (moduleList.at(moduleIndex))->attachModule( syModuleWidget );   
       
-      moduleDescriptionLabel->setText( syModules[moduleIndex]->getDescription() );
-      moduleNameLabel->setText( QString("Synnefo ") + syModules[moduleIndex]->getName() );
+      moduleDescriptionLabel->setText( (moduleList.at(moduleIndex) )->getDescription() );
+      moduleNameLabel->setText( QString("Synnefo ") + (moduleList.at(moduleIndex) )->getName() );
     
-    /* NOTE: Save/Apply buttons reserved until functionality exists.
-      
-      
-      Frame->setVisible( syModules[ moduleIndex ]->isEditable() );
-    */
     }
     // TODO Failure case.
 }
@@ -74,6 +65,7 @@ void Synnefo::changeModuleSelection ( int moduleIndex )
 
 void Synnefo::openApplicationSettings()
 {
+    config = new SyConfig(moduleList, this);
     config->setVisible(true);
 }
 
