@@ -3,5 +3,6 @@
     <file alias="printer.png">resources/printer.png</file>
     <file alias="monitor.png">resources/monitor.png</file>
     <file alias="scanner.png">resources/scanner.png</file>
+    <file alias="devices_icon.png">resources/devices_icon.png</file>
   </qresource>
 </RCC>

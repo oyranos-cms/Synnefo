@@ -5,7 +5,17 @@ SySettingsConfig::SySettingsConfig (QWidget * parent) :
    SyModuleConfig(parent)
 {
     setupUi(this);
+        
+    moduleConfig.beginGroup("Settings");   
+    moduleConfig.endGroup();
 }
+
+
+void SySettingsConfig::readSettings()
+{
+     
+}
+
 
 SySettingsConfig::~SySettingsConfig()
 {

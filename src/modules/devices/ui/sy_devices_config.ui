@@ -13,11 +13,11 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
-    <widget class="QPushButton" name="test">
+    <widget class="QCheckBox" name="checkBox">
      <property name="text">
-      <string>Devices Config Widget</string>
+      <string>Always display profile change box.</string>
      </property>
     </widget>
    </item>

@@ -21,6 +21,8 @@ class SyModuleConfig : public QWidget
     
   protected:
     
+    QSettings moduleConfig;
+    
     void saveWidgetState();
     
     void loadWidgetState();

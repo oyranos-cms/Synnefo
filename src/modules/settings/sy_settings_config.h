@@ -15,7 +15,9 @@ class SySettingsConfig : public SyModuleConfig, Ui::sySettingsConfig
   
   public:
     SySettingsConfig(QWidget * parent = 0);
-    ~SySettingsConfig();
+    ~SySettingsConfig();    
+    
+    void readSettings();
     
   private:
     Ui::sySettingsWidget ui_;    // Variable to access 'Settings' widget objects.

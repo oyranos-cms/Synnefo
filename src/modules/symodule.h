@@ -30,10 +30,7 @@ class SyModule : public QWidget
 public:
      
     SyModule(QWidget * parent);
-    
-    SyModule ** insertModule( SyModule );
-
-
+    ~SyModule();
     
 /*** Public Functions ****************/    
 
@@ -46,21 +43,33 @@ public:
         
     QString getDescription() { return moduleDescription; }
     
+    int getIndex(){ return index_; }
+    
     // Get module name.
     QString getName(){ return moduleName; } 
     
     // Returns current 'editable' state; 
     bool isEditable() {return editable;}    
     
+    // Returns current index
+    int setIndex(void) { return index_; }
+    
     // Returns current 'modified' state.
     bool isModified(void) { return modified; }
     
+    bool isHiding(void) { return hiding; }
+    
     // Sets 'editable' state.
-    void setEditable (bool b) { editable = b; }        
+    void setEditable (bool b) { editable = b; }   
+    
+    // Sets 'module hiding' state.
+    void setHiding (bool b);
     
     // Sets 'modified' state.
     void setModified(bool b) { modified = b; }
     
+    // Sets index of module relative to widget ordering.
+    void setIndex( int newIndex ) { index_ = newIndex; }
   
 protected:
     
@@ -72,7 +81,7 @@ protected:
         
     void setDescription( QString name ) { moduleDescription = name; }
     
-    void setModuleName( QString name ) { moduleName = name; }    
+    void setModuleName( QString name ) { moduleName = QString(name); }    
     
     void setConfigWidget( SyModuleConfig * cfg );
     
@@ -80,6 +89,14 @@ protected:
 /*** Protected Data Members ****************/
 
     SyModuleConfig * config_;     // Module config ui.
+    
+    bool hiding;
+    
+    enum{
+      HIDDEN_INDEX = -1,      
+      ADDED_INDEX = 100       
+    };
+    int index_;
 
     QString moduleName;
     QString moduleDescription;

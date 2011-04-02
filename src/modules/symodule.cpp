@@ -4,12 +4,15 @@
 SyModule::SyModule(QWidget * parent)
     : QWidget(parent)
 {
+    index_ = -1;
   
     setModuleName("module");
     setDescription("A Synnefo Module");      
     
     config_ = NULL;
     modified = false;
+    
+    hiding = false;
 }
 
 
@@ -31,6 +34,21 @@ void SyModule::setConfigWidget( SyModuleConfig * cfg )
     config_ = cfg;
 }
 
+void SyModule::setHiding( bool b )
+{
+   if (b == true) {
+     config_->setEnabled( false );
+     this->setEnabled( false );
+   }
+   else if (b == false)
+   {
+     config_->setEnabled( true );
+     this->setEnabled( true );
+   }
+   
+   hiding = b;
+}
+
 
 void SyModule::save()
 {
@@ -41,4 +59,10 @@ void SyModule::save()
 void SyModule::load()
 {
   
+}
+
+
+SyModule::~SyModule()
+{
+   delete config_;
 }

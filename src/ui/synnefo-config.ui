@@ -137,8 +137,15 @@
       <string>Module Settings</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
+      <item row="0" column="0">
+       <widget class="QStackedWidget" name="moduleConfigStack">
+        <property name="currentIndex">
+         <number>-1</number>
+        </property>
+       </widget>
+      </item>
       <item row="1" column="0">
-       <widget class="QRadioButton" name="radioButton">
+       <widget class="QCheckBox" name="hideModuleCheckBox">
         <property name="layoutDirection">
          <enum>Qt::RightToLeft</enum>
         </property>
@@ -147,10 +154,18 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QStackedWidget" name="moduleConfigStack">
-        <property name="currentIndex">
-         <number>-1</number>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label">
+        <property name="font">
+         <font>
+          <pointsize>8</pointsize>
+         </font>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::RightToLeft</enum>
+        </property>
+        <property name="text">
+         <string>(Module hiding changes take effect after restarting Synnefo)</string>
         </property>
        </widget>
       </item>

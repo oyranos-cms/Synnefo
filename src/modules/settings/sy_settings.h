@@ -9,6 +9,7 @@
 #include <oyranos.h>
 
 #include "symodule.h"
+#include "sy_settings_config.h"
 
 // Qt Designer code translation.
 #include "ui_sy_settings.h"    
@@ -79,6 +80,8 @@ private:
     
     
   // *** PRIVATE DATA MEMBERS ***
+  
+    SySettingsConfig * settingsConfig;
   
     // Holds all available policy names on the list.
     QStringList installedCustomPolicies;

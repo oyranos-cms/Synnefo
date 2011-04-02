@@ -32,22 +32,26 @@ class Synnefo : public QMainWindow, Ui::syMainWindow
     
     void openApplicationSettings();
     
-  private:
-    SyConfig * config;
-    SyModule ** syModules;
+    void refreshModuleList();
     
-    QList <SyModule*> moduleList;
-    
-    int insertModule( SyModule *, QStackedWidget * );
+  private:    
     
     void loadSyModules();
+    
+    void saveState();
     
     // Synnefo module interfaces.
     SyDevices * devicesModule;    
     SyInfo * infoModule;
     SySettings * settingsModule;
     
-    int module_n;
+    SyConfig * configDialog;
+    
+    bool isFirstRun;
+    
+    QSettings configuration;
+    
+    QList <SyModule*> moduleList;
     
 };
 

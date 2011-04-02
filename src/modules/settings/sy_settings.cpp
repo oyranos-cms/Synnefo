@@ -3,7 +3,6 @@
 #include <QInputDialog>
  
 #include "sy_settings.h"
-#include "sy_settings_config.h"
 
 #include <oyranos.h>
 #include <oyranos_config.h>
@@ -20,9 +19,9 @@ SySettings::SySettings(QWidget * parent)
     
     setupUi(this);
     
-    SySettingsConfig * settingConfig = new SySettingsConfig(0);
+    SySettingsConfig * settingsConfig = new SySettingsConfig(0);
     
-    setConfigWidget(settingConfig);
+    setConfigWidget(settingsConfig);
     
     setEditable(true);
     
