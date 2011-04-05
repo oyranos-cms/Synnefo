@@ -1,64 +1,65 @@
 #include "synnefo.h"
 
+
+// Assume we have the three default modules currently installed.
 const int moduleCount = 3;
+
 
 Synnefo::Synnefo(QWidget * parent)
     : QMainWindow(parent)
 {   
-    setupUi(this);  
+    setupUi(this);        // Initialize main Synnefo Ui.
     
-    // Check if running Synnefo for first time.
+    // Check if running is Synnefo for the first time.
     isFirstRun = configuration.value("first-run", true).toBool();
         
     loadSyModules();
         
     configDialog = new SyConfig(moduleList, this);
     
-    connect (syModuleListView, 
-	      SIGNAL ( currentRowChanged ( int )), this, 
-	      SLOT ( changeModuleSelection ( int )));
-    connect( exitButton, SIGNAL( clicked() ), this, SLOT( closeSynnefo() ));
-    connect( appSettingsButton, SIGNAL( clicked() ), this, SLOT( openApplicationSettings() ));
+    connect(syModuleListView, 
+            SIGNAL (currentRowChanged (int)), 
+            this, 
+            SLOT (changeModuleSelection(int)));
+    connect(exitButton, 
+            SIGNAL( clicked() ), 
+            this, 
+            SLOT( closeSynnefo() ));
+    connect(appSettingsButton, 
+            SIGNAL( clicked() ), 
+            this, 
+            SLOT( openApplicationSettings() ));
 }
 
 
-// Initialize Synnefo modules.
-void Synnefo::loadSyModules()
-{
-    // TODO Find solution to automatically check for # of modules in directory structure.                   
-    // Initialize pre-packaged Synnefo modules.
-    devicesModule = new SyDevices(0);
-    infoModule = new SyInfo(0);
-    settingsModule = new SySettings(0);
-    
-    moduleList.insert( 0, settingsModule );
-    moduleList.insert( 0, infoModule );
-    moduleList.insert( 0, devicesModule );    
-      
-    refreshModuleList();    
-    
-}  
+
+//   ********************************
+//   *    PRIVATE SLOT FUNCTIONS    *
+//   ********************************
 
 
-// Changes module widget whenever user clicks on a selection.
-void Synnefo::changeModuleSelection ( int rowIndex )
+void Synnefo::changeModuleSelection(int rowIndex)
+/*  Pre: The user clicks on a module item in the selection list.
+    Post: The function passes the index that is clicked by the user (rowIndex),
+          changing the appropriate widget item. */
 {   
     // Pop the previous widget off the stackedWidget.
     QWidget * previousWidget = syModuleWidget->currentWidget();    
     syModuleWidget->removeWidget( previousWidget );    
-  
-  
+    
     QString moduleName = (syModuleListView->item(rowIndex))->text();       
     
     int i;
-    for (i = 0; i < moduleCount; i++)
-    {
-        if (moduleName == (moduleList.at(i))->getName())
-        {
+    for (i = 0; i < moduleCount; i++) {
+        if (moduleName == (moduleList.at(i))->getName()) {
+
             (moduleList.at(i))->attachModule( syModuleWidget );
     
-            moduleDescriptionLabel->setText( (moduleList.at(i) )->getDescription() );
-            moduleNameLabel->setText( QString("Synnefo ") + (moduleList.at(i) )->getName() );
+            // Display module information above its widget.
+            moduleDescriptionLabel->
+                           setText((moduleList.at(i) )->getDescription() );
+            moduleNameLabel->setText( QString("Synnefo ") 
+                                        + (moduleList.at(i) )->getName() );
 
             break;
         }
@@ -66,57 +67,23 @@ void Synnefo::changeModuleSelection ( int rowIndex )
 }
 
 
+
 void Synnefo::openApplicationSettings()
+/*  Pre: The user clicks on the "Application Settings" button in the main dialog.
+    Post: Opens the Synnefo Configuration dialog. */
 {  
     configDialog->exec();
     
-    // FIXME Refreshing list after hiding results in a segfault.
+    // FIXME Refreshing list after changing hiding status in a segfault.
     // refreshModuleList();
 }
 
 
-void Synnefo::refreshModuleList()
-{ 
-    int i;
-    
-    syModuleListView->clear();
-        
-    configuration.beginGroup("modulesVisible");    
-    
-    for (i = 0; i < moduleCount; i++)
-    {        
-        QString moduleName = (moduleList.at(i))->getName() ;
-        bool hideStatus = configuration.value(moduleName).toBool();
-        
-        (moduleList.at(i))->setHiding(hideStatus);
-    }  
-    
-    configuration.endGroup();
-    
-    for (i = 0; i < moduleCount; i++)
-    {
-       QString moduleName = (moduleList.at(i))->getName() ;
-       bool hideStatus = (moduleList.at(i))->isHiding();
-       
-       if (hideStatus == false)
-       {
-         QListWidgetItem * item = new QListWidgetItem(moduleName);
-         syModuleListView->addItem(item);        
-       }
-    }
-         
-    
-}
-
-
-void Synnefo::saveState()
-{
-
-
-}
-
 
 void Synnefo::closeSynnefo()
+/*  Pre: The user clicks on the "Exit" button in the main dialog.
+    Post: Closes the Synnefo dialog, and saves the Ui state upon exiting. 
+          The isFirstRun flag will be set to FALSE if it isn't already. */
 {
     saveState();
     
@@ -127,8 +94,90 @@ void Synnefo::closeSynnefo()
 }
 
 
-Synnefo::~Synnefo()
+
+//   ***************************
+//   *    PRIVATE FUNCTIONS    *
+//   ***************************
+
+
+void Synnefo::loadSyModules()
+/*  Pre: SyModule objects and module list are unintialized.
+    Post: Initializes each SyModule objects and populates the module list (moduleList).
+          The module selection in the main Synnefo dialog will be refreshed.  */
+{
+    // TODO Find solution to automatically check for # of modules in directory structure.    
+    
+    devicesModule = new SyDevices(0);       // "Synnefo Devices"
+    infoModule = new SyInfo(0);             // "Synnefo Information"
+    settingsModule = new SySettings(0);     // "Synnefo Settings"
+    
+    moduleList.insert( 0, settingsModule );
+    moduleList.insert( 0, infoModule );
+    moduleList.insert( 0, devicesModule );    
+      
+    refreshModuleList();        
+}  
+
+
+
+void Synnefo::refreshModuleList()
+/*  Post: Updates the module listing in the Synnefo dialog. */
+{ 
+    int i;
+    
+    syModuleListView->clear();
+
+   // Open configuration for hidden modules.    
+    configuration.beginGroup("modulesVisible");    
+    
+    for (i = 0; i < moduleCount; i++){        
+        QString moduleName = (moduleList.at(i))->getName() ;
+        bool hideStatus = configuration.value(moduleName).toBool();
+        
+        (moduleList.at(i))->setHiding(hideStatus);   
+    }  
+    
+    configuration.endGroup();       // Close configuration.
+    
+    for (i = 0; i < moduleCount; i++) {
+       QString moduleName = (moduleList.at(i))->getName();
+       bool hideStatus = (moduleList.at(i))->isHiding();
+       
+       if (hideStatus == false){
+         QListWidgetItem * item = new QListWidgetItem(moduleName);
+         syModuleListView->addItem(item);        
+       }
+    }         
+    
+}
+
+
+
+void Synnefo::saveState()
+/* Post: Saves the Ui state configuration. */
+{
+
+
+}
+
+
+
+void Synnefo::freeSyModules()
+/* Pre: Initialized SyModules and SyModule QList.
+   Post: Frees allocated memory from the SyModule list,
+         including the individual modules contained in it. */
 {
    while (!moduleList.isEmpty())
      delete moduleList.takeFirst();
+   
+   devicesModule = 0;
+   infoModule = 0;
+   settingsModule = 0;  
+}
+
+
+
+Synnefo::~Synnefo()
+{
+    freeSyModules();
 }
