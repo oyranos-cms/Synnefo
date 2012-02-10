@@ -35,6 +35,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "ui_synnefo.h"   
 
 // Synnefo Module Headers
+#include "sy_database.h"
 #include "sy_devices.h"
 #include "sy_info.h"
 #include "sy_settings.h"
@@ -93,9 +94,10 @@ private:
     QList <SyModule*> moduleList;       // List to store Synnefo modules.
     
     // Synnefo module widget interfaces.
+    SyDatabase* databaseModule;
     SyDevices* devicesModule;          
     SyInfo* infoModule;                
-    SySettings* settingsModule;
+    SySettings* settingsModule;    
       
     SyConfig* configDialog;            // Synnefo config dialog.
     

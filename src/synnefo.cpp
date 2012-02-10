@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // Assume we have the three default modules currently installed.
-const int moduleCount = 3;
+const int moduleCount = 4;
 
 
 Synnefo::Synnefo(QWidget * parent)
@@ -132,13 +132,15 @@ void Synnefo::loadSyModules()
     // TODO Find solution to automatically check 
     //      for # of modules in directory structure.    
     
+    databaseModule = new SyDatabase(0);     // "Synnefo Database"
     devicesModule = new SyDevices(0);       // "Synnefo Devices"
     infoModule = new SyInfo(0);             // "Synnefo Information"
-    settingsModule = new SySettings(0);     // "Synnefo Settings"
+    settingsModule = new SySettings(0);     // "Synnefo Settings"    
     
     moduleList.insert( 0, settingsModule );
     moduleList.insert( 0, infoModule );
-    moduleList.insert( 0, devicesModule );    
+    moduleList.insert( 0, devicesModule ); 
+    moduleList.insert( 0, databaseModule );
       
     refreshModuleList();        
 }  
@@ -195,6 +197,7 @@ void Synnefo::freeSyModules()
    while (!moduleList.isEmpty())
      delete moduleList.takeFirst();
    
+   databaseModule = 0;
    devicesModule = 0;
    infoModule = 0;
    settingsModule = 0;  

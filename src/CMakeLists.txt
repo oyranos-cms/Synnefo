@@ -19,6 +19,7 @@ set( synnefo_SRCS
     modules/symoduleconfig.cpp
 
     # synnefo modules
+    modules/database/sy_database.cpp
     modules/devices/sy_devices.cpp
     modules/information/sy_info.cpp
     modules/settings/sy_settings.cpp    
@@ -26,6 +27,7 @@ set( synnefo_SRCS
     modules/devices/sy_devices_item.cpp
     modules/information/sy_info_dialog.cpp    
 
+    modules/database/sy_database_config.cpp
     modules/devices/sy_devices_config.cpp
     modules/information/sy_info_config.cpp
     modules/settings/sy_settings_config.cpp
@@ -39,15 +41,18 @@ SET( synnefo_MOC_HEADERS
     classes/syconfig.h
 
     # modules
+    modules/database/sy_database.h
     modules/devices/sy_devices.h
     modules/information/sy_info.h
-    modules/settings/sy_settings.h
-
-    modules/information/sy_info_dialog.h
+    modules/settings/sy_settings.h    
 
     modules/devices/sy_devices_config.h
+
     modules/information/sy_info_config.h
+    modules/information/sy_info_dialog.h
+
     modules/settings/sy_settings_config.h
+    modules/database/sy_database_config.h
 )
 
 set( synnefo_UIs
@@ -58,13 +63,15 @@ set( synnefo_UIs
     ui/synnefo-config.ui
 
     # module UI files
+    modules/database/ui/sy_database.ui
+    modules/database/ui/sy_database_config.ui
     modules/devices/ui/sy_devices.ui
     modules/devices/ui/sy_devices_config.ui
     modules/information/ui/sy_info.ui
     modules/information/ui/sy_info_config.ui
     modules/information/ui/sy_info_dialog.ui    
     modules/settings/ui/sy_settings.ui
-    modules/settings/ui/sy_settings_config.ui
+    modules/settings/ui/sy_settings_config.ui    
 )
 
 INCLUDE_DIRECTORIES(
@@ -72,6 +79,8 @@ INCLUDE_DIRECTORIES(
     # modules
     "${CMAKE_CURRENT_SOURCE_DIR}/classes"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/database"
+    "${CMAKE_CURRENT_SOURCE_DIR}/modules/database/ui"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/devices"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/devices/ui"
     "${CMAKE_CURRENT_SOURCE_DIR}/modules/information"
