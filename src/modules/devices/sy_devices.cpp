@@ -40,7 +40,7 @@ SyDevices::SyDevices(QWidget * parent)
     deviceList->setColumnWidth(0, 400);
     
     // Load directories and device listing.
-    populateDeviceListing();   
+    populateDeviceListing();
     
     // Expand list for user.
     deviceList->expandAll();
@@ -585,24 +585,13 @@ oyConfig_s * SyDevices::getCurrentDevice( void )
     return device;
 }
 
-void sy_sleep(double seconds)
+#include <QThread>
+class kmSleep : public QThread
 {
-#        if defined(__GCC__) || defined(__APPLE__)
-           timespec ts;
-           double end;
-           double rest = modf(seconds, &end);
-           ts.tv_sec = (time_t)end;
-           ts.tv_nsec = (time_t)(rest * 1000000000);
-           //DBG_PROG_V( seconds<<" "<<ts.tv_sec<<" "<<end<<" "<<rest )
-           nanosleep(&ts, 0);
-#        else
-#          if defined( WIN32 ) 
-             Sleep((DWORD)(seconds*(double)CLOCKS_PER_SEC));
-#          else
-             usleep((time_t)(seconds*(double)CLOCKS_PER_SEC));
-#          endif
-#        endif
-}
+  public:
+     static void sleep(double seconds)
+     { QThread::msleep((long unsigned int)(seconds*1000)); }
+};
 
 void SyDevices::assignProfile( QString & profile_name )
 {        
@@ -632,7 +621,7 @@ void SyDevices::assignProfile( QString & profile_name )
          error = oyDeviceSetup( device ); /* reinitialise */
          /* compiz needs some time to exchange the profiles,
             immediately we would get the old colour server profile */
-         sy_sleep(0.3);
+         kmSleep::sleep(0.3);
          error = syDeviceGetProfile( device, &profile ); /* reget profile */
 
          /* clear */
