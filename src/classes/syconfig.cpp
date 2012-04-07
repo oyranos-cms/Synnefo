@@ -1,6 +1,6 @@
 #include "syconfig.h"
 
-const int module_count = 3;
+extern int synnefo_module_count;
 
 SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent) 
      : QDialog(parent, 0)
@@ -57,7 +57,7 @@ void SyConfig::loadState()
     mainConfig.beginGroup("modulesVisible");
     
     int i;
-    for (i = 0; i < module_count; i++)    
+    for (i = 0; i < synnefo_module_count; i++)    
     {
       QString moduleName = (module_list.at(i))->getName();
       bool isHidden = mainConfig.value(moduleName).toBool();
@@ -78,7 +78,7 @@ void SyConfig::saveState()
     int i = 0;
     int visibleCount = 0;
     
-    for (i; i < module_count; i++)
+    for (i; i < synnefo_module_count; i++)
     {        
         QString moduleName = (module_list.at(i))->getName() ;
         bool hidingStatus = (module_list.at(i))->isHiding() ;
@@ -102,7 +102,7 @@ void SyConfig::changeModuleConfig( int rowIndex )
     QString moduleName = (availableModuleList->item(rowIndex))->text();       
     
     int i;
-    for (i = 0; i < module_count; i++)
+    for (i = 0; i < synnefo_module_count; i++)
     {
         if (moduleName == (module_list.at(i))->getName())
         {

@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // Assume we have the three default modules currently installed.
-const int moduleCount = 4;
+int synnefo_module_count = 4;
 
 
 Synnefo::Synnefo(QWidget * parent)
@@ -76,7 +76,7 @@ void Synnefo::changeModuleSelection(int rowIndex)
     QString moduleName = (syModuleListView->item(rowIndex))->text();       
     
     int i;
-    for (i = 0; i < moduleCount; i++) {
+    for (i = 0; i < synnefo_module_count; i++) {
         if (moduleName == (moduleList.at(i))->getName()) {
 
             (moduleList.at(i))->attachModule( syModuleWidget );
@@ -157,7 +157,7 @@ void Synnefo::refreshModuleList()
    // Open configuration for hidden modules.    
     configuration.beginGroup("modulesVisible");    
     
-    for (i = 0; i < moduleCount; i++){        
+    for (i = 0; i < synnefo_module_count; i++){        
         QString moduleName = (moduleList.at(i))->getName() ;
         bool hideStatus = configuration.value(moduleName).toBool();
         
@@ -166,7 +166,7 @@ void Synnefo::refreshModuleList()
     
     configuration.endGroup();       // Close configuration.
     
-    for (i = 0; i < moduleCount; i++) {
+    for (i = 0; i < synnefo_module_count; i++) {
        QString moduleName = (moduleList.at(i))->getName();
        bool hideStatus = (moduleList.at(i))->isHiding();
        
