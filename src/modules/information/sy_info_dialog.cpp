@@ -35,7 +35,7 @@ void SyInfoDialog::launchICCExamin()
     //v.toULongLong()
 
     if(!directoryListingTag->text().isNull())
-      exec = iccExaminCommand + " \"" + directoryListingTag->text() + "\"&";
+      exec = iccExaminCommand + " -g \"" + directoryListingTag->text() + "\"&";
     else
     {
       // Write to a temporary file.
@@ -51,7 +51,7 @@ void SyInfoDialog::launchICCExamin()
         file.flush();
         file.close();
         free(data); data = 0;
-        exec = iccExaminCommand + " " + "/tmp/icc_examin_temp.icc" + "&";
+        exec = iccExaminCommand + " -g " + "/tmp/icc_examin_temp.icc" + "&";
       } else
         return;
     }
