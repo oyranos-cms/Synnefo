@@ -372,7 +372,7 @@ int SyDevices::detectDevices(const char * device_type)
 
             QWidget * w = new QWidget();
             w->setLayout(layout);
-         
+ 
             parent_item->addChild( deviceListPointer );
             deviceList->setItemWidget ( deviceListPointer, ITEM_COMBOBOX, w);
  
@@ -380,7 +380,6 @@ int SyDevices::detectDevices(const char * device_type)
             oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
             const char * icc_profile_class = oyConfDomain_GetText( d,
                                                  "icc_profile_class", oyNAME_NICK );
-            
 
             if(icc_profile_class && strcmp(icc_profile_class,"display") == 0)
               populateDeviceComboBox(*newProfileAssociationCB, icSigDisplayClass);
@@ -388,12 +387,9 @@ int SyDevices::detectDevices(const char * device_type)
               populateDeviceComboBox(*newProfileAssociationCB, icSigOutputClass);
             else if(icc_profile_class && strcmp(icc_profile_class,"input") == 0)
               populateDeviceComboBox(*newProfileAssociationCB, icSigInputClass);
-    
-            
 
             oyConfig_Release(&device);
         }
-        
      }
      else
         error = -1;
@@ -442,7 +438,11 @@ void SyDevices::updateProfileList(oyConfig_s * device)
                              {"serial",0},
                              {0,0}};
 
-    if(!device) return;
+    if(!device)
+    {
+      changeDeviceItem((QTreeWidgetItem *)NULL);
+      return;
+    }
 
     profileAssociationList->clear();
 
