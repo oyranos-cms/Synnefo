@@ -336,8 +336,11 @@ int SyDevices::detectDevices(const char * device_type)
             }
 
             deviceItemString.append(device_model);
-            deviceItemString.append(" ");
-            deviceItemString.append(device_serial);
+            if(device_serial)
+            {
+              deviceItemString.append(" ");
+              deviceItemString.append(device_serial);
+            }
 
             error = syDeviceGetProfile(device, &profile);
             profile_filename = oyProfile_GetFileName(profile, 0);
