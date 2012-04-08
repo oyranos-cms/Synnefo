@@ -142,8 +142,8 @@ void SyInfo::addProfileTreeItem( oyPROFILE_e profile_type, QString description,
     QTreeWidgetItem * new_child = new QTreeWidgetItem();
     
     new_child->setIcon( ITEM_ICON, examineIcon );
-    new_child->setText( ITEM_DESCRIPTION, description );
-    new_child->setText( ITEM_NAME, text );
+    new_child->setText( ITEM_DESCRIPTION, text );
+    new_child->setText( ITEM_NAME, description );
 
     // attach the profile to the widget
     QVariant v((qulonglong) oyProfile_Copy(profile,0));
@@ -257,10 +257,10 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
           const char* profile_name = oyProfile_GetText( p, oyNAME_DESCRIPTION );
           const char* file_name = oyProfile_GetFileName( p, -1 );
           if(file_name)
-            profile_child->setText( ITEM_DESCRIPTION, QString(file_name) );
+            profile_child->setText( ITEM_NAME, QString(file_name) );
           else
-            profile_child->setText( ITEM_DESCRIPTION, "in memory" );
-          profile_child->setText( ITEM_NAME, profile_name );
+            profile_child->setText( ITEM_NAME, "in memory" );
+          profile_child->setText( ITEM_DESCRIPTION, profile_name );
 
           // attach the profile to the widget
           QVariant v((qulonglong) oyProfile_Copy(p,0));
