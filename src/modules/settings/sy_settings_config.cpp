@@ -1,11 +1,9 @@
 
 #include "sy_settings_config.h"
 
-SySettingsConfig::SySettingsConfig (QWidget * parent) :
-   SyModuleConfig(parent)
+SySettingsConfig::SySettingsConfig (QWidget * parent, QString moduleId) :
+   SyModuleConfig(parent, moduleId)
 {
-    setupUi(this);
-        
     moduleConfig.beginGroup("Settings");   
     moduleConfig.endGroup();
 }

@@ -40,6 +40,9 @@ SET( synnefo_MOC_HEADERS
     # config 
     classes/syconfig.h
 
+    # module config
+    modules/symoduleconfig.h
+
     # modules
     modules/database/sy_database.h
     modules/devices/sy_devices.h
@@ -59,8 +62,11 @@ set( synnefo_UIs
     # main ui file
     ui/synnefo.ui
  
-    # config ui files
+    # config ui file
     ui/synnefo-config.ui
+
+    # module config UI file 
+    modules/symoduleconfig.ui
 
     # module UI files
     modules/database/ui/sy_database.ui

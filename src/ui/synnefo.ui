@@ -101,6 +101,9 @@
        </property>
        <item row="0" column="3">
         <widget class="QPushButton" name="appSettingsButton">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>

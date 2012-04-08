@@ -23,6 +23,7 @@ class SyConfig : public QDialog, Ui::syConfigDialog
   private slots:
     
     void closeDialog();   
+    void closeAndSaveDialog();
     
     void changeModuleConfig( int );
     
