@@ -91,7 +91,7 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
     }
 
     // Don't count top parent items as a "selected device".
-    if (selectedDeviceItem->parent() == deviceListPointer)
+    if (selectedDeviceItem->parent() == NULL)
     {
          deviceProfileComboBox->setEnabled(false);
         
@@ -301,12 +301,12 @@ int SyDevices::detectDevices(const char * device_type)
     if(device_num > 0)
     {
         // Set up Synnefo gui "logistics" for a specified device.
-        QTreeWidgetItem * parent_item = new QTreeWidgetItem;
-        parent_item->setText( ITEM_MAIN, oyConfDomain_GetText( d, "device_class",
+        QTreeWidgetItem * device_class_item = new QTreeWidgetItem;
+        device_class_item->setText( ITEM_MAIN, oyConfDomain_GetText( d, "device_class",
                                                       oyNAME_NAME ));
         QVariant v( device_class );
-        parent_item->setData( 0, Qt::UserRole, v );
-        deviceList->insertTopLevelItem( ITEM_MAIN, parent_item );
+        device_class_item->setData( 0, Qt::UserRole, v );
+        deviceList->insertTopLevelItem( ITEM_MAIN, device_class_item );
 
         QIcon device_icon;
         QSize icon_size(64, 64);
@@ -357,7 +357,7 @@ int SyDevices::detectDevices(const char * device_type)
             error = syDeviceGetProfile(device, &profile);
             profile_filename = oyProfile_GetFileName(profile, 0);
  
-            deviceListPointer = new SyDevicesItem(0);
+            SyDevicesItem * deviceItem = new SyDevicesItem(0);
 
             if (profile_filename == NULL)
             {
@@ -369,12 +369,12 @@ int SyDevices::detectDevices(const char * device_type)
             else
                 deviceProfileDescription = convertFilenameToDescription(profile_filename);
 
-            deviceListPointer->setIcon( ITEM_MAIN, device_icon );
+            deviceItem->setIcon( ITEM_MAIN, device_icon );
             
-            deviceListPointer->addText(DEVICE_DESCRIPTION, device_model);
-            deviceListPointer->addText(DEVICE_NAME, device_designation);
-            deviceListPointer->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
-            deviceListPointer->addText(PROFILE_FILENAME, profile_filename);
+            deviceItem->addText(DEVICE_DESCRIPTION, device_model);
+            deviceItem->addText(DEVICE_NAME, device_designation);
+            deviceItem->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
+            deviceItem->addText(PROFILE_FILENAME, profile_filename);
     
             // NOTE: New code to add association combo box in tree widget.
             QComboBox * newProfileAssociationCB = new QComboBox();
@@ -385,8 +385,8 @@ int SyDevices::detectDevices(const char * device_type)
             QWidget * w = new QWidget();
             w->setLayout(layout);
  
-            parent_item->addChild( deviceListPointer );
-            deviceList->setItemWidget ( deviceListPointer, ITEM_COMBOBOX, w);
+            device_class_item->addChild( deviceItem );
+            deviceList->setItemWidget ( deviceItem, ITEM_COMBOBOX, w);
  
             // Generate profiles in the combobox for current item.
             oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );

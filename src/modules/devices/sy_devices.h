@@ -82,7 +82,6 @@ private:
       ITEM_MAIN,        // SyDevicesItem column '0' -- Main display area.
       ITEM_COMBOBOX     // SyDevicesItem column '1' -- 'Profile Set' combobox.
     };
-    SyDevicesItem * deviceListPointer;
     
     // Pointer used to store address of 'recently clicked' device item widget.
     QTreeWidgetItem * currentDevice;
