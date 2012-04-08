@@ -83,9 +83,21 @@ void SyDevices::changeDeviceItem(int /*state*/)
 // When the user clicks on an item in the devices tree list.
 void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
 {  
-    currentDevice = selectedDeviceItem;
-  
-  #if 0
+    if(!selectedDeviceItem)
+    {
+      deviceProfileComboBox->clear();
+      deviceProfileComboBox->setEnabled(false);
+      return;
+    }
+
+    // Don't count top parent items as a "selected device".
+    if (selectedDeviceItem->parent() == deviceListPointer)
+    {
+         deviceProfileComboBox->setEnabled(false);
+        
+         return;
+    }
+
     // The user modifies the list, but clicks away from the selected device item.
     listModified = false;
 
@@ -127,8 +139,6 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
 
     updateProfileList(device); 
     oyConfig_Release(&device);
-    
-  #endif
 }
 
 
@@ -136,7 +146,7 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
 // NOTE Removed until appropriate implementation is available.
 void SyDevices::openProfile(int /*index*/)
 {
-  #if 0
+  #if 1
     int parenthesis_index = 0, base_filename_index = 0, str_size = 0, i;        
     QString baseFileName = deviceProfileComboBox->currentText(),
             tempProfile;
@@ -327,6 +337,8 @@ int SyDevices::detectDevices(const char * device_type)
             
             // Get device designation.
             error = oyDeviceGetInfo(device, oyNAME_NICK, 0, &device_designation, malloc);
+            setCurrentDeviceName(device_designation);
+            setCurrentDeviceClass(device_class);
  
             // A printer will only take a "device model"
             if (strcmp(device_class,"printer") != 0)
@@ -578,6 +590,7 @@ oyConfig_s * SyDevices::getCurrentDevice( void )
     if(current_device_class && current_device_name)
       error = oyDeviceGet( OY_TYPE_STD, current_device_class, current_device_name,
                            options, &device );
+    Q_UNUSED(error);
  
     /* clear */
     oyOptions_Release( &options );
