@@ -62,7 +62,7 @@ void SyConfig::loadState()
     {
       SyModuleConfig * currentConfig = 
                       (SyModuleConfig*)module_list.at(i)->getConfigWidget();
-      currentConfig->loadModuleHidingState();
+      //currentConfig->loadModuleHidingState();
     }
     
     mainConfig.endGroup();
@@ -80,7 +80,7 @@ void SyConfig::saveState()
       SyModuleConfig * currentConfig = 
                       (SyModuleConfig*)module_list.at(i)->getConfigWidget();
 
-      currentConfig->saveModuleHidingState();
+      //currentConfig->saveModuleHidingState();
     }
     
 }

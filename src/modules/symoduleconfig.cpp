@@ -13,10 +13,10 @@ SyModuleConfig::SyModuleConfig(QWidget * parent, QString moduleName) : QWidget(p
 
 void SyModuleConfig::saveModuleHidingState()
 {
-    isHidden = isHidden->isChecked();
+    isHidden = hideModuleCheckBox->isChecked();
   
     moduleConfig.beginGroup(configRegistration);
-    moduleConfig.setValue("is_hidden", newHidingStatus);
+    moduleConfig.setValue("is_hidden", isHidden);
     moduleConfig.endGroup();
 }
 
