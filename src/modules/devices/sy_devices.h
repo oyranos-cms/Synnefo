@@ -58,39 +58,43 @@ private:
     
     // Populate device-specified profile combo box listing.
     void populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature );
-    
+
+    // Populate single device profile combo box widget
+    void updateProfileCombo( QTreeWidgetItem * deviceItem );
+
     // Function to detect all devices/directories.
     void populateDeviceListing();
-    
+
     // Refresh current profile list.
     void updateProfileList(oyConfig_s * device);
-    
+
     // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
-    
-    
+ 
+
   //***** Private Data Members.*********************
  
-    
+
     // String used when user wants to add a new profile...
     QString recentlyAddedProfile;
-    
+
     // Directory name variables.
     QString profileDirectoryDefault;
-    
+
+public:
     enum {
       ITEM_MAIN,        // SyDevicesItem column '0' -- Main display area.
       ITEM_COMBOBOX     // SyDevicesItem column '1' -- 'Profile Set' combobox.
     };
-    
+private:
     // Pointer used to store address of 'recently clicked' device item widget.
     QTreeWidgetItem * currentDevice;
 
     bool listModified;                // Was the list changed by the user?
-    
-    // Global string values for Oyranos device identification 
+
+    // Global string values for Oyranos device identification
     char * current_device_name;
-    char * current_device_class;  
+    char * current_device_class;
     void setCurrentDeviceName(const char * name)
     { if(current_device_name) free(current_device_name);
       current_device_name = strdup(name); };

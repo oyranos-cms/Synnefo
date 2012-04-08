@@ -57,7 +57,6 @@ SyDevices::SyDevices(QWidget * parent)
              this, SLOT( showProfileCombobox( QTreeWidgetItem* , int )));
 }
 
-
 // small helper to obtain a profile from a device
 int syDeviceGetProfile( oyConfig_s * device, oyProfile_s ** profile )
 {
@@ -71,12 +70,56 @@ int syDeviceGetProfile( oyConfig_s * device, oyProfile_s ** profile )
 }
 
 
+void SyDevices::updateProfileCombo( QTreeWidgetItem * deviceItem )
+{
+  QTreeWidgetItem* device_class_item = deviceItem->parent();
+  QVariant v = device_class_item->data( 0, Qt::UserRole );
+  QString qs_device_class = v.toString();
+  QByteArray raw_string = qs_device_class.toLatin1();
+  char * device_class = strdup(raw_string.data());
+  SyDevicesItem * device_data = dynamic_cast<SyDevicesItem*>(deviceItem);
+  raw_string = device_data->getText(DEVICE_NAME).toLatin1();
+  const char * device_name = strdup(raw_string.data());
+  // Generate profiles in the combobox for current item.
+  oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
+  const char * icc_profile_class = oyConfDomain_GetText( d,
+                                                 "icc_profile_class", oyNAME_NICK );
+  QWidget * w = deviceList->itemWidget(deviceItem, SyDevices::ITEM_COMBOBOX);
+  QLayout * layout = w->layout();
+  QComboBox * profileAssociationCB = dynamic_cast<QComboBox*> (layout->itemAt(0)->widget());
+
+  setCurrentDeviceClass(device_class);
+  setCurrentDeviceName(device_name);
+
+  if(icc_profile_class && strcmp(icc_profile_class,"display") == 0)
+    populateDeviceComboBox(*profileAssociationCB, icSigDisplayClass);
+  else if(icc_profile_class && strcmp(icc_profile_class,"output") == 0)
+    populateDeviceComboBox(*profileAssociationCB, icSigOutputClass);
+  else if(icc_profile_class && strcmp(icc_profile_class,"input") == 0)
+    populateDeviceComboBox(*profileAssociationCB, icSigInputClass);
+
+  oyConfDomain_Release( &d );
+
+  qWarning( "deviceList: %s - %s", device_class, device_name );
+}
+
 
 //  ******** SIGNAL/SLOT Functions *****************
 
 void SyDevices::changeDeviceItem(int /*state*/)
 {     
-    changeDeviceItem( currentDevice );
+    for(int i = 0; i < deviceList->topLevelItemCount(); ++i)
+    {
+      QTreeWidgetItem* device_class_item = deviceList->topLevelItem(i);
+      for(int j = 0; j < device_class_item->childCount(); ++j)
+      {
+        QTreeWidgetItem * deviceItem = device_class_item->child(j);
+        updateProfileCombo( deviceItem );
+        qWarning( "deviceList: [%d][%d]", i,j );
+      }
+    }
+
+    //changeDeviceItem( currentDevice );
 } 
 
 // NOTE Dynamic item information (for each item click) update might be removed.
@@ -377,28 +420,18 @@ int SyDevices::detectDevices(const char * device_type)
             deviceItem->addText(PROFILE_FILENAME, profile_filename);
     
             // NOTE: New code to add association combo box in tree widget.
-            QComboBox * newProfileAssociationCB = new QComboBox();
+            QComboBox * profileAssociationCB = new QComboBox();
    
             QBoxLayout *layout = new QBoxLayout(QBoxLayout::LeftToRight);
-            layout->addWidget (newProfileAssociationCB);
+            layout->addWidget (profileAssociationCB);
 
             QWidget * w = new QWidget();
             w->setLayout(layout);
  
             device_class_item->addChild( deviceItem );
-            deviceList->setItemWidget ( deviceItem, ITEM_COMBOBOX, w);
- 
-            // Generate profiles in the combobox for current item.
-            oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
-            const char * icc_profile_class = oyConfDomain_GetText( d,
-                                                 "icc_profile_class", oyNAME_NICK );
+            deviceList->setItemWidget( deviceItem, ITEM_COMBOBOX, w);
 
-            if(icc_profile_class && strcmp(icc_profile_class,"display") == 0)
-              populateDeviceComboBox(*newProfileAssociationCB, icSigDisplayClass);
-            else if(icc_profile_class && strcmp(icc_profile_class,"output") == 0)
-              populateDeviceComboBox(*newProfileAssociationCB, icSigOutputClass);
-            else if(icc_profile_class && strcmp(icc_profile_class,"input") == 0)
-              populateDeviceComboBox(*newProfileAssociationCB, icSigInputClass);
+            updateProfileCombo( deviceItem );
 
             oyConfig_Release(&device);
         }
