@@ -7,15 +7,17 @@
 #include <alpha/oyranos_alpha.h>
 #include <alpha/oyranos_cmm.h>
 
+const char * sy_devices_module_name = "Devices";
+
 SyDevices::SyDevices(QWidget * parent)
     : SyModule(parent)
 {         
-    setModuleName("Devices");
+    setModuleName(sy_devices_module_name);
     setDescription("Set profiles for the devices on your system.");
     
     this->setParent(parent);
     
-    SyDevicesConfig * devicesConfig = new SyDevicesConfig(0);
+    SyDevicesConfig * devicesConfig = new SyDevicesConfig(0, sy_devices_module_name);
     setConfigWidget( devicesConfig );
     
     setEditable(true);

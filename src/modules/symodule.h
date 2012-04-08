@@ -57,7 +57,7 @@ public:
     // Returns current 'modified' state.
     bool isModified(void) { return modified; }
     
-    bool isHiding(void) { return hiding; }
+    bool isHiding(void) { return config_->isHiding(); }
     
     // Sets 'editable' state.
     void setEditable (bool b) { editable = b; }   

@@ -6,17 +6,15 @@
 #include <alpha/oyranos_alpha.h>
 #include <alpha/oyranos_cmm.h>
 
-#include <stdio.h>
-
-
+const char * sy_database_module_name = "Database";
 
 SyDatabase::SyDatabase(QWidget * parent)
     : SyModule(parent)
 {   
-    setModuleName("Database");
+    setModuleName(sy_database_module_name);
     setDescription("Browse profiles listed from the Taxi server.");
     
-    SyDatabaseConfig * databaseConfig = new SyDatabaseConfig(0);
+    SyDatabaseConfig * databaseConfig = new SyDatabaseConfig(0, sy_database_module_name);
     setConfigWidget( databaseConfig );
     
     setupUi(this);

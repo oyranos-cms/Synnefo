@@ -11,10 +11,13 @@ class SyInfoConfig : public SyModuleConfig
   Q_OBJECT
   
   public:
-    SyInfoConfig(QWidget * parent = 0, QString moduleId = "SyInformation");
+    SyInfoConfig(QWidget * parent = 0, QString moduleId = "");
     ~SyInfoConfig();    
     
     Ui::syInfoConfig ui_;
+    
+    void saveWidgetState();
+    void loadWidgetState();
     
   private:
     void populateOptionGrid();
@@ -22,7 +25,6 @@ class SyInfoConfig : public SyModuleConfig
     // Detailed view options.
     QLabel * viewDetailOptLabel;
     QCheckBox * viewDetailOptCheckBox;
-    
 };
 
 #endif

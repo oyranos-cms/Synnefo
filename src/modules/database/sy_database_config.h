@@ -39,14 +39,13 @@ class SyDatabaseConfig : public SyModuleConfig, Ui::syDatabaseConfig
   
   public:
     SyDatabaseConfig(QWidget * parent = 0, QString moduleId = "SyDatabase");
-    ~SyDatabaseConfig();    
+    ~SyDatabaseConfig();   
     
-    void readSettings();
+    void loadWidgetState();
+    void saveWidgetState();
     
   private:
     Ui::syDatabaseWidget ui_;    // Variable to access 'Settings' widget objects.
-    
-    void storeWidgets();
 };
 
 #endif

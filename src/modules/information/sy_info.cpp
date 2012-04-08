@@ -6,6 +6,8 @@
 #include "sy_info.h"
 #include "sy_info_config.h"
 
+const char * sy_info_module_name = "Information";
+
 SyInfo::SyInfo(QWidget * parent)
     : SyModule(parent)
 {       
@@ -13,12 +15,12 @@ SyInfo::SyInfo(QWidget * parent)
     
     infoDialog = new SyInfoDialog(this);
   
-    setModuleName("Information");
+    setModuleName(sy_info_module_name);
     setDescription("Analyze profile information on your system.");
     
     setupUi(this);                  // Load Gui.
     
-    SyInfoConfig * infoConfig = new SyInfoConfig(0);
+    SyInfoConfig * infoConfig = new SyInfoConfig(0, sy_info_module_name);
     setConfigWidget( infoConfig );
     
     setEditable(false);

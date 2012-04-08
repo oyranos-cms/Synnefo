@@ -33,6 +33,16 @@ void SyModuleConfig::loadModuleHidingState()
       hideModuleCheckBox->setCheckState(Qt::Unchecked);
 }
 
+void SyModuleConfig::saveWidgetState()
+{
+  
+}
+
+void SyModuleConfig::loadWidgetState()
+{
+  
+}
+
 SyModuleConfig::~SyModuleConfig()
 {
     
