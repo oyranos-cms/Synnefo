@@ -67,10 +67,7 @@ QString  SyDevicesItem::getText(ItemText e)
 
 void  SyDevicesItem::refreshText()
 {
-    deviceItemText =  deviceName + 
-                     "\n\nDescription: " + deviceDescription +
-                     "\nProfile Name: " + profileFilename +
-                     "\nProfile description: " + profileDescription;
-		     
+    deviceItemText = deviceName +
+                     "\n" + deviceDescription;
     this->setText (0, deviceItemText);
 }
