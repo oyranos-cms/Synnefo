@@ -5,27 +5,49 @@
 #include <QSettings>
 #include <QWidget>
 
+#include "ui_symoduleconfig.h"
+
 /**
 
   SyModuleConfig class:
   
-  Use as a base class for module configuration classes.
+  Use as a base class for module configuration classes.  
+  
+  Each Synnefo module will have its own configuration widget, which must attach
+  itself to this base class using 'attachConfigModule()'.
   
 */
 
-class SyModuleConfig : public QWidget
+class SyModuleConfig : public QWidget, protected Ui::syModuleConfigWidget
 {
+  Q_OBJECT
+  
   public:
-    SyModuleConfig(QWidget * parent = 0);    
+    SyModuleConfig(QWidget * parent = 0, QString moduleName = 0);    
     ~SyModuleConfig();
     
-  protected:
+    QString getRegistrationId(void) const {return configRegistration;}    
+    bool getHidingStatus(void) const {return isHidden;}    
+    
+    void saveWidgetState();    
+    void loadWidgetState();    
+    
+  protected:    
+    void attachConfigModule(QWidget* newModule)
+                      {syModuleConfigGrid->addWidget(newModule, 0,0,0);}
+    
+
+    
+    void setModuleHiding(bool);
+    void loadModuleHidingState();
+    void saveModuleHidingState();
     
     QSettings moduleConfig;
+    QString configRegistration;
     
-    void saveWidgetState();
-    
-    void loadWidgetState();
+  private:
+    QString moduleNameId;    
+    bool isHidden;
 };
 
 #endif

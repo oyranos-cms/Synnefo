@@ -30,8 +30,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "symoduleconfig.h"
 
-
-
 #include "ui_sy_database_config.h"
 #include "ui_sy_database.h"      
 
@@ -40,7 +38,7 @@ class SyDatabaseConfig : public SyModuleConfig, Ui::syDatabaseConfig
   Q_OBJECT
   
   public:
-    SyDatabaseConfig(QWidget * parent = 0);
+    SyDatabaseConfig(QWidget * parent = 0, QString moduleId = "SyDatabase");
     ~SyDatabaseConfig();    
     
     void readSettings();

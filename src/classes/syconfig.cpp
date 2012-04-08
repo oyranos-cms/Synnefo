@@ -12,11 +12,13 @@ SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent)
        
     loadState();
     
-    connect( closeButton, SIGNAL( clicked() ), this, SLOT( closeDialog() ));
-    connect ( availableModuleList, SIGNAL ( currentRowChanged ( int )),
-              this, SLOT ( changeModuleConfig ( int )));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(closeAndSaveDialog()));
+    connect(availableModuleList, SIGNAL (currentRowChanged (int)),
+              this, SLOT (changeModuleConfig (int)));
+/*
     connect( hideModuleCheckBox, SIGNAL (clicked (bool)),
-              this, SLOT (changeModuleStatus( bool )));
+              this, SLOT (changeModuleStatus( bool )));*/
 }
 
 // Helper function to 
@@ -53,19 +55,14 @@ void SyConfig::changeModuleStatus( bool newState )
 
 void SyConfig::loadState()
 {
-  
     mainConfig.beginGroup("modulesVisible");
     
     int i;
     for (i = 0; i < synnefo_module_count; i++)    
     {
-      QString moduleName = (module_list.at(i))->getName();
-      bool isHidden = mainConfig.value(moduleName).toBool();
-      
-      if (isHidden == true)
-        availableModuleList->addItem( moduleName + " <HIDDEN>");      
-      else 
-        availableModuleList->addItem( moduleName );     
+      SyModuleConfig * currentConfig = 
+                      (SyModuleConfig*)module_list.at(i)->getConfigWidget();
+      currentConfig->loadModuleHidingState();
     }
     
     mainConfig.endGroup();
@@ -78,17 +75,13 @@ void SyConfig::saveState()
     int i = 0;
     int visibleCount = 0;
     
-    for (i; i < synnefo_module_count; i++)
+    for (i = 0; i < synnefo_module_count; i++)
     {        
-        QString moduleName = (module_list.at(i))->getName() ;
-        bool hidingStatus = (module_list.at(i))->isHiding() ;
-        
-        if (hidingStatus == false)        
-            visibleCount++;
+      SyModuleConfig * currentConfig = 
+                      (SyModuleConfig*)module_list.at(i)->getConfigWidget();
+
+      currentConfig->saveModuleHidingState();
     }
-    
-    mainConfig.setValue("modulesVisibleCount", visibleCount);
-    mainConfig.sync();
     
 }
 
@@ -114,17 +107,21 @@ void SyConfig::changeModuleConfig( int rowIndex )
     (module_list.at(rowIndex))->attachConfigWidget( moduleConfigStack ); 
     
     bool moduleHideState = (module_list.at(rowIndex))->isHiding();
-    
+    /*
     if (moduleHideState == true) 
       hideModuleCheckBox->setCheckState(Qt::Checked);
     else if (moduleHideState == false) 
-      hideModuleCheckBox->setCheckState(Qt::Unchecked); 
+      hideModuleCheckBox->setCheckState(Qt::Unchecked); */
 }       
 
 
 void SyConfig::closeDialog()
-{
+{    
+    close();
+}
 
+void SyConfig::closeAndSaveDialog()
+{
     saveState();
     close();
 }

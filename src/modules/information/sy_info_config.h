@@ -5,18 +5,24 @@
 #include "symoduleconfig.h"
 
 #include "ui_sy_info_config.h"
-#include "ui_sy_info.h"      
 
-class SyInfoConfig : public SyModuleConfig, Ui::syInfoConfig
+class SyInfoConfig : public SyModuleConfig
 {
   Q_OBJECT
   
   public:
-    SyInfoConfig(QWidget * parent = 0);
-    ~SyInfoConfig();
+    SyInfoConfig(QWidget * parent = 0, QString moduleId = "SyInformation");
+    ~SyInfoConfig();    
+    
+    Ui::syInfoConfig ui_;
     
   private:
-    Ui::syInfoWidget ui_;    // Variable to access 'Devices' widget objects.
+    void populateOptionGrid();
+    
+    // Detailed view options.
+    QLabel * viewDetailOptLabel;
+    QCheckBox * viewDetailOptCheckBox;
+    
 };
 
 #endif

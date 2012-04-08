@@ -30,12 +30,10 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include <oyranos_config.h>
 #include <alpha/oyranos_alpha.h>
 
-SyDatabaseConfig::SyDatabaseConfig (QWidget * parent) :
-   SyModuleConfig(parent)
-{
-    setupUi(this);
-        
-    moduleConfig.beginGroup("Settings");   
+SyDatabaseConfig::SyDatabaseConfig (QWidget * parent, QString moduleId) :
+   SyModuleConfig(parent, moduleId)
+{        
+    moduleConfig.beginGroup(QString(moduleId + "/global"));   
     moduleConfig.endGroup();
 }
 
