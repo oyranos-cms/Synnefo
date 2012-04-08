@@ -20,6 +20,16 @@ void SyInfoConfig::populateOptionGrid()
     syModuleConfigGrid->addWidget(viewDetailOptCheckBox, 0,1,0);  
 }
 
+void SyInfoConfig::saveWidgetState()
+{
+    this->saveModuleHidingState();
+}
+
+void SyInfoConfig::loadWidgetState()
+{
+    this->loadModuleHidingState();
+}
+
 SyInfoConfig::~SyInfoConfig()
 {
   

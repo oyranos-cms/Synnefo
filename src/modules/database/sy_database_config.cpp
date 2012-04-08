@@ -33,24 +33,20 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 SyDatabaseConfig::SyDatabaseConfig (QWidget * parent, QString moduleId) :
    SyModuleConfig(parent, moduleId)
 {        
-    moduleConfig.beginGroup(QString(moduleId + "/global"));   
-    moduleConfig.endGroup();
+
 }
 
 
-
-void SyDatabaseConfig::storeWidgets()
+void SyDatabaseConfig::saveWidgetState()
 {
-    oyOptions_s * d;
   
 }
 
-
-
-void SyDatabaseConfig::readSettings()
+void SyDatabaseConfig::loadWidgetState()
 {
-     
+
 }
+
 
 
 SyDatabaseConfig::~SyDatabaseConfig()

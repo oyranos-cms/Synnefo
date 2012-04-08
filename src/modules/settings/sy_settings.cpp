@@ -9,17 +9,17 @@
 #include <alpha/oyranos_alpha.h>
 #include <locale.h>
 
-
+const char * sy_settings_module_name = "Settings";
 
 SySettings::SySettings(QWidget * parent)
     : SyModule(parent)
 {       
-    setModuleName("Settings");
+    setModuleName(sy_settings_module_name);
     setDescription("Set system-wide profile parameters.");
     
     setupUi(this);
     
-    SySettingsConfig * settingsConfig = new SySettingsConfig(0);
+    SySettingsConfig * settingsConfig = new SySettingsConfig(0, sy_settings_module_name);
     
     setConfigWidget(settingsConfig);
     

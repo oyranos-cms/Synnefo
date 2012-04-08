@@ -150,32 +150,21 @@ void Synnefo::loadSyModules()
 void Synnefo::refreshModuleList()
 /*  Post: Updates the module listing in the Synnefo dialog. */
 { 
-    int i;
+    int i = 0;
+    QString moduleName = "";
+    SyModule * currentModule = 0;
     
     syModuleListView->clear();
-
-   // Open configuration for hidden modules.    
-    configuration.beginGroup("modulesVisible");    
     
-    for (i = 0; i < synnefo_module_count; i++){        
-        QString moduleName = (moduleList.at(i))->getName() ;
-        bool hideStatus = configuration.value(moduleName).toBool();
-        
-        (moduleList.at(i))->setHiding(hideStatus);   
-    }  
-    
-    configuration.endGroup();       // Close configuration.
-    
-    for (i = 0; i < synnefo_module_count; i++) {
-       QString moduleName = (moduleList.at(i))->getName();
-       bool hideStatus = (moduleList.at(i))->isHiding();
-       
-       if (hideStatus == false){
-         QListWidgetItem * item = new QListWidgetItem(moduleName);
-         syModuleListView->addItem(item);        
-       }
-    }         
-    
+    for(i = 0; i < synnefo_module_count; i++){
+      currentModule = moduleList.at(i);      
+      moduleName = currentModule->getName();
+      
+      if(!currentModule->isHiding()){
+        QListWidgetItem * item = new QListWidgetItem(moduleName);
+        syModuleListView->addItem(item);
+      }
+    }
 }
 
 

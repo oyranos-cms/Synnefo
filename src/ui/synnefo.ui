@@ -102,7 +102,7 @@
        <item row="0" column="3">
         <widget class="QPushButton" name="appSettingsButton">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="maximumSize">
           <size>

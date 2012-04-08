@@ -36,16 +36,7 @@ void SyModule::setConfigWidget( SyModuleConfig * cfg )
 
 void SyModule::setHiding( bool b )
 {
-   if (b == true) {
-     config_->setEnabled( false );
-     this->setEnabled( false );
-   }
-   else if (b == false)
-   {
-     config_->setEnabled( true );
-     this->setEnabled( true );
-   }
-   
+   //config_->setModuleHiding(b);   
    hiding = b;
 }
 

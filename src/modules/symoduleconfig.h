@@ -26,17 +26,16 @@ class SyModuleConfig : public QWidget, protected Ui::syModuleConfigWidget
     SyModuleConfig(QWidget * parent = 0, QString moduleName = 0);    
     ~SyModuleConfig();
     
-    QString getRegistrationId(void) const {return configRegistration;}    
-    bool getHidingStatus(void) const {return isHidden;}    
+    QString getRegistrationId(void) const {return configRegistration;}   
+    QString getModuleName(void) const {return moduleNameId;}
+    bool isHiding(void) const {return isHidden;}    
     
-    void saveWidgetState();    
-    void loadWidgetState();    
+    virtual void saveWidgetState();    
+    virtual void loadWidgetState();    
     
   protected:    
     void attachConfigModule(QWidget* newModule)
                       {syModuleConfigGrid->addWidget(newModule, 0,0,0);}
-    
-
     
     void setModuleHiding(bool);
     void loadModuleHidingState();

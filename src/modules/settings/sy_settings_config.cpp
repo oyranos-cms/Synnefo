@@ -9,9 +9,14 @@ SySettingsConfig::SySettingsConfig (QWidget * parent, QString moduleId) :
 }
 
 
-void SySettingsConfig::readSettings()
+void SySettingsConfig::loadWidgetState()
 {
-     
+   this->loadModuleHidingState();
+}
+
+void SySettingsConfig::saveWidgetState()
+{
+   this->saveModuleHidingState();
 }
 
 

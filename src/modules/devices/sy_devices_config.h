@@ -12,8 +12,11 @@ class SyDevicesConfig : public SyModuleConfig, Ui::syDevicesConfig
   Q_OBJECT
   
   public:
-    SyDevicesConfig(QWidget * parent = 0);
+    SyDevicesConfig(QWidget * parent = 0, QString moduleId = 0);
     ~SyDevicesConfig();
+    
+    void loadWidgetState();
+    void saveWidgetState();
     
   private:
     Ui::syDevicesWidget ui_;    // Variable to access 'Devices' widget objects.

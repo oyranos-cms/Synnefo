@@ -12,8 +12,8 @@ SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent)
        
     loadState();
     
-    connect(okButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(closeAndSaveDialog()));
+    connect(okButton, SIGNAL(clicked()), this, SLOT(closeAndSaveDialog()));
+    connect(cancelButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
     connect(availableModuleList, SIGNAL (currentRowChanged (int)),
               this, SLOT (changeModuleConfig (int)));
 /*
@@ -49,23 +49,29 @@ void SyConfig::changeModuleStatus( bool newState )
        setModuleHiding( currentIndex, true );
     else if (newState == false)  
        setModuleHiding( currentIndex, false );
-      
 }
 
 
 void SyConfig::loadState()
-{
-    mainConfig.beginGroup("modulesVisible");
+{   
+    int i = 0;
+    QString moduleName = "";
+    SyModuleConfig * currentConfig = 0;
     
-    int i;
     for (i = 0; i < synnefo_module_count; i++)    
     {
-      SyModuleConfig * currentConfig = 
-                      (SyModuleConfig*)module_list.at(i)->getConfigWidget();
-      //currentConfig->loadModuleHidingState();
+      currentConfig = (SyModuleConfig*)module_list.at(i)->getConfigWidget();
+      currentConfig->loadWidgetState();
+      
+      moduleName = currentConfig->getModuleName();
+      
+      if(currentConfig->isHiding())
+        availableModuleList->addItem(moduleName + " <HIDDEN>");
+      else
+        availableModuleList->addItem(moduleName);  
+      
+
     }
-    
-    mainConfig.endGroup();
 }
 
 
@@ -74,13 +80,12 @@ void SyConfig::saveState()
   
     int i = 0;
     int visibleCount = 0;
+    SyModuleConfig * currentConfig = 0;
     
     for (i = 0; i < synnefo_module_count; i++)
     {        
-      SyModuleConfig * currentConfig = 
-                      (SyModuleConfig*)module_list.at(i)->getConfigWidget();
-
-      //currentConfig->saveModuleHidingState();
+      currentConfig = (SyModuleConfig*)module_list.at(i)->getConfigWidget();
+      currentConfig->saveWidgetState();
     }
     
 }
