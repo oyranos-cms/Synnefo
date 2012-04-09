@@ -39,12 +39,12 @@ SyDatabaseConfig::SyDatabaseConfig (QWidget * parent, QString moduleId) :
 
 void SyDatabaseConfig::saveWidgetState()
 {
-  
+   this->saveModuleHidingState();
 }
 
 void SyDatabaseConfig::loadWidgetState()
 {
-
+   this->loadModuleHidingState();
 }
 
 
