@@ -604,11 +604,21 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
         current = pos;
     }
     
+    if(current == -1 && profile_file_name)
+    {
+      getProfileDescription = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
+      getProfileDescription.append("\t(");
+      getProfileDescription.append(profile_file_name);
+      getProfileDescription.append(")");
+      itemComboBox.addItem(getProfileDescription);
+      current = pos;
+    }
+
+    itemComboBox.setCurrentIndex( current );
+
     oyConfig_Release( &device );
     oyProfile_Release( &profile );
     oyProfiles_Release( &iccs );
-
-    itemComboBox.setCurrentIndex( current );
 } 
 
 oyConfig_s * SyDevices::getCurrentDevice( void )
