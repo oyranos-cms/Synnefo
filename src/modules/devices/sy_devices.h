@@ -71,7 +71,9 @@ private:
     // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
  
-
+    // Download profile from Taxi server (based on device).
+    QString checkRecentTaxiProfile(oyConfig_s * device);
+    
   //***** Private Data Members.*********************
  
 

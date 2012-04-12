@@ -358,7 +358,7 @@ int SyDevices::detectDevices(const char * device_type)
         QString iconPath = QString(":/resources/") + device_class + ".png";
         device_icon.addFile( iconPath.toLower(), icon_size , QIcon::Normal, QIcon::On);
 
-
+        QString taxiProfileDescription = "";
         // Traverse through the available devices 
         for (j = 0; j < device_num; j++)
         {
@@ -391,6 +391,12 @@ int SyDevices::detectDevices(const char * device_type)
                 deviceItemString.append(device_manufacturer);
                 deviceItemString.append(" ");
             }
+            
+            // Ping the taxi server for recent profiles. (TESTING)
+            if (strcmp(device_class,"monitor") == 0)
+            {      
+                taxiProfileDescription = checkRecentTaxiProfile(device);
+            }
 
             deviceItemString.append(device_model);
             if(device_serial)
@@ -420,6 +426,12 @@ int SyDevices::detectDevices(const char * device_type)
             deviceItem->addText(DEVICE_NAME, device_designation);
             deviceItem->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
             deviceItem->addText(PROFILE_FILENAME, profile_filename);
+    
+            // TESTING
+            if(!taxiProfileDescription.isEmpty())
+              deviceItem->addText(MISC_INFO, QString("*NEW FROM TAXI* --" + taxiProfileDescription));
+
+            deviceItem->refreshText();
     
             // NOTE: New code to add association combo box in tree widget.
             QComboBox * profileAssociationCB = new QComboBox();
@@ -690,6 +702,66 @@ void SyDevices::assignProfile( QString & profile_name )
        profile_name = "------";
      currentDevice->setText(PROFILE_FILENAME, profile_name);
 }
+
+
+/*                  
+           ************* Oyranos Taxi Code *************
+*/
+
+int   compareRanks                   ( const void       * rank1,
+                                       const void       * rank2 )
+{int32_t *r1=(int32_t*)rank1, *r2=(int32_t*)rank2; if(r1[1] < r2[1]) return 1; else return 0;}
+
+// Obtain either the profile description or the taxi ID of the server profile.
+QString getTaxiString(oyConfig_s * device, const char * oy_taxi_string)
+{
+    QString str = "";
+    int error = 0, n, i = 0;
+    int32_t * ranks;
+    oyConfig_s * taxi_dev;
+    oyConfigs_s * devices = 0;
+    oyOptions_s * options = NULL;
+    int head = 0;
+    
+    error = oyOptions_SetFromText(&options,
+                                  "//" OY_TYPE_STD "/config/command",
+                                  "properties", OY_CREATE_NEW);
+    oyDevicesFromTaxiDB(device, options, &devices, NULL);
+    n = oyConfigs_Count(devices);
+    
+    if (n)
+    {
+      ranks = new int32_t(n*2+1);
+      for(i = 0; i < n; ++i)
+      {
+        taxi_dev = oyConfigs_Get(devices, i);
+        ranks[2*i+0] = i;
+        error = oyConfig_Compare(device, taxi_dev, &ranks[2*i+1]);
+
+        oyConfig_Release(&taxi_dev);
+      }
+            
+      qsort(ranks, n, sizeof(int32_t)*2, compareRanks);      
+      
+      taxi_dev = oyConfigs_Get(devices, 0);
+      str = oyConfig_FindString(taxi_dev, oy_taxi_string, 0);
+      
+      oyConfig_Release(&taxi_dev);
+    }
+    
+    oyConfigs_Release(&devices);
+    
+    return str;
+}
+
+// Obtain the profile description of the "best fit" profile from Taxi.
+QString SyDevices::checkRecentTaxiProfile(oyConfig_s * device)
+{
+    QString profileDescription = getTaxiString(device, "TAXI_profile_description");
+ 
+    return profileDescription;
+}
+
 
 
 /*                  
