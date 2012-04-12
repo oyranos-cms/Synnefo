@@ -4,12 +4,13 @@
 SyDevicesItem::SyDevicesItem( QTreeWidget * parent )
     : QTreeWidgetItem( parent, 0 )
 {
-    QString deviceDescription = " ";
-    QString deviceName = " ";
-    QString profileDescription = " ";
-    QString profileFilename = " ";
+    deviceDescription = "";
+    deviceName = "";
+    profileDescription = "";
+    profileFilename = "";
+    miscDescription = "";
     
-    deviceItemText = " ";
+    deviceItemText = "";
 }
 
 void  SyDevicesItem::addText( ItemText e, QString appendedText )
@@ -30,12 +31,13 @@ void  SyDevicesItem::addText( ItemText e, QString appendedText )
          case PROFILE_FILENAME:
            profileFilename = appendedText;
            break;
+         case MISC_INFO:
+           miscDescription = appendedText;
+           break;         
          default:
           return;
        }     
     }
-    
-    refreshText();
     
     return;
 }
@@ -59,6 +61,9 @@ QString  SyDevicesItem::getText(ItemText e)
       case PROFILE_FILENAME:
          text = profileFilename;
          break;
+      case MISC_INFO:
+         text = profileFilename;
+         break;
     }
     
     return text;
@@ -67,7 +72,7 @@ QString  SyDevicesItem::getText(ItemText e)
 
 void  SyDevicesItem::refreshText()
 {
-    deviceItemText = deviceName +
-                     "\n" + deviceDescription;
+    deviceItemText = deviceName + "\n" + deviceDescription + "\n" +
+                        miscDescription;
     this->setText (0, deviceItemText);
 }

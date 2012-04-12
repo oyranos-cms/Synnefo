@@ -8,11 +8,13 @@
       DEVICE_DESCRIPTION,
       DEVICE_NAME,
       PROFILE_DESCRIPTION,
-      PROFILE_FILENAME
+      PROFILE_FILENAME,
+      MISC_INFO
     };
 
 /* This class is used within the Synnefo 'Devices' module.
    It extends QListWidgetItem and is used to display 
+   information for each device.
    */
 
 class SyDevicesItem : public QTreeWidgetItem
@@ -23,13 +25,14 @@ class SyDevicesItem : public QTreeWidgetItem
     void addText (ItemText, QString );
     QString getText (ItemText);
     
-  private:
     void refreshText();
     
+  private:    
     QString deviceDescription;
     QString deviceName;
     QString profileDescription;
     QString profileFilename;
+    QString miscDescription;
     
     QString deviceItemText;
 };
