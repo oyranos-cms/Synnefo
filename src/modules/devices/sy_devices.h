@@ -70,6 +70,9 @@ private:
 
     // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
+    
+    QString getTaxiString(oyConfig_s * device, const char * oy_taxi_string);
+    const char * getTaxiProfile(oyConfig_s * device);
  
     // Download profile from Taxi server (based on device).
     QString checkRecentTaxiProfile(oyConfig_s * device);

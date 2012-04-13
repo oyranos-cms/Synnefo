@@ -1,3 +1,4 @@
+#include <QMessageBox>
 
 #include "sy_devices.h"
 #include "sy_devices_config.h"
@@ -395,7 +396,31 @@ int SyDevices::detectDevices(const char * device_type)
             // Ping the taxi server for recent profiles. (TESTING)
             if (strcmp(device_class,"monitor") == 0)
             {      
+                int ret = 0;
                 taxiProfileDescription = checkRecentTaxiProfile(device);
+#if 0
+                if(!taxiProfileDescription.isEmpty())
+                {
+                  QMessageBox msgBox;
+                  msgBox.setText("A new profile is available to download on " + deviceItemString);
+                  msgBox.setInformativeText("Do you wish to install it?");
+                  msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+                  msgBox.setDefaultButton(QMessageBox::Yes);
+                  ret = msgBox.exec();
+
+		  
+                  switch(ret)
+                  {
+                     case QMessageBox::Yes:
+                     {
+                       //const char * taxi_pname = getTaxiProfile(device);
+
+                       break;
+                     }
+  
+                  }
+                }
+#endif                
             }
 
             deviceItemString.append(device_model);
@@ -712,16 +737,14 @@ int   compareRanks                   ( const void       * rank1,
                                        const void       * rank2 )
 {int32_t *r1=(int32_t*)rank1, *r2=(int32_t*)rank2; if(r1[1] < r2[1]) return 1; else return 0;}
 
-// Obtain either the profile description or the taxi ID of the server profile.
-QString getTaxiString(oyConfig_s * device, const char * oy_taxi_string)
+// Helper function to get 'best-ranking' profile from the Taxi server. 
+oyConfig_s * getTaxiBestFit(oyConfig_s * device)
 {
-    QString str = "";
     int error = 0, n, i = 0;
     int32_t * ranks;
     oyConfig_s * taxi_dev;
     oyConfigs_s * devices = 0;
     oyOptions_s * options = NULL;
-    int head = 0;
     
     error = oyOptions_SetFromText(&options,
                                   "//" OY_TYPE_STD "/config/command",
@@ -731,7 +754,7 @@ QString getTaxiString(oyConfig_s * device, const char * oy_taxi_string)
     
     if (n)
     {
-      ranks = new int32_t(n*2+1);
+      ranks = new int32_t[n*2+1];
       for(i = 0; i < n; ++i)
       {
         taxi_dev = oyConfigs_Get(devices, i);
@@ -744,22 +767,64 @@ QString getTaxiString(oyConfig_s * device, const char * oy_taxi_string)
       qsort(ranks, n, sizeof(int32_t)*2, compareRanks);      
       
       taxi_dev = oyConfigs_Get(devices, 0);
-      str = oyConfig_FindString(taxi_dev, oy_taxi_string, 0);
-      
-      oyConfig_Release(&taxi_dev);
+
+      delete[] ranks;    
     }
     
     oyConfigs_Release(&devices);
+    oyOptions_Release(&options);  
+    
+    return taxi_dev;
+}
+
+// Obtain either profile description or the taxi_id of a Taxi device (Server).
+QString SyDevices::getTaxiString(oyConfig_s * device, const char * oy_taxi_string)
+{
+    QString str = "";
+    oyConfig_s * taxi_dev = 0;
+    
+    taxi_dev = getTaxiBestFit(device);
+    
+    str = oyConfig_FindString(taxi_dev, oy_taxi_string, 0);
+    
+    oyConfig_Release(&taxi_dev);
     
     return str;
 }
 
+
+
 // Obtain the profile description of the "best fit" profile from Taxi.
 QString SyDevices::checkRecentTaxiProfile(oyConfig_s * device)
 {
-    QString profileDescription = getTaxiString(device, "TAXI_profile_description");
- 
+    QString profileDescription = getTaxiString(device, "TAXI_profile_description"); 
     return profileDescription;
+}
+
+// TESTING Download a profile from Taxi server and return its filename.
+const char * SyDevices::getTaxiProfile(oyConfig_s * device)
+{
+    int error = 0;
+    oyProfile_s * ip = 0;    
+    oyOptions_s * options = NULL;
+    const char * file_name = NULL;
+    
+    QString taxiIdString = QString( getTaxiString(device, "TAXI_id") + "/0" );
+    
+    error = oyOptions_SetFromText(&options,
+                                 "//" OY_TYPE_STD "/argv/TAXI_id",
+                                 taxiIdString.toLocal8Bit(),
+                                 OY_CREATE_NEW);
+
+    if(!error){
+      //ip = oyProfile_FromTaxiDB(options, NULL);           
+      //oyProfile_Release(&ip);
+    }    
+    
+    oyOptions_Release(&options);
+    
+    
+    return file_name;
 }
 
 
