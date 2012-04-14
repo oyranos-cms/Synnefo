@@ -8,6 +8,7 @@
 
 #include "symodule.h"
 #include "sy_devices_item.h"
+#include "sy_devices_config.h"
 
 // Qt Designer code translation.
 #include "ui_sy_devices.h"          
@@ -71,8 +72,10 @@ private:
     // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
     
+    int checkTaxiProfile(oyConfig_s * device);
+    
     QString getTaxiString(oyConfig_s * device, const char * oy_taxi_string);
-    const char * getTaxiProfile(oyConfig_s * device);
+    QString getTaxiProfile(oyConfig_s * device);
  
     // Download profile from Taxi server (based on device).
     QString checkRecentTaxiProfile(oyConfig_s * device);
@@ -94,6 +97,7 @@ public:
 private:
     // Pointer used to store address of 'recently clicked' device item widget.
     QTreeWidgetItem * currentDevice;
+    SyDevicesConfig * devicesConfig;
 
     bool listModified;                // Was the list changed by the user?
 
