@@ -336,8 +336,29 @@ QString getDeviceName(oyConfig_s * device)
     return QString(manufacturer)+" "+QString(model)+" "+QString(serial);  
 }
 
+int SyDevices::installTaxiProfile(oyConfig_s * device)
+{    
+    int error = 0;
+    QString taxiProfileName = downloadTaxiProfile(device);
+   
+    if (!taxiProfileName.isEmpty())
+    {
+      const char * profile_name = taxiProfileName.toLocal8Bit();
+      char * pn = strdup(profile_name);
+
+      // Install the profile.
+      error = oyDeviceSetProfile(device, pn);
+      error = oyDeviceUnset(device);
+      error = oyDeviceSetup(device);
+    }
+    else
+      error = 1;
+    
+    return error;
+}
+
 // Ping the Taxi server for recent profiles. 
-int SyDevices::checkTaxiProfile(oyConfig_s * device)
+int SyDevices::checkProfileUpdates(oyConfig_s * device)
 {
     int is_installed = 0;
     
@@ -348,7 +369,8 @@ int SyDevices::checkTaxiProfile(oyConfig_s * device)
       int error, ret = 0;
       
       QMessageBox msgBox;
-      msgBox.setText("A new profile is available to download for " + getDeviceName(device));
+      msgBox.setText("A new profile is available to download for " 
+                     + getDeviceName(device) + ".");
       msgBox.setInformativeText("Do you wish to install it?");
       msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
       msgBox.setDefaultButton(QMessageBox::Yes);
@@ -358,18 +380,11 @@ int SyDevices::checkTaxiProfile(oyConfig_s * device)
       {
          case QMessageBox::Yes:
          {
-	   // Download the profile.
-           QString taxi_pname = getTaxiProfile(device);
-	   
-           const char * profile_name = taxi_pname.toLocal8Bit();
-           char * pn = strdup(profile_name);
+           error = installTaxiProfile(device);
 
-           error = oyDeviceSetProfile(device, pn);
-           error = oyDeviceUnset(device);
-           error = oyDeviceSetup(device);
-
-           if(!error) is_installed = 1; 
-
+	   if(!error) 
+             is_installed = 1; 
+           
            break;
          }
          case QMessageBox::No:
@@ -433,8 +448,6 @@ int SyDevices::detectDevices(const char * device_type)
 
             const char * profile_filename = 0;
             oyProfile_s * profile = 0;
-    
-            int taxi_profile_installed = 0;
 
             device_manufacturer = oyConfig_FindString( device,"manufacturer",0);
             device_model = oyConfig_FindString( device, "model", 0);
@@ -462,7 +475,7 @@ int SyDevices::detectDevices(const char * device_type)
             
             // TESTING Check device for Taxi updates.
             if (strcmp(device_class, "monitor") == 0)
-              taxi_profile_installed = checkTaxiProfile(device);
+              checkProfileUpdates(device);
 
             error = syDeviceGetProfile(device, &profile);
             profile_filename = oyProfile_GetFileName(profile, 0);
@@ -791,6 +804,7 @@ int isRecentProfile(oyConfig_s * device, oyConfig_s * taxi_device)
       oyProfile_Release(&p2);
     
       free(current_profile);
+      current_profile = 0;
     }
     
     oyOptions_Release(&options);
@@ -832,7 +846,8 @@ oyConfig_s * getTaxiBestFit(oyConfig_s * device)
 
         oyConfig_Release(&taxi_dev);
       }
-            
+      
+      // TODO Fix ranking so that it uses C++ sorting algorithm instead.
       qsort(ranks, n, sizeof(int32_t)*2, compareRanks);      
       
       // Obtain the best-ranked device profile (0).
@@ -879,7 +894,7 @@ QString SyDevices::checkRecentTaxiProfile(oyConfig_s * device)
 }
 
 // Download a profile from Taxi server and return its filename.
-QString SyDevices::getTaxiProfile(oyConfig_s * device)
+QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
 {  
     QString fileName = "";
     int error, i = 0;

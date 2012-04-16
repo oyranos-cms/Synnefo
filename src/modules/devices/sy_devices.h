@@ -16,6 +16,9 @@
 #include <alpha/oyranos_alpha.h>
 #include <alpha/oyranos_cmm.h>
 
+#include <stdio.h>
+#include <stdlib.h>
+
 
 
 /*****************************************************************
@@ -72,10 +75,12 @@ private:
     // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
     
-    int checkTaxiProfile(oyConfig_s * device);
+    int checkProfileUpdates(oyConfig_s * device);
     
     QString getTaxiString(oyConfig_s * device, const char * oy_taxi_string);
-    QString getTaxiProfile(oyConfig_s * device);
+    
+    QString downloadTaxiProfile(oyConfig_s * device);
+    int installTaxiProfile(oyConfig_s * config);
  
     // Download profile from Taxi server (based on device).
     QString checkRecentTaxiProfile(oyConfig_s * device);
