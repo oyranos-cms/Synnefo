@@ -1,3 +1,6 @@
+#include <QMessageBox>
+#include <QProgressDialog>
+#include <QFile>
 
 #include "sy_devices.h"
 #include "sy_devices_config.h"
@@ -6,6 +9,9 @@
 #include <oyranos_icc.h>
 #include <alpha/oyranos_alpha.h>
 #include <alpha/oyranos_cmm.h>
+
+// FIXME What would be the best path to automatically download profiles?
+#define TAXI_DOWNLOAD_PATH "/tmp/"
 
 const char * sy_devices_module_name = "Devices";
 
@@ -17,7 +23,7 @@ SyDevices::SyDevices(QWidget * parent)
     
     this->setParent(parent);
     
-    SyDevicesConfig * devicesConfig = new SyDevicesConfig(0, sy_devices_module_name);
+    devicesConfig = new SyDevicesConfig(0, sy_devices_module_name);
     setConfigWidget( devicesConfig );
     
     setEditable(true);
@@ -104,7 +110,6 @@ void SyDevices::updateProfileCombo( QTreeWidgetItem * deviceItem )
 
   qWarning( "deviceList: %s - %s", device_class, device_name );
 }
-
 
 //  ******** SIGNAL/SLOT Functions *****************
 
@@ -320,8 +325,77 @@ void SyDevices::showProfileCombobox( QTreeWidgetItem* item, int column)
    
 }
 
-
 // ************** Private Functions ********************
+
+// Helper to obtain device string ID.
+QString getDeviceName(oyConfig_s * device)
+{ 
+    const char * manufacturer = oyConfig_FindString( device,"manufacturer",0);
+    const char * model = oyConfig_FindString( device, "model", 0);
+    const char * serial = oyConfig_FindString( device, "serial", 0); 
+    return QString(manufacturer)+" "+QString(model)+" "+QString(serial);  
+}
+
+int SyDevices::installTaxiProfile(oyConfig_s * device)
+{    
+    int error = 0;
+    QString taxiProfileName = downloadTaxiProfile(device);
+   
+    if (!taxiProfileName.isEmpty())
+    {
+      const char * profile_name = taxiProfileName.toLocal8Bit();
+      char * pn = strdup(profile_name);
+
+      // Install the profile.
+      error = oyDeviceSetProfile(device, pn);
+      error = oyDeviceUnset(device);
+      error = oyDeviceSetup(device);
+    }
+    else
+      error = 1;
+    
+    return error;
+}
+
+// Ping the Taxi server for recent profiles. 
+int SyDevices::checkProfileUpdates(oyConfig_s * device)
+{
+    int is_installed = 0;
+    
+    QString taxiProfileDescription = checkRecentTaxiProfile(device);    
+
+    if(!taxiProfileDescription.isEmpty())
+    {
+      int error, ret = 0;
+      
+      QMessageBox msgBox;
+      msgBox.setText("A new profile is available to download for " 
+                     + getDeviceName(device) + ".");
+      msgBox.setInformativeText("Do you wish to install it?");
+      msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+      msgBox.setDefaultButton(QMessageBox::Yes);
+      ret = msgBox.exec();
+
+      switch(ret)
+      {
+         case QMessageBox::Yes:
+         {
+           error = installTaxiProfile(device);
+
+	   if(!error) 
+             is_installed = 1; 
+           
+           break;
+         }
+         case QMessageBox::No:
+           break;
+         default:
+           break;  
+      }
+    }  
+    
+    return is_installed;
+}
 
 // General function to detect and retrieve devices via the Oyranos CMM backend.
 int SyDevices::detectDevices(const char * device_type)
@@ -358,7 +432,7 @@ int SyDevices::detectDevices(const char * device_type)
         QString iconPath = QString(":/resources/") + device_class + ".png";
         device_icon.addFile( iconPath.toLower(), icon_size , QIcon::Normal, QIcon::On);
 
-
+        QString taxiProfileDescription = "";
         // Traverse through the available devices 
         for (j = 0; j < device_num; j++)
         {
@@ -398,6 +472,10 @@ int SyDevices::detectDevices(const char * device_type)
               deviceItemString.append(" ");
               deviceItemString.append(device_serial);
             }
+            
+            // TESTING Check device for Taxi updates.
+            if (strcmp(device_class, "monitor") == 0)
+              checkProfileUpdates(device);
 
             error = syDeviceGetProfile(device, &profile);
             profile_filename = oyProfile_GetFileName(profile, 0);
@@ -420,6 +498,8 @@ int SyDevices::detectDevices(const char * device_type)
             deviceItem->addText(DEVICE_NAME, device_designation);
             deviceItem->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
             deviceItem->addText(PROFILE_FILENAME, profile_filename);
+
+            deviceItem->refreshText();
     
             // NOTE: New code to add association combo box in tree widget.
             QComboBox * profileAssociationCB = new QComboBox();
@@ -700,6 +780,177 @@ void SyDevices::assignProfile( QString & profile_name )
        profile_name = "------";
      currentDevice->setText(PROFILE_FILENAME, profile_name);
 }
+
+
+/*                  
+           ************* Oyranos Taxi Code *************
+*/
+
+// TESTING Code to verify if recent Taxi profile is already installed.
+int isRecentProfile(oyConfig_s * device, oyConfig_s * taxi_device)
+{
+    int error, is_recent = 0;   
+    char * current_profile = 0; 
+    oyProfile_s * p1 = 0;
+    oyProfile_s * p2 = 0;
+    oyOptions_s * options = 0;    
+    
+    oyDeviceProfileFromDB(device, &current_profile, malloc);
+    QString taxiIdString = QString(oyConfig_FindString(taxi_device, "TAXI_id",0)) + "/0";
+
+    error = oyOptions_SetFromText(&options,
+                                 "//" OY_TYPE_STD "/argv/TAXI_id",
+                                 taxiIdString.toLocal8Bit(),
+                                 OY_CREATE_NEW);
+    if(!error)
+    {
+      p1 = oyProfile_FromTaxiDB(options, NULL);        
+      p2 = oyProfile_FromFile(current_profile, 0, 0);
+    
+      if(oyProfile_Equal(p1, p2))
+        is_recent = 1;
+    
+      oyProfile_Release(&p1);
+      oyProfile_Release(&p2);
+    
+      free(current_profile);
+      current_profile = 0;
+    }
+    
+    oyOptions_Release(&options);
+    
+    return is_recent;    
+}
+
+
+
+int   compareRanks                   ( const void       * rank1,
+                                       const void       * rank2 )
+{int32_t *r1=(int32_t*)rank1, *r2=(int32_t*)rank2; if(r1[1] < r2[1]) return 1; else return 0;}
+
+// Helper function to get 'best-ranking' profile from the Taxi server. 
+oyConfig_s * getTaxiBestFit(oyConfig_s * device)
+{
+    int error = 0, n, i = 0;
+    int32_t * ranks;
+    oyConfig_s * taxi_dev;
+    oyConfigs_s * devices = 0;
+    oyOptions_s * options = NULL;
+    
+    error = oyOptions_SetFromText(&options,
+                                  "//" OY_TYPE_STD "/config/command",
+                                  "properties", OY_CREATE_NEW);
+
+    oyDevicesFromTaxiDB(device, options, &devices, NULL);
+    
+    n = oyConfigs_Count(devices);
+    
+    if (n)
+    {
+      ranks = new int32_t[n*2+1];
+      for(i = 0; i < n; ++i)
+      {
+        taxi_dev = oyConfigs_Get(devices, i);
+        ranks[2*i+0] = i;
+        error = oyConfig_Compare(device, taxi_dev, &ranks[2*i+1]);
+
+        oyConfig_Release(&taxi_dev);
+      }
+      
+      // TODO Fix ranking so that it uses C++ sorting algorithm instead.
+      qsort(ranks, n, sizeof(int32_t)*2, compareRanks);      
+      
+      // Obtain the best-ranked device profile (0).
+      taxi_dev = oyConfigs_Get(devices, 0);
+
+      delete[] ranks;    
+    }
+        
+    // Verify if we already have the Taxi profile installed.
+    if(isRecentProfile(device, taxi_dev))
+    {
+       oyConfig_Release(&taxi_dev);
+       taxi_dev = 0;
+    }
+    
+    oyConfigs_Release(&devices);
+    oyOptions_Release(&options);  
+    
+    return taxi_dev;
+}
+
+// Obtain either profile description or the taxi_id of a Taxi device (Server).
+QString SyDevices::getTaxiString(oyConfig_s * device, const char * oy_taxi_string)
+{
+    QString str = "";
+    oyConfig_s * taxi_dev = 0;
+    
+    taxi_dev = getTaxiBestFit(device);
+    
+    if(taxi_dev)
+    {
+      str = oyConfig_FindString(taxi_dev, oy_taxi_string, 0);    
+      oyConfig_Release(&taxi_dev);
+    }
+    
+    return str;
+}
+
+// Obtain the profile description of the "best fit" profile from Taxi.
+QString SyDevices::checkRecentTaxiProfile(oyConfig_s * device)
+{    
+    QString profileDescription = getTaxiString(device, "TAXI_profile_description");     
+    return profileDescription;
+}
+
+// Download a profile from Taxi server and return its filename.
+QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
+{  
+    QString fileName = "";
+    int error, i = 0;
+    oyProfile_s * ip = 0;    
+    oyOptions_s * options = NULL;
+    const char * file_name = 0;
+    size_t size = 0;
+    char * data = 0;
+    
+    QString taxiIdString = QString( getTaxiString(device, "TAXI_id") + "/0" );
+    
+    error = oyOptions_SetFromText(&options,
+                                 "//" OY_TYPE_STD "/argv/TAXI_id",
+                                 taxiIdString.toLocal8Bit(),
+                                 OY_CREATE_NEW);
+
+    // Download the taxi profile.
+    if(!error)
+    {
+      ip = oyProfile_FromTaxiDB(options, NULL);  
+      
+      const char * taxi_profile_name = oyProfile_GetText( ip, oyNAME_DESCRIPTION );
+      fileName = TAXI_DOWNLOAD_PATH + QString(taxi_profile_name) + ".icc";
+      
+      data = (char*)oyProfile_GetMem(ip, &size, 0, malloc);
+            
+      if(data)
+      {
+        QFile file(fileName);
+        file.open(QIODevice::WriteOnly);
+      
+        QDataStream out(&file);      
+        out.writeRawData(data, size);
+      
+        file.close();
+      
+        oyProfile_Release(&ip);
+        free(data);
+      }
+    }    
+    
+    oyOptions_Release(&options);
+    
+    return fileName;
+}
+
 
 
 /*                  
