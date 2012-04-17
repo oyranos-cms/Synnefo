@@ -39,8 +39,11 @@ private slots:
     void openProfile(int index);
     
     // Hitting the "Show only device related ICC profiles" button.
-    void changeDeviceItem( int state );
+    void updateDeviceItems( int state );
     
+    // Hitting the device profile selection combo box.
+    void changeDeviceItem( int state );
+
     // When user clicks on a device tree item.
     void changeDeviceItem( QTreeWidgetItem* );
     

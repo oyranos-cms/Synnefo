@@ -53,10 +53,8 @@ SyDevices::SyDevices(QWidget * parent)
     // Expand list for user.
     deviceList->expandAll();
     
-    connect( deviceList, SIGNAL(itemClicked( QTreeWidgetItem*, int)),
-             this, SLOT( changeDeviceItem( QTreeWidgetItem*)) );
     connect( relatedDeviceCheckBox, SIGNAL(stateChanged( int )),
-             this, SLOT( changeDeviceItem( int )) );
+             this, SLOT( updateDeviceItems( int )) );
     connect( deviceProfileComboBox, SIGNAL(activated(int)),
              this, SLOT( openProfile(int)) );
     connect( profileAssociationList, SIGNAL( itemDoubleClicked( QListWidgetItem* )),
@@ -113,8 +111,8 @@ void SyDevices::updateProfileCombo( QTreeWidgetItem * deviceItem )
 
 //  ******** SIGNAL/SLOT Functions *****************
 
-void SyDevices::changeDeviceItem(int /*state*/)
-{     
+void SyDevices::updateDeviceItems(int state)
+{
     for(int i = 0; i < deviceList->topLevelItemCount(); ++i)
     {
       QTreeWidgetItem* device_class_item = deviceList->topLevelItem(i);
@@ -125,8 +123,13 @@ void SyDevices::changeDeviceItem(int /*state*/)
         qWarning( "deviceList: [%d][%d]", i,j );
       }
     }
+} 
 
-    //changeDeviceItem( currentDevice );
+void SyDevices::changeDeviceItem(int state)
+{
+  QComboBox *combo = dynamic_cast<QComboBox*>(sender());
+
+    qWarning( "deviceList: %d", state );
 } 
 
 // NOTE Dynamic item information (for each item click) update might be removed.
@@ -504,6 +507,8 @@ int SyDevices::detectDevices(const char * device_type)
             // NOTE: New code to add association combo box in tree widget.
             QComboBox * profileAssociationCB = new QComboBox();
    
+            connect( profileAssociationCB, SIGNAL(currentIndexChanged( int )),
+                     this, SLOT( changeDeviceItem( int )) );
             QBoxLayout *layout = new QBoxLayout(QBoxLayout::LeftToRight);
             layout->addWidget (profileAssociationCB);
 
