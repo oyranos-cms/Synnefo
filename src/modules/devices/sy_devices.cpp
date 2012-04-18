@@ -36,17 +36,10 @@ SyDevices::SyDevices(QWidget * parent)
     setupUi(this);
     
     deviceList->setMouseTracking(true);
-    
-    // Disable for now.
-    // NOTE Will eventually be removed from base widget.
-    profileAssociationGroupBox->setVisible(false);
-    
-    // Disable all buttons
-    deviceProfileComboBox->setEnabled(false); 
-    
+
     // Set column width of device list.
     deviceList->setColumnWidth(0, 400);
-    
+
     // Load directories and device listing.
     populateDeviceListing();
     
@@ -55,12 +48,6 @@ SyDevices::SyDevices(QWidget * parent)
     
     connect( relatedDeviceCheckBox, SIGNAL(stateChanged( int )),
              this, SLOT( updateDeviceItems( int )) );
-    connect( deviceProfileComboBox, SIGNAL(activated(int)),
-             this, SLOT( openProfile(int)) );
-    connect( profileAssociationList, SIGNAL( itemDoubleClicked( QListWidgetItem* )),
-             this, SLOT( profileListDoubleClicked( QListWidgetItem * )) );
-    connect( deviceList, SIGNAL( itemEntered( QTreeWidgetItem*, int )),
-             this, SLOT( showProfileCombobox( QTreeWidgetItem* , int )));
 }
 
 // small helper to obtain a profile from a device
@@ -128,8 +115,8 @@ void SyDevices::updateDeviceItems(int state)
 void SyDevices::changeDeviceItem(int state)
 {
   QComboBox *combo = dynamic_cast<QComboBox*>(sender());
-
-    qWarning( "deviceList: %d", state );
+  if(combo)
+  qWarning( "deviceList: %d", state );
 } 
 
 // NOTE Dynamic item information (for each item click) update might be removed.
@@ -138,24 +125,17 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
 {  
     if(!selectedDeviceItem)
     {
-      deviceProfileComboBox->clear();
-      deviceProfileComboBox->setEnabled(false);
       return;
     }
 
     // Don't count top parent items as a "selected device".
     if (selectedDeviceItem->parent() == NULL)
     {
-         deviceProfileComboBox->setEnabled(false);
-        
-         return;
+      return;
     }
 
     // The user modifies the list, but clicks away from the selected device item.
     listModified = false;
-
-    // If we click on a device item, the current device is stored and options are available.
-    deviceProfileComboBox->setEnabled(true);
 
     currentDevice = selectedDeviceItem;
  
@@ -190,143 +170,9 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
     oyConfig_s * device = 0;
     device = getCurrentDevice();
 
-    updateProfileList(device); 
     oyConfig_Release(&device);
 }
 
-
-// Add a new profile to the list.
-// NOTE Removed until appropriate implementation is available.
-void SyDevices::openProfile(int /*index*/)
-{
-  #if 1
-    int parenthesis_index = 0, base_filename_index = 0, str_size = 0, i;        
-    QString baseFileName = deviceProfileComboBox->currentText(),
-            tempProfile;
-
-    QListWidgetItem * temp_item = new QListWidgetItem;
-
-    QString description = baseFileName;    
-    parenthesis_index = baseFileName.indexOf("\t(");   
-
-    // Clean-up full text in the deviceComboBox (we will o>setText(2)nly use the file name to
-    //                                          add to the profiles list).
-    str_size = baseFileName.size();
-    baseFileName.remove(0, parenthesis_index + 2);
-    baseFileName.remove(str_size - 2, 1);
-    parenthesis_index = baseFileName.indexOf(")");
-    baseFileName.remove(parenthesis_index, parenthesis_index + 1);
-    base_filename_index = baseFileName.lastIndexOf("/");
-    baseFileName.remove(0, base_filename_index + 1); 
-
-    // Error if user adds a duplicate profile.
-    for(i = 0; i < profileAssociationList->count(); i++)
-    {
-          temp_item = profileAssociationList->item(i);
-          if(temp_item->text() == baseFileName)
-          {
-	          // TODO Return some message here.
-                  return;
-          }
-    }
-    
-    listModified = true;
-
-    assignProfile( baseFileName );
-
-    // Convert QString to proper C string.
-    QByteArray raw_string;
-    raw_string = (currentDevice->text(DEVICE_NAME)).toLatin1();
-    setCurrentDeviceName(raw_string.data());
-        
-    // Get the device that the user selected.
-    oyConfig_s * device = 0;     
-    device = getCurrentDevice();
- 
-    updateProfileList(device); 
-    oyConfig_Release(&device);
-    
-  #endif
-}
-
-
-void SyDevices::profileListDoubleClicked( QListWidgetItem * item )
-{
-    int i,j,n, k,k_n;
-    oyConfigs_s * db_list = 0,
-                * matches = 0;
-    oyConfig_s * config = 0;
-    const char * pattern[][2] = {{"device_name",0},
-                                 {"manufacturer",0},
-                                 {"model",0},
-                                 {"serial",0},
-                                 {0,0}};
-    char * t;
-    oyConfig_s * device = getCurrentDevice();
-    oyOptions_s * options = 0;
-    oyOption_s * o = 0;
-
-    j = 0;
-    while(pattern[j][0])
-    {
-      pattern[j][1] = oyConfig_FindString( device, pattern[j][0], 0);
-      ++j;
-    }
-
-    oyConfigs_FromDB( device->registration, &db_list, 0 );
-    oyConfigs_SelectSimiliars( db_list, pattern, &matches );
-
-    n = profileAssociationList->count();
-    for(i = 0; i < n; ++i)
-    {
-      if(profileAssociationList->item( i ) == item)
-      {
-        QString d;
-        config = oyConfigs_Get( matches, i );
-      
-        k_n = oyConfig_Count( config );
-        for(k = 0; k < k_n; ++k)
-        {
-          o = oyConfig_Get( config, k );
-          t = oyOption_GetValueText( o, malloc );
-          if(t)
-          {
-              d.append( strrchr( oyOption_GetRegistration(o), '/' ) + 1 );
-              d.append(":\t");
-              d.append( t );
-              d.append("\n");
-            free( t );
-          }
-        }
-
-      //KMessageBox::information( this, i18n("Oyranos DB entry:\n") + d );
-
-        oyConfig_Release( &config );
-      }
-    }
-
-    oyConfig_Release( &device );
-    oyConfigs_Release( &db_list );
-    oyConfigs_Release( &matches );
-    oyOptions_Release( &options );
-}
-
-// Make comboboxes visible only when mouse is over an item.
-void SyDevices::showProfileCombobox( QTreeWidgetItem* item, int column)
-{
-  #if 0
-   if (column == ITEM_MAIN)
-     return;
-   else if ( (column == ITEM_COMBOBOX) && (item->childCount() == 0) ) {
-     QWidget * w = new QWidget();
-     
-     w = deviceList->itemWidget( item, column );
-     w->setVisible(true);
-     deviceList->setItemWidget( item, column, w );
-   }   
-   #endif
-   
-}
 
 // ************** Private Functions ********************
 
@@ -501,12 +347,12 @@ int SyDevices::detectDevices(const char * device_type)
             deviceItem->addText(DEVICE_NAME, device_designation);
             deviceItem->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
             deviceItem->addText(PROFILE_FILENAME, profile_filename);
+            deviceItem->setDevice(device);
 
             deviceItem->refreshText();
     
             // NOTE: New code to add association combo box in tree widget.
             QComboBox * profileAssociationCB = new QComboBox();
-   
             connect( profileAssociationCB, SIGNAL(currentIndexChanged( int )),
                      this, SLOT( changeDeviceItem( int )) );
             QBoxLayout *layout = new QBoxLayout(QBoxLayout::LeftToRight);
@@ -555,58 +401,6 @@ void SyDevices::populateDeviceListing()
 }
 
 
-// Update profile association list every time a user clicks on a device item.
-void SyDevices::updateProfileList(oyConfig_s * device)
-{
-    int i, j;
-    oyProfile_s * profile = 0;
-    const char * profile_name = 0;
-    oyConfigs_s * db_list = 0,
-                * matches = 0;
-    oyConfig_s * config;
-    const char * pattern[][2] = {{"device_name",0},
-                             {"manufacturer",0},
-                             {"model",0},
-                             {"serial",0},
-                             {0,0}};
-
-    if(!device)
-    {
-      changeDeviceItem((QTreeWidgetItem *)NULL);
-      return;
-    }
-
-    profileAssociationList->clear();
-
-    syDeviceGetProfile( device, &profile );
-    profile_name = oyProfile_GetText(profile, oyNAME_DESCRIPTION);
-
-    j = 0;
-    while(pattern[j][0])
-    {
-      pattern[j][1] = oyConfig_FindString( device, pattern[j][0], 0);
-
-      ++j;
-    }
-
-    oyConfigs_FromDB( device->registration, &db_list, 0 );
-    oyConfigs_SelectSimiliars( db_list, pattern, &matches );
-
-    int n = oyConfigs_Count( matches );
-    for(i = 0; i < n; ++i)
-    {
-      config = oyConfigs_Get( matches, i );
-      
-      profile_name = oyConfig_FindString( config, "profile_name", 0);
-      if( profile_name )
-        profileAssociationList->addItem( profile_name );
-
-      oyConfig_Release( &config );
-    }
-
-    oyConfigs_Release( &matches );
-    oyConfigs_Release( &db_list );
-}
 
 // Populate "Assign Profile" combobox.  Depending on the device selected, the profile list will vary.
 void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature )
@@ -675,7 +469,7 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
            getProfileDescription.append("\t(");
            getProfileDescription.append(temp_profile_file_name);
            getProfileDescription.append(")");
-           itemComboBox.addItem(getProfileDescription);
+           itemComboBox.addItem(getProfileDescription, temp_profile_file_name);
            ++pos;
          }
       oyProfile_Release( &temp_profile );

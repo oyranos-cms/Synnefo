@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QSignalMapper>
 #include <QWidget>
+#include <QComboBox>
 
 #include "symodule.h"
 #include "sy_devices_item.h"
@@ -35,9 +36,6 @@ public:
     
 private slots:
   
-    // When the "Assign Profile" button is pressed...
-    void openProfile(int index);
-    
     // Hitting the "Show only device related ICC profiles" button.
     void updateDeviceItems( int state );
     
@@ -46,11 +44,6 @@ private slots:
 
     // When user clicks on a device tree item.
     void changeDeviceItem( QTreeWidgetItem* );
-    
-    // When user clicks on a profile list item
-    void profileListDoubleClicked( QListWidgetItem* );
-    
-    void showProfileCombobox( QTreeWidgetItem * item, int column);
     
 private:
     
@@ -71,9 +64,6 @@ private:
 
     // Function to detect all devices/directories.
     void populateDeviceListing();
-
-    // Refresh current profile list.
-    void updateProfileList(oyConfig_s * device);
 
     // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
