@@ -15,6 +15,7 @@
 
 const char * sy_devices_module_name = "Devices";
 
+// a bag to provide a otherwise hard to obtain link to the parent widget
 class SyDeviceItem : public QComboBox
 {
   public:
@@ -105,13 +106,14 @@ void SyDevices::updateProfileCombo( QTreeWidgetItem * deviceItem )
 
   oyConfDomain_Release( &d );
 
-  qWarning( "deviceList: %s - %s", device_class, device_name );
+  qWarning( "%d deviceList: %s - %s", __LINE__,device_class, device_name );
 }
 
 //  ******** SIGNAL/SLOT Functions *****************
 
 void SyDevices::updateDeviceItems(int state)
 {
+    init = true;  // skip signals in changeDeviceItem
     for(int i = 0; i < deviceList->topLevelItemCount(); ++i)
     {
       QTreeWidgetItem* device_class_item = deviceList->topLevelItem(i);
@@ -122,6 +124,7 @@ void SyDevices::updateDeviceItems(int state)
         qWarning( "deviceList: [%d][%d]", i,j );
       }
     }
+    init = false;
 } 
 
 void SyDevices::changeDeviceItem(int pos)
@@ -130,6 +133,7 @@ void SyDevices::changeDeviceItem(int pos)
   if(combo && !init)
   {
     SyDevicesItem * device_item = combo->getParent();
+    // unselect all tree items
     for(int i = 0; i < deviceList->topLevelItemCount(); ++i)
     {
       QTreeWidgetItem* device_class_item = deviceList->topLevelItem(i);
@@ -140,7 +144,10 @@ void SyDevices::changeDeviceItem(int pos)
           deviceItem->setSelected(false);
       }
     }
+    // select the belonging widget to this combobox
     device_item->setSelected(true);
+
+    // get infos
     QVariant v = device_item->parent()->data( 0, Qt::UserRole );
     QString qs = v.toString();
     QByteArray raw_string = qs.toLatin1();
@@ -151,11 +158,15 @@ void SyDevices::changeDeviceItem(int pos)
     char * profile_name = strdup(raw_string.data());
     raw_string = device_item->getText(DEVICE_NAME).toLatin1();
     char * device_name = raw_string.data();
+
+    // set internal context
     setCurrentDeviceClass(device_class);
     setCurrentDeviceName(device_name);
     qWarning( "%d deviceItem: %d %s %s: %s", __LINE__,pos, device_class,
               device_item->getText(DEVICE_NAME).toLatin1().data(),
               profile_name);
+
+    // set profile
     assignProfile(QString(profile_name));
   }
 } 
@@ -382,7 +393,7 @@ int SyDevices::detectDevices(const char * device_type)
 
             deviceItem->setIcon( ITEM_MAIN, device_icon );
             
-            deviceItem->addText(DEVICE_DESCRIPTION, device_model);
+            deviceItem->addText(DEVICE_DESCRIPTION, deviceItemString);
             deviceItem->addText(DEVICE_NAME, device_designation);
             deviceItem->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
             deviceItem->addText(PROFILE_FILENAME, profile_filename);
