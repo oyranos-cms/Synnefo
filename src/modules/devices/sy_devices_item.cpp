@@ -11,6 +11,7 @@ SyDevicesItem::SyDevicesItem( QTreeWidget * parent )
     miscDescription = "";
     
     deviceItemText = "";
+    device = 0;
 }
 
 void  SyDevicesItem::addText( ItemText e, QString appendedText )
