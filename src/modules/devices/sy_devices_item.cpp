@@ -73,7 +73,8 @@ QString  SyDevicesItem::getText(ItemText e)
 
 void  SyDevicesItem::refreshText()
 {
-    deviceItemText = deviceName + "\n" + deviceDescription + "\n" +
-                        miscDescription;
+    deviceItemText = deviceName + "\n" + deviceDescription;
+    if(miscDescription.size())
+      deviceItemText += "\n" + miscDescription;
     this->setText (0, deviceItemText);
 }
