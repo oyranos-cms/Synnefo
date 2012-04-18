@@ -54,7 +54,7 @@ private:
     int detectDevices( const char * device_type );
     
     // set the new profile to a Oyranos device
-    void assignProfile( QString & profile_name );
+    void assignProfile( QString profile_name );
     
     // Populate device-specified profile combo box listing.
     void populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature );
@@ -94,10 +94,10 @@ public:
     };
 private:
     // Pointer used to store address of 'recently clicked' device item widget.
-    QTreeWidgetItem * currentDevice;
     SyDevicesConfig * devicesConfig;
 
     bool listModified;                // Was the list changed by the user?
+    bool init;                        // Are we inside tor?
 
     // Global string values for Oyranos device identification
     char * current_device_name;

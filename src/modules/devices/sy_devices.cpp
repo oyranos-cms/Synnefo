@@ -15,6 +15,16 @@
 
 const char * sy_devices_module_name = "Devices";
 
+class SyDeviceItem : public QComboBox
+{
+  public:
+    SyDeviceItem () : QComboBox() {}
+    void setParent ( SyDevicesItem * p ) {parent_ = p;}
+    SyDevicesItem * getParent () {return parent_;}
+  private:    
+    SyDevicesItem * parent_;
+};
+
 SyDevices::SyDevices(QWidget * parent)
     : SyModule(parent)
 {         
@@ -32,6 +42,7 @@ SyDevices::SyDevices(QWidget * parent)
     current_device_class = 0;
 
     listModified = false;       // avoid action on signals
+    init = true;
     
     setupUi(this);
     
@@ -48,6 +59,7 @@ SyDevices::SyDevices(QWidget * parent)
     
     connect( relatedDeviceCheckBox, SIGNAL(stateChanged( int )),
              this, SLOT( updateDeviceItems( int )) );
+    init = false;
 }
 
 // small helper to obtain a profile from a device
@@ -70,8 +82,8 @@ void SyDevices::updateProfileCombo( QTreeWidgetItem * deviceItem )
   QString qs_device_class = v.toString();
   QByteArray raw_string = qs_device_class.toLatin1();
   char * device_class = strdup(raw_string.data());
-  SyDevicesItem * device_data = dynamic_cast<SyDevicesItem*>(deviceItem);
-  raw_string = device_data->getText(DEVICE_NAME).toLatin1();
+  SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(deviceItem);
+  raw_string = device_item->getText(DEVICE_NAME).toLatin1();
   const char * device_name = strdup(raw_string.data());
   // Generate profiles in the combobox for current item.
   oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
@@ -112,11 +124,40 @@ void SyDevices::updateDeviceItems(int state)
     }
 } 
 
-void SyDevices::changeDeviceItem(int state)
+void SyDevices::changeDeviceItem(int pos)
 {
-  QComboBox *combo = dynamic_cast<QComboBox*>(sender());
-  if(combo)
-  qWarning( "deviceList: %d", state );
+  SyDeviceItem * combo = dynamic_cast<SyDeviceItem*>(sender());
+  if(combo && !init)
+  {
+    SyDevicesItem * device_item = combo->getParent();
+    for(int i = 0; i < deviceList->topLevelItemCount(); ++i)
+    {
+      QTreeWidgetItem* device_class_item = deviceList->topLevelItem(i);
+      for(int j = 0; j < device_class_item->childCount(); ++j)
+      {
+        QTreeWidgetItem * deviceItem = device_class_item->child(j);
+        if(device_item != deviceItem && deviceItem->isSelected())
+          deviceItem->setSelected(false);
+      }
+    }
+    device_item->setSelected(true);
+    QVariant v = device_item->parent()->data( 0, Qt::UserRole );
+    QString qs = v.toString();
+    QByteArray raw_string = qs.toLatin1();
+    char * device_class = strdup(raw_string.data());
+    v = combo->itemData(pos, Qt::UserRole);
+    qs = v.toString();
+    raw_string = qs.toLatin1();
+    char * profile_name = strdup(raw_string.data());
+    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
+    char * device_name = raw_string.data();
+    setCurrentDeviceClass(device_class);
+    setCurrentDeviceName(device_name);
+    qWarning( "%d deviceItem: %d %s %s: %s", __LINE__,pos, device_class,
+              device_item->getText(DEVICE_NAME).toLatin1().data(),
+              profile_name);
+    assignProfile(QString(profile_name));
+  }
 } 
 
 // NOTE Dynamic item information (for each item click) update might be removed.
@@ -137,11 +178,10 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
     // The user modifies the list, but clicks away from the selected device item.
     listModified = false;
 
-    currentDevice = selectedDeviceItem;
- 
     // Convert QString to proper C string.
     QByteArray raw_string;
-    raw_string = (currentDevice->text(DEVICE_NAME)).toLatin1();
+    SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selectedDeviceItem);
+    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
     setCurrentDeviceName(raw_string.data());
         
     char * device_class = 0;
@@ -270,8 +310,7 @@ int SyDevices::detectDevices(const char * device_type)
     {
         // Set up Synnefo gui "logistics" for a specified device.
         QTreeWidgetItem * device_class_item = new QTreeWidgetItem;
-        device_class_item->setText( ITEM_MAIN, oyConfDomain_GetText( d, "device_class",
-                                                      oyNAME_NAME ));
+        device_class_item->setText( ITEM_MAIN, device_class );
         QVariant v( device_class );
         device_class_item->setData( 0, Qt::UserRole, v );
         deviceList->insertTopLevelItem( ITEM_MAIN, device_class_item );
@@ -352,11 +391,12 @@ int SyDevices::detectDevices(const char * device_type)
             deviceItem->refreshText();
     
             // NOTE: New code to add association combo box in tree widget.
-            QComboBox * profileAssociationCB = new QComboBox();
+            SyDeviceItem * profileAssociationCB = new SyDeviceItem();
             connect( profileAssociationCB, SIGNAL(currentIndexChanged( int )),
                      this, SLOT( changeDeviceItem( int )) );
             QBoxLayout *layout = new QBoxLayout(QBoxLayout::LeftToRight);
             layout->addWidget (profileAssociationCB);
+            profileAssociationCB->setParent(deviceItem);
 
             QWidget * w = new QWidget();
             w->setLayout(layout);
@@ -530,7 +570,7 @@ class kmSleep : public QThread
      { QThread::msleep((long unsigned int)(seconds*1000)); }
 };
 
-void SyDevices::assignProfile( QString & profile_name )
+void SyDevices::assignProfile( QString profile_name )
 {        
      oyProfile_s * profile;
      QString description;
@@ -572,12 +612,8 @@ void SyDevices::assignProfile( QString & profile_name )
      if(!description.count())
        description = "(No Profile Installed!)";
 
-     // Set third column of the device list with the profile description.
-     currentDevice->setText(PROFILE_DESCRIPTION, description);
- 
      if(!profile_name.count())
        profile_name = "------";
-     currentDevice->setText(PROFILE_FILENAME, profile_name);
 }
 
 
