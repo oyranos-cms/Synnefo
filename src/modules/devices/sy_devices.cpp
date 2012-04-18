@@ -707,7 +707,7 @@ oyConfig_s * getTaxiBestFit(oyConfig_s * device)
       qsort(ranks, n, sizeof(int32_t)*2, compareRanks);      
       
       // Obtain the best-ranked device profile (0).
-      taxi_dev = oyConfigs_Get(devices, 0);
+      taxi_dev = oyConfigs_Get(devices, ranks[0]);
 
       delete[] ranks;    
     }
