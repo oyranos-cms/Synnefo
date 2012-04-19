@@ -10,8 +10,8 @@
 #include <alpha/oyranos_alpha.h>
 #include <alpha/oyranos_cmm.h>
 
-// FIXME What would be the best path to automatically download profiles?
-#define TAXI_DOWNLOAD_PATH "/tmp/"
+// Use the users personal ICC path for installation.
+#define TAXI_DOWNLOAD_PATH OY_USERCOLORDATA OY_SLASH OY_ICCDIRNAME
 
 const char * sy_devices_module_name = "Devices";
 
@@ -284,7 +284,14 @@ int SyDevices::checkProfileUpdates(oyConfig_s * device)
 
 	   if(!error) 
              is_installed = 1; 
-           
+           else
+           {
+             QMessageBox msgBox;
+             msgBox.setText("Could not install " 
+                     + getDeviceName(device) + ".");
+             msgBox.setDefaultButton(QMessageBox::Yes);
+             ret = msgBox.exec();
+           }
            break;
          }
          case QMessageBox::No:
@@ -773,7 +780,8 @@ QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
       ip = oyProfile_FromTaxiDB(options, NULL);  
       
       const char * taxi_profile_name = oyProfile_GetText( ip, oyNAME_DESCRIPTION );
-      fileName = TAXI_DOWNLOAD_PATH + QString(taxi_profile_name) + ".icc";
+      fileName = QString(TAXI_DOWNLOAD_PATH) + OY_SLASH + taxi_profile_name
+                 + ".icc";
       
       data = (char*)oyProfile_GetMem(ip, &size, 0, malloc);
             
@@ -784,7 +792,8 @@ QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
       
         QDataStream out(&file);      
         out.writeRawData(data, size);
-      
+        qWarning("installed -> $s", fileName.toLatin1().data());
+
         file.close();
       
         oyProfile_Release(&ip);
