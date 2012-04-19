@@ -57,7 +57,7 @@ SyInfo::SyInfo(QWidget * parent)
     populateInstalledProfileList();
 
     connect( installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), 
-                this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
+             this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
 
 }
 
@@ -69,13 +69,13 @@ void SyInfo::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, i
     if (column != ITEM_ICON)
        return;
     
-    infoDialog->showDialog();
-    
     QVariant v = currentProfileItem->data( 0, Qt::UserRole );
     oyProfile_s * p = (oyProfile_s *) v.toULongLong();
 
     if(p && p->type_ == oyOBJECT_PROFILE_S)
     {
+      infoDialog->showDialog();
+    
       populateDeviceProfileDescriptions(p, true);    
       return;
     }
