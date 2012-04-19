@@ -34,6 +34,15 @@ private slots:
     // Function to remove custom policy.
     void removeCustomPolicy();
     
+    // Write changes to the custom Xml File.
+    void saveCustomXmlFile();
+    
+    // Enables "Apply" button.
+    void emitChanged();
+
+    // Button is called to save custom default profile into XML file.
+    void saveSettingsToXml();
+  
 private:
   
     // Used to fill in "Default Profiles" tab.
@@ -57,15 +66,6 @@ private:
     // Filter default profiles. 
     void fillProfileComboBoxes(oyPROFILE_e, QComboBox *);
     
-    // Write changes to the custom Xml File.
-    void saveCustomXmlFile();
-    
-    // Enables "Apply" button.
-    void emitChanged();
-
-    // Button is called to save custom default profile into XML file.
-    void saveSettingsToXml();
-  
     // Save policies 
     void savePolicy();
 

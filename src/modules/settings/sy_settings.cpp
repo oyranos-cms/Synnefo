@@ -150,6 +150,15 @@ SySettings::SySettings(QWidget * parent)
     connect(addNewPolicyButton, SIGNAL(clicked()), this, SLOT(addNewPolicy()));
     connect(removePolicyButton, SIGNAL(clicked()), this, SLOT(removeCustomPolicy()));
 
+   int k = 0, n = editableComboItems.size();
+   // When a user clicks on any combo box, the "Apply" button will be enabled.
+   for(k = 0; k < n; ++k)
+    connect(editableComboItems.value(k), SIGNAL(activated(int)), this, SLOT(emitChanged()));
+
+   n = editableCheckBoxItems.size();
+   // When a user clicks on a radio box, the "Apply" button will be enabled.
+   for(k = 0; k < n; ++k)
+    connect(editableCheckBoxItems.value(k), SIGNAL(clicked()), this, SLOT(emitChanged()));
 }
 
 
@@ -420,6 +429,7 @@ void SySettings::setEditableItems(bool itemStatus)
     {
         combobox = editableComboItems.value(i);
         combobox->setEnabled(itemStatus);
+        connect(combobox, SIGNAL(activated(int)), this, SLOT(emitChanged()));
     }
 
     QCheckBox * checkbox;
@@ -427,6 +437,7 @@ void SySettings::setEditableItems(bool itemStatus)
     {
         checkbox = editableCheckBoxItems.value(i);
         checkbox->setEnabled(itemStatus);
+        connect(checkbox, SIGNAL(clicked()), this, SLOT(emitChanged()));
     }
 }
 
