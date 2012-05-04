@@ -1,27 +1,38 @@
-README (draft)
-
-Synnefo Development (3-10)
-by Joseph Simon
+Synnefo (v0.9) README 
+by Joseph Simon 2011-2012 (jsimon383@gmail.com)
 
 ************************************
 
+===Overview===
+
+Synnefo is a Qt color management front-end.  It uses the Oyranos CMS to provide the ability to set and examine device profiles, as well as to change system-wide color settings.
 
 
---BUILDING SYNNEFO--
+===Requirements===
+
+This build is currently using the latest Oyranos build through "git". It is required that Oyranos be up-to-date using this.
+
+
+===Build Instructions===
+
 Type the following in Synnefo's root directory:
 
-mkdir build
-cd build
+$ mkdir build
+$ cd build
 
-cmake ../
-make
-
-
+$ cmake ..
+$ make
 
 
---TESTING--
+===Running Synnefo===
+
 After building, do the following (from the build directory):
 
-cd src
-./synnefo
+$ cd src
+$ ./synnefo
 
+
+===Development History===
+
+*Started: 3-10-11
+*First Release (v0.9): 5-4-12

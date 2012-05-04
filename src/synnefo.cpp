@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 // Assume we have the three default modules currently installed.
-int synnefo_module_count = 4;
+int synnefo_module_count = 3;
 
 
 Synnefo::Synnefo(QWidget * parent)
@@ -40,8 +40,12 @@ Synnefo::Synnefo(QWidget * parent)
     isFirstRun = configuration.value("first-run", true).toBool();
         
     loadSyModules();
+    
+    // NOTE We shall hide the "Application Settings" until the code is done.
+    appSettingsButton->setHidden(true);
         
-    configDialog = new SyConfig(moduleList, this);
+
+    //confiobject->exec();
     
     connect(syModuleListView, 
             SIGNAL (currentRowChanged (int)), 
@@ -96,7 +100,12 @@ void Synnefo::openApplicationSettings()
 /*  Pre: The user clicks on the "Application Settings" button in the main dialog.
     Post: Opens the Synnefo Configuration dialog. */
 {  
+    // "Application Settings"
+    configDialog = new SyConfig(moduleList, this);    
+    configDialog->setAttribute(Qt::WA_DeleteOnClose);
+    
     configDialog->exec();
+    configDialog = 0;
     
     // FIXME Refreshing list after changing hiding status in a segfault.
     // refreshModuleList();
@@ -132,7 +141,7 @@ void Synnefo::loadSyModules()
     // TODO Find solution to automatically check 
     //      for # of modules in directory structure.    
     
-    databaseModule = new SyDatabase(0);     // "Synnefo Database"
+    //databaseModule = new SyDatabase(0);     // "Synnefo Database"
     devicesModule = new SyDevices(0);       // "Synnefo Devices"
     infoModule = new SyInfo(0);             // "Synnefo Information"
     settingsModule = new SySettings(0);     // "Synnefo Settings"    
@@ -140,7 +149,7 @@ void Synnefo::loadSyModules()
     moduleList.insert( 0, settingsModule );
     moduleList.insert( 0, infoModule );
     moduleList.insert( 0, devicesModule ); 
-    moduleList.insert( 0, databaseModule );
+    //moduleList.insert( 0, databaseModule );
       
     refreshModuleList();        
 }  
@@ -186,7 +195,7 @@ void Synnefo::freeSyModules()
    while (!moduleList.isEmpty())
      delete moduleList.takeFirst();
    
-   databaseModule = 0;
+   //databaseModule = 0;
    devicesModule = 0;
    infoModule = 0;
    settingsModule = 0;  

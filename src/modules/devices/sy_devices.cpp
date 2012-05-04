@@ -380,8 +380,8 @@ int SyDevices::detectDevices(const char * device_type)
             }
             
             // TESTING Check device for Taxi updates.
-            if (strcmp(device_class, "monitor") == 0)
-              checkProfileUpdates(device);
+            //if (strcmp(device_class, "monitor") == 0)
+            //  checkProfileUpdates(device);
 
             error = syDeviceGetProfile(device, &profile);
             profile_filename = oyProfile_GetFileName(profile, 0);
