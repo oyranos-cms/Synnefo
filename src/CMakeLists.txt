@@ -3,10 +3,6 @@ project (synnefo)
 find_package(Qt4)
 INCLUDE(   ${QT_USE_FILE}   )
 
-
-
-INCLUDE(${QT_USE_FILE})
-
 set( synnefo_SRCS
     # core sources
     main.cpp    
@@ -122,3 +118,7 @@ IF(WIN32)
 ELSE()
   target_link_libraries(synnefo ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
 ENDIF()
+
+install(TARGETS synnefo
+  EXPORT SynnefoLibraryDepends
+  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)

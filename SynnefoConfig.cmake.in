@@ -1,0 +1,11 @@
+
+get_filename_component(SYNNEFO_CMAKE_DIR "${CMAKE_CURRENT_LIST_FILE}" PATH)
+if(EXISTS "${SYNNEFO_CMAKE_DIR}/CMakeCache.txt")
+  include("${SYNNEFO_CMAKE_DIR}/SynnefoBuildTreeSettings.cmake")
+else()
+  set(SYNNEFO_INCLUDE_DIRS "${SYNNEFO_CMAKE_DIR}/@CONF_REL_INCLUDE_DIR@")
+endif()
+
+include("${SYNNEFO_CMAKE_DIR}/SynnefoLibraryDepends.cmake")
+
+set(SYNNEFO_EXECUTABLE synnefo) 
