@@ -22,14 +22,18 @@ $ cd build
 
 $ cmake ..
 $ make
+$ make install
+
+If you wish to uninstall synnefo, simply type:
+
+$ make uninstall
 
 
 ===Running Synnefo===
 
-After building, do the following (from the build directory):
+After building, simply enter the following in your console:
 
-$ cd src
-$ ./synnefo
+$ synnefo
 
 
 ===Development History===
