@@ -9,6 +9,8 @@
 #include <oyranos_devices.h>
 #include <oyProfiles_s.h>
 
+#define i18n(t) t
+
 // Use the users personal ICC path for installation.
 #define TAXI_DOWNLOAD_PATH OY_USERCOLORDATA OY_SLASH OY_ICCDIRNAME
 
@@ -512,7 +514,7 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
          if(empty_added == -1 &&
             rank_list[i] < 1)
          {
-           itemComboBox.addItem("");
+           itemComboBox.addItem(i18n("automatic"));
            empty_added = pos;
            if(current != -1 &&
               current == pos)
@@ -535,7 +537,7 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
     
     if(empty_added == -1)
     {
-      itemComboBox.addItem("");
+      itemComboBox.addItem(i18n("automatic"));
       ++pos;
       if(current == -1 && current_tmp != -1)
         current = pos;
@@ -602,11 +604,11 @@ void SyDevices::assignProfile( QString profile_name )
          char * pn = strdup(profilename);
 
          /* store a existing profile in DB */
-         if(strlen(pn))
+         if(strlen(pn) && QString::localeAwareCompare( QString(pn), i18n("automatic")))
            error = oyDeviceSetProfile ( device, pn );
          error = oyDeviceUnset( device ); /* unset the device */
          /* completly unset the actual profile from DB */
-         if(!strlen(pn))
+         if(!strlen(pn) || !QString::localeAwareCompare(QString(pn), i18n("automatic")))
          {
            error = oyConfig_EraseFromDB( device );
            oyConfig_Release( &device );
