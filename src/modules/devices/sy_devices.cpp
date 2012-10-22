@@ -6,9 +6,8 @@
 #include "sy_devices_config.h"
 
 #include <oyranos.h>
-#include <oyranos_icc.h>
-#include <alpha/oyranos_alpha.h>
-#include <alpha/oyranos_cmm.h>
+#include <oyranos_devices.h>
+#include <oyProfiles_s.h>
 
 // Use the users personal ICC path for installation.
 #define TAXI_DOWNLOAD_PATH OY_USERCOLORDATA OY_SLASH OY_ICCDIRNAME
@@ -465,12 +464,13 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
 {
     int size, i, current = -1, current_tmp, pos = 0;
     oyProfile_s * profile = 0, * temp_profile = 0;
-    oyProfiles_s * patterns = 0, * iccs = 0;
+    oyProfiles_s * patterns = oyProfiles_New(0),
+                 * iccs = 0;
     oyConfig_s * device = getCurrentDevice();
     const char * profile_file_name = 0;
 
     profile = oyProfile_FromSignature( deviceSignature, oySIGNATURE_CLASS, 0 );
-    patterns = oyProfiles_MoveIn( patterns, &profile, -1 );
+    oyProfiles_MoveIn( patterns, &profile, -1 );
 
     iccs = oyProfiles_Create( patterns, 0 );
     oyProfiles_Release( &patterns );

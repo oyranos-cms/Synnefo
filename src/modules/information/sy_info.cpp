@@ -1,7 +1,7 @@
  
 #include <oyranos.h>
-#include <oyranos_config.h>
-#include <alpha/oyranos_alpha.h>
+#include <oyranos_devices.h>
+#include <oyProfiles_s.h>
  
 #include "sy_info.h"
 #include "sy_info_config.h"

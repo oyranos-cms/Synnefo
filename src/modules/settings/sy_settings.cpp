@@ -5,8 +5,8 @@
 #include "sy_settings.h"
 
 #include <oyranos.h>
-#include <oyranos_config.h>
-#include <alpha/oyranos_alpha.h>
+#include <oyProfiles_s.h>
+#include <oyranos_devices.h>
 #include <locale.h>
 
 const char * sy_settings_module_name = "Settings";
