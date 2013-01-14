@@ -14,8 +14,7 @@
 // Qt Designer code translation.
 #include "ui_sy_devices.h"          
 
-#include <alpha/oyranos_alpha.h>
-#include <alpha/oyranos_cmm.h>
+#include <oyranos_devices.h>
 
 #include <stdio.h>
 #include <stdlib.h>

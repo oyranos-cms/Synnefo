@@ -2,7 +2,7 @@
 #include <QFileInfo>
 #include <oyranos.h>
 #include <oyranos_config.h>
-#include <alpha/oyranos_alpha.h>
+#include <oyranos_devices.h>
 
 #include "sy_info_dialog.h"
 

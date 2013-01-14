@@ -1,6 +1,7 @@
  
 #include <oyranos.h>
 #include <oyranos_devices.h>
+#include <oyranos_icc.h>
 #include <oyProfiles_s.h>
 
 #include <QProcess>

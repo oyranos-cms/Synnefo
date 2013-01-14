@@ -3,7 +3,7 @@
 
 #include <QListWidgetItem>
 #include <QTreeWidgetItem>
-#include <alpha/oyranos_alpha.h>
+#include <oyranos_devices.h>
 
  enum ItemText {
       DEVICE_DESCRIPTION,

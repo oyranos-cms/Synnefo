@@ -13,7 +13,7 @@ SET( ${PROJECT_NAME}_MINOR_VERSION 1)
 find_package(Qt4 REQUIRED)
 find_package(Oyranos REQUIRED)
 
-include_directories(${OYRANOS_INCLUDE_DIR} ${OYRANOS_INCLUDE_DIR}/alpha/object)
+include_directories(${OYRANOS_INCLUDE_DIR})
 
 SET( ${CMAKE_BUILD_TYPE} Debug)
 

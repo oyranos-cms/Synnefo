@@ -7,7 +7,7 @@
 #include <QWidget>
 #include <QTemporaryFile>
 
-#include <alpha/oyranos_alpha.h>
+#include <oyranos_devices.h>
 
 #include "symodule.h"          
 #include "sy_info_dialog.h"

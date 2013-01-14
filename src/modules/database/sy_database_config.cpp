@@ -28,7 +28,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "sy_database_config.h"
 #include <oyranos.h>
 //#include <oyranos_config.h>
-#include <alpha/oyranos_alpha.h>
+#include <oyranos_devices.h>
 
 SyDatabaseConfig::SyDatabaseConfig (QWidget * parent, QString moduleId) :
    SyModuleConfig(parent, moduleId)

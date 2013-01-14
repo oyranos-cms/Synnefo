@@ -3,8 +3,7 @@
 
 #include <oyranos.h>
 #include <oyranos_icc.h>
-#include <alpha/oyranos_alpha.h>
-#include <alpha/oyranos_cmm.h>
+#include <oyranos_devices.h>
 
 const char * sy_database_module_name = "Database";
 
