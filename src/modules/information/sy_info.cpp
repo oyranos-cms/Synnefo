@@ -31,23 +31,6 @@ SyInfo::SyInfo(QWidget * parent)
     installedProfilesTree->setColumnWidth(0, 350);
     installedProfilesTree->setColumnWidth(1, 150);
     
-    // Save tree list parents to QTreeWidgetItem pointers.
-    devicesParentTree = installedProfilesTree->topLevelItem(0);
-    const char * g_name = NULL;
-    QString name;
-    editingCsTree = installedProfilesTree->topLevelItem(1);
-    oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_EDIT, NULL, &g_name,
-                      NULL, NULL );
-    editingCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
-    assumedCsTree = installedProfilesTree->topLevelItem(2);
-    oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_ASSUMED, NULL, &g_name,
-                      NULL, NULL );
-    assumedCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
-
-    // For convenience, we expand colorspace trees.
-    installedProfilesTree->expandItem(editingCsTree);
-    installedProfilesTree->expandItem(assumedCsTree);
-
     installedProfilesTree->expandAll();
         
     examineIcon.addFile(QString::fromUtf8(":/resources/examine.png"), 
@@ -58,6 +41,8 @@ SyInfo::SyInfo(QWidget * parent)
     
     // Display oyEDITING_XYZ info for now. 
     populateInstalledProfileList();
+
+    installedProfilesTree->expandAll();
 
     connect( installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), 
              this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
@@ -92,16 +77,30 @@ void SyInfo::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, i
 // Populate the tree with detected profile items.
 void SyInfo::populateInstalledProfileList()
 {
-    devicesParentTree = installedProfilesTree->topLevelItem(0);
-    editingCsTree = installedProfilesTree->topLevelItem(1);
-    assumedCsTree = installedProfilesTree->topLevelItem(2);
 
-    populateDeviceProfiles( devicesParentTree );
-    installedProfilesTree->expandAll();
+    QTreeWidgetItem * devicesTree = new QTreeWidgetItem;
+    installedProfilesTree->addTopLevelItem( devicesTree );
+    devicesTree->setText( ITEM_NAME, QString("Devices"));
+    populateDeviceProfiles( devicesTree );
 
+    // Save tree list parents to QTreeWidgetItem pointers.
     const char * g_name = NULL;
     QString name;
-            
+    QTreeWidgetItem * editingCsTree = new QTreeWidgetItem;
+    installedProfilesTree->addTopLevelItem( editingCsTree );
+    oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_EDIT, NULL, &g_name,
+                      NULL, NULL );
+    editingCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
+    QTreeWidgetItem * assumedCsTree = new QTreeWidgetItem;
+    installedProfilesTree->addTopLevelItem( assumedCsTree );
+    oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_ASSUMED, NULL, &g_name,
+                      NULL, NULL );
+    assumedCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
+
+    // For convenience, we expand colorspace trees.
+    installedProfilesTree->expandItem(editingCsTree);
+    installedProfilesTree->expandItem(assumedCsTree);
+
     // Populate colorspace items.
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_RGB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
@@ -166,21 +165,22 @@ void SyInfo::addProfileTreeItem( oyPROFILE_e profile_type, QString description,
 void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
 {
     int n = 0;
-    QIcon device_icon("");
 
-    uint32_t count = 0, i,j,
+    uint32_t count = 0, j,
            * rank_list = 0;
+    int32_t i;
     char ** texts = 0;
-    const char * device_class = 0;
     oyConfDomain_s * d = 0;
 
     // get all configuration filters
     oyConfigDomainList( "//"OY_TYPE_STD"/config.device.icc_profile",
                         &texts, &count, &rank_list ,0 );
 
-    for (i = 0; i < count; i++)
+    for(i = count - 1; i >= 0; --i)
     {
+      QIcon device_icon("");
       oyConfigs_s * devices = 0;
+      printf("count: %d [i]: %d\n", count, i);
       const char * reg_app = strrchr(texts[i],'/')+1;
       oyDevicesGet( OY_TYPE_STD, reg_app, 0, &devices );
       n = oyConfigs_Count( devices );
@@ -194,12 +194,15 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
       else if(strstr(reg_app,"scanner"))
         device_icon = QIcon(":/resources/scanner.png");
 
+      QTreeWidgetItem * device_list_sub_tree = deviceListTree;
+#     if 0
+      // add subtree per device class
       // pick the modules device class nick name
-      device_class = oyConfDomain_GetText( d, "device_class", oyNAME_NAME );
+      const char * device_class = oyConfDomain_GetText( d, "device_class", oyNAME_NAME );
 
-      QTreeWidgetItem * device_list_sub_tree = new QTreeWidgetItem;
       device_list_sub_tree->setText( ITEM_NAME, device_class );
-      deviceListTree->addChild( device_list_sub_tree) ;
+      deviceListTree->addChild( device_list_sub_tree );
+#     endif
 
       for(j = 0; j < (uint32_t)n; ++j)
       {

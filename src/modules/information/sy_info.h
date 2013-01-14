@@ -41,7 +41,7 @@ private:
     
     // Populate tree list items relating to device-specific profiles (printers, monitors, etc.)
     void populateDeviceProfiles
-         ( /*QStringList listOfDevices,*/ QTreeWidgetItem * deviceListSubTree /*, QIcon device_icon*/);
+         ( /*QStringList listOfDevices,*/ QTreeWidgetItem * listTree /*, QIcon device_icon*/);
 
     // Populate tag descriptions for device-specific profiles.
     void populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid);
@@ -72,9 +72,6 @@ private:
       ITEM_DESCRIPTION,
       ITEM_ICON      
     };
-    QTreeWidgetItem * assumedCsTree;
-    QTreeWidgetItem * editingCsTree;
-    QTreeWidgetItem * devicesParentTree;
 
     // Pointers to device-specific (parent) items on list
     oyProfile_s * current_profile;
