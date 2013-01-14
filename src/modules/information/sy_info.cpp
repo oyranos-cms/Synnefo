@@ -257,21 +257,21 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
 
         if(p)
         {
-          QTreeWidgetItem * profile_child = new QTreeWidgetItem;
           const char* profile_name = oyProfile_GetText( p, oyNAME_DESCRIPTION );
+#         if 0
           const char* file_name = oyProfile_GetFileName( p, -1 );
           if(file_name)
-            profile_child->setText( ITEM_NAME, QString(file_name) );
+            device_child->setText( ITEM_NAME, device_child->text(ITEM_NAME) + "\n" + QString(file_name) );
           else
-            profile_child->setText( ITEM_NAME, "in memory" );
-          profile_child->setText( ITEM_DESCRIPTION, profile_name );
+            device_child->setText( ITEM_NAME, device_child->text(ITEM_NAME) + "\n" + "in memory" );
+#         endif
+          device_child->setText( ITEM_DESCRIPTION, profile_name );
 
           // attach the profile to the widget
           QVariant v((qulonglong) oyProfile_Copy(p,0));
-          profile_child->setData( 0, Qt::UserRole, v );
+          device_child->setData( 0, Qt::UserRole, v );
 
-          profile_child->setIcon(ITEM_ICON, examineIcon);
-          device_child->addChild(profile_child);
+          device_child->setIcon(ITEM_ICON, examineIcon);
         }
 
         //oyProfile_Release( &p );
