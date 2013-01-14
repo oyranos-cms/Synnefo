@@ -38,7 +38,8 @@ class SyInfoDialog : public QDialog, Ui::syInfoDialog
     
     void setDialogText( DialogString e, QString text );
     void showDialog();
-    
+    void loadProfileGraph( QString fileName );
+        
   private:
     
     // Determines if iccExamin is installed on the machine.
@@ -46,7 +47,6 @@ class SyInfoDialog : public QDialog, Ui::syInfoDialog
     
     QString iccExaminCommand;
     
-        
 };
 
 #endif

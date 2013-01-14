@@ -5,6 +5,7 @@
 #include <QApplication>
 #include <QSignalMapper>
 #include <QWidget>
+#include <QTemporaryFile>
 
 #include <alpha/oyranos_alpha.h>
 
@@ -27,7 +28,7 @@ public:
 private slots:
     
     void profileExamineButtonClicked(QTreeWidgetItem *, int);
-    
+    void loadProfileGraph();
 private:
   
   /*** PRIVATE FUNCTIONS ***/  
@@ -78,6 +79,7 @@ private:
     // Pointers to device-specific (parent) items on list
     oyProfile_s * current_profile;
           
+    QTemporaryFile m_tempFile;
 };
 
 #endif

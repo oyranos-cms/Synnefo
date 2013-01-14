@@ -2,6 +2,8 @@
 #include <oyranos.h>
 #include <oyranos_devices.h>
 #include <oyProfiles_s.h>
+
+#include <QProcess>
  
 #include "sy_info.h"
 #include "sy_info_config.h"
@@ -304,6 +306,14 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
         QString profilePathName = oyProfile_GetFileName( profile, 0 );
         infoDialog->setDialogText( PROFILE_PATH_TAG, profilePathName );
 
+	m_tempFile.open();
+
+	QProcess * process = new QProcess();
+	connect(process, SIGNAL(finished(int)), SLOT(loadProfileGraph()));
+
+	QString program = QString("oyranos-profile-graph -o \"%1\" -w 200 \"%2\"").arg(m_tempFile.fileName()).arg(profilePathName);
+	process->start(program);
+
         oyProfile_Release( &current_profile );
         current_profile = oyProfile_Copy( profile, 0 );
     }
@@ -325,6 +335,12 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
   
 }
 
+void SyInfo::loadProfileGraph()
+{
+        infoDialog->loadProfileGraph(m_tempFile.fileName());
+
+        m_tempFile.close();
+}
 
 // Function to write signature head, based on profile, tag type, and QT Label.
 void SyInfo::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagType, DialogString tag )

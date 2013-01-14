@@ -170,3 +170,9 @@ bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
 }
 
 
+void SyInfoDialog::loadProfileGraph(QString fileName)
+{
+    QPixmap mypix(fileName);
+    launchICCExaminButton->setIcon(QIcon(mypix));
+}
+
