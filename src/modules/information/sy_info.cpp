@@ -443,9 +443,9 @@ void SyInfo::setDateTag(oyProfile_s * profile)
       //seconds = oyProfile_GetSignature(profile, oySIGNATURE_DATETIME_SECONDS);
 
      infoDialog->setDialogText(DATE_CREATED_TAG, 
-                                 monthString.setNum(month) + "/" 
-                                 + dayString.setNum(day) + "/" 
-                                 + yearString.setNum(year));
+                                 monthString.setNum(year) + "-" 
+                                 + dayString.setNum(month) + "-" 
+                                 + yearString.setNum(day));
 }
 
 
