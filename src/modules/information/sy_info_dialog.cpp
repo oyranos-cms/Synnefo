@@ -3,6 +3,7 @@
 #include <oyranos.h>
 #include <oyranos_config.h>
 #include <oyranos_devices.h>
+#include <oyranos_profile.h>
 
 #include "sy_info_dialog.h"
 
@@ -10,6 +11,14 @@ SyInfoDialog::SyInfoDialog(QWidget * parent)
     : QDialog(parent, 0)
 {
     setupUi(this);
+
+    dateTextLabel->setText( oyProfileSignatureName(oySIGNATURE_DATETIME_YEAR) );
+    dcTextLabel->setText( oyProfileSignatureName(oySIGNATURE_CLASS) );
+    manufacturerLabel->setText( oyProfileSignatureName(oySIGNATURE_MANUFACTURER) );
+    modelTextLabel->setText( oyProfileSignatureName(oySIGNATURE_MODEL) );
+    iccVersionLabel->setText( oyProfileSignatureName(oySIGNATURE_VERSION) );
+    colorspaceLabel->setText( oyProfileSignatureName(oySIGNATURE_COLOUR_SPACE) );
+    pcsTypeLabel->setText( oyProfileSignatureName(oySIGNATURE_PCS) );
 
     connect( closeButton, SIGNAL( clicked() ), this, SLOT( closeDialog() ));
     connect( launchICCExaminButton, SIGNAL(clicked()), this, SLOT(launchICCExamin())); 
