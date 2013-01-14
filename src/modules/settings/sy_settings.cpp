@@ -44,8 +44,14 @@ SySettings::SySettings(QWidget * parent)
                     flags = 0;
     const char    * tooltip = NULL;
     const char   ** names = NULL;
-    const char    * name = NULL;
+    const char    * name = NULL,
+                  * description = NULL;
 
+    oyWidgetTitleGet( oyWIDGET_GROUP_ALL, NULL, &name,
+                      NULL, NULL );
+    oyWidgetDescriptionGet( oyWIDGET_GROUP_ALL, &description, 0 );
+    setModuleName(QString::fromUtf8(name));
+    setDescription(QString::fromUtf8(description));
   
     oyWidgetTitleGet( oyWIDGET_POLICY, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
@@ -414,7 +420,7 @@ void SySettings::refreshPolicySettings()
       selected_policy = names[current];
       // Set user selected policy as system default.
       currentPolicyLabel->setText(selected_policy);      // Update default policy label.
-      printf( "acual policy: %s\n", names[current] );
+      printf( "actual policy: %s\n", names[current] );
     } else
       currentPolicyLabel->setText("----");
 }

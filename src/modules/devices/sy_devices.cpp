@@ -33,6 +33,15 @@ SyDevices::SyDevices(QWidget * parent)
     setModuleName(sy_devices_module_name);
     setDescription("Set profiles for the devices on your system.");
     
+    const char    * name = NULL,
+                  * description = NULL;
+
+    oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES, NULL, &name,
+                      NULL, NULL );
+    oyWidgetDescriptionGet( oyWIDGET_GROUP_DEVICES, &description, 0 );
+    setModuleName(QString::fromUtf8(name));
+    setDescription(QString::fromUtf8(description));
+
     this->setParent(parent);
     
     devicesConfig = new SyDevicesConfig(0, sy_devices_module_name);

@@ -15,36 +15,42 @@ SyInfo::SyInfo(QWidget * parent)
     : SyModule(parent)
 {       
     current_profile = NULL;
-    
+
+    const char    * name = NULL,
+                  * description = NULL;
+
+    oyWidgetTitleGet( oyWIDGET_GROUP_INFORMATION, NULL, &name,
+                      NULL, NULL );
+    oyWidgetDescriptionGet( oyWIDGET_GROUP_INFORMATION, &description, 0 );
+    setModuleName(QString::fromUtf8(name));
+    setDescription(QString::fromUtf8(description));
+
     infoDialog = new SyInfoDialog(this);
-  
-    setModuleName(sy_info_module_name);
-    setDescription("Analyze profile information on your system.");
-    
+
     setupUi(this);                  // Load Gui.
-    
+
     SyInfoConfig * infoConfig = new SyInfoConfig(0, sy_info_module_name);
     setConfigWidget( infoConfig );
-    
+
     setEditable(false);
-        
+
     installedProfilesTree->setColumnWidth(0, 350);
     installedProfilesTree->setColumnWidth(1, 150);
-    
+
     installedProfilesTree->expandAll();
-        
-    examineIcon.addFile(QString::fromUtf8(":/resources/examine.png"), 
+
+    examineIcon.addFile(QString::fromUtf8(":/resources/examine.png"),
                                   QSize(10, 10), QIcon::Normal, QIcon::On);
  
-    examineIcon.addFile(QString::fromUtf8(":/resources/examine_select.png"), 
+    examineIcon.addFile(QString::fromUtf8(":/resources/examine_select.png"),
                                   QSize(10, 10), QIcon::Active, QIcon::On);
-    
-    // Display oyEDITING_XYZ info for now. 
+
+    // Display oyEDITING_XYZ info for now.
     populateInstalledProfileList();
 
     installedProfilesTree->expandAll();
 
-    connect( installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)), 
+    connect( installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
              this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
 
 }
@@ -56,19 +62,19 @@ void SyInfo::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, i
 {
     if (column != ITEM_ICON)
        return;
-    
+
     QVariant v = currentProfileItem->data( 0, Qt::UserRole );
     oyProfile_s * p = (oyProfile_s *) v.toULongLong();
 
     if(p && p->type_ == oyOBJECT_PROFILE_S)
     {
       infoDialog->showDialog();
-    
-      populateDeviceProfileDescriptions(p, true);    
+
+      populateDeviceProfileDescriptions(p, true);
       return;
     }
 
-    populateDeviceProfileDescriptions(NULL, false);    
+    populateDeviceProfileDescriptions(NULL, false);
 }
 
 
@@ -80,22 +86,25 @@ void SyInfo::populateInstalledProfileList()
 
     QTreeWidgetItem * devicesTree = new QTreeWidgetItem;
     installedProfilesTree->addTopLevelItem( devicesTree );
-    devicesTree->setText( ITEM_NAME, QString("Devices"));
+
+    const char * g_name = NULL;
+    oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES, NULL, &g_name,
+                      NULL, NULL );
+    devicesTree->setText( ITEM_NAME, QString::fromUtf8(g_name));
     populateDeviceProfiles( devicesTree );
 
     // Save tree list parents to QTreeWidgetItem pointers.
-    const char * g_name = NULL;
     QString name;
     QTreeWidgetItem * editingCsTree = new QTreeWidgetItem;
     installedProfilesTree->addTopLevelItem( editingCsTree );
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_EDIT, NULL, &g_name,
                       NULL, NULL );
-    editingCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
+    editingCsTree->setText( ITEM_NAME, name.fromUtf8(g_name));
     QTreeWidgetItem * assumedCsTree = new QTreeWidgetItem;
     installedProfilesTree->addTopLevelItem( assumedCsTree );
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_ASSUMED, NULL, &g_name,
                       NULL, NULL );
-    assumedCsTree->setText( ITEM_NAME, name.fromLatin1(g_name));
+    assumedCsTree->setText( ITEM_NAME, name.fromUtf8(g_name));
 
     // For convenience, we expand colorspace trees.
     installedProfilesTree->expandItem(editingCsTree);
@@ -104,34 +113,34 @@ void SyInfo::populateInstalledProfileList()
     // Populate colorspace items.
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_RGB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_RGB, name.fromLatin1(g_name), editingCsTree);
+        addProfileTreeItem( oyEDITING_RGB, name.fromUtf8(g_name), editingCsTree);
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_CMYK, NULL, &g_name, NULL,NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyEDITING_CMYK, name.fromLatin1(g_name), editingCsTree);
+       addProfileTreeItem( oyEDITING_CMYK, name.fromUtf8(g_name), editingCsTree);
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_XYZ, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_XYZ, name.fromLatin1(g_name), editingCsTree );
+        addProfileTreeItem( oyEDITING_XYZ, name.fromUtf8(g_name), editingCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_LAB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_LAB, name.fromLatin1(g_name), editingCsTree );
+        addProfileTreeItem( oyEDITING_LAB, name.fromUtf8(g_name), editingCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_GRAY, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_GRAY, name.fromLatin1(g_name), editingCsTree );
+        addProfileTreeItem( oyEDITING_GRAY, name.fromUtf8(g_name), editingCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_RGB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_RGB, name.fromLatin1(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_RGB, name.fromUtf8(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_CMYK, NULL, &g_name, NULL,NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyASSUMED_CMYK, name.fromLatin1(g_name), assumedCsTree );
+        addProfileTreeItem( oyASSUMED_CMYK, name.fromUtf8(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_XYZ, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_XYZ, name.fromLatin1(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_XYZ, name.fromUtf8(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_LAB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_LAB, name.fromLatin1(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_LAB, name.fromUtf8(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_GRAY, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_GRAY, name.fromLatin1(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_GRAY, name.fromUtf8(g_name), assumedCsTree );
 }
 
 

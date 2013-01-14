@@ -88,8 +88,7 @@ void Synnefo::changeModuleSelection(int rowIndex)
             // Display module information above its widget.
             moduleDescriptionLabel->
                            setText((moduleList.at(i) )->getDescription() );
-            moduleNameLabel->setText( QString("Synnefo ") 
-                                        + (moduleList.at(i) )->getName() );
+            moduleNameLabel->setText( (moduleList.at(i) )->getName() );
         }
     }  
 }
@@ -119,10 +118,10 @@ void Synnefo::closeSynnefo()
           The isFirstRun flag will be set to FALSE if it isn't already. */
 {
     saveState();
-    
-    if (isFirstRun) 
+
+    if (isFirstRun)
        configuration.setValue("first-run", false);
-  
+
     close();
 }
 
@@ -138,37 +137,37 @@ void Synnefo::loadSyModules()
     Post: Initializes each SyModule objects and populates the module listing.
           The module selection in the main Synnefo dialog will be refreshed.*/
 {
-    // TODO Find solution to automatically check 
-    //      for # of modules in directory structure.    
-    
+    // TODO Find solution to automatically check
+    //      for # of modules in directory structure.
+
     //databaseModule = new SyDatabase(0);     // "Synnefo Database"
     devicesModule = new SyDevices(0);       // "Synnefo Devices"
-    settingsModule = new SySettings(0);     // "Synnefo Settings"    
+    settingsModule = new SySettings(0);     // "Synnefo Settings"
     infoModule = new SyInfo(0);             // "Synnefo Information"
-    
+
     moduleList.insert( 0, settingsModule );
-    moduleList.insert( 1, devicesModule ); 
+    moduleList.insert( 1, devicesModule );
     moduleList.insert( 2, infoModule );
     //moduleList.insert( 0, databaseModule );
-      
-    refreshModuleList();        
+
+    refreshModuleList();
 }  
 
 
 
 void Synnefo::refreshModuleList()
 /*  Post: Updates the module listing in the Synnefo dialog. */
-{ 
+{
     int i = 0;
     QString moduleName = "";
     SyModule * currentModule = 0;
-    
+
     syModuleListView->clear();
-    
+
     for(i = 0; i < synnefo_module_count; i++){
-      currentModule = moduleList.at(i);      
+      currentModule = moduleList.at(i);
       moduleName = currentModule->getName();
-      
+
       if(!currentModule->isHiding()){
         QListWidgetItem * item = new QListWidgetItem(moduleName);
         syModuleListView->addItem(item);
@@ -194,11 +193,11 @@ void Synnefo::freeSyModules()
 {
    while (!moduleList.isEmpty())
      delete moduleList.takeFirst();
-   
+
    //databaseModule = 0;
    devicesModule = 0;
    infoModule = 0;
-   settingsModule = 0;  
+   settingsModule = 0;
 }
 
 
