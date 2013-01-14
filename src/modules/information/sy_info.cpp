@@ -180,7 +180,6 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
     {
       QIcon device_icon("");
       oyConfigs_s * devices = 0;
-      printf("count: %d [i]: %d\n", count, i);
       const char * reg_app = strrchr(texts[i],'/')+1;
       oyDevicesGet( OY_TYPE_STD, reg_app, 0, &devices );
       n = oyConfigs_Count( devices );
@@ -231,12 +230,16 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
         device_item_string.append(" ");
         device_item_string.append(device_serial);
 
-        char * model = strdup(device_item_string.toUtf8());
-        if(!model)
+        char * model = 0;
+        if(device_manufacturer || device_model || device_serial)
+          model = strdup(device_item_string.toUtf8());
+        else
         {
           const char * m = oyConfig_FindString( device, "device_name", 0);
           if(m)
             model = strdup(m);
+          else
+            oyDeviceGetInfo(device, oyNAME_NICK, 0, &model, malloc);
         }
 
 #if 0
@@ -245,7 +248,8 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
                                    + QString(device_info));
         else
 #endif
-        device_child->setText( ITEM_NAME, QString(model) );
+        if(model)
+          device_child->setText( ITEM_NAME, QString(model) );
         if(model) free(model); model = 0;
         device_child->setIcon(ITEM_NAME, device_icon);
         device_list_sub_tree->addChild(device_child);   
