@@ -313,6 +313,8 @@ int SyDevices::detectDevices(const char * device_type)
     const char * reg_app = strrchr(device_type,'/')+1;
     const char * device_class = oyConfDomain_GetText( d, "device_class",
                                                       oyNAME_NICK );
+    const char * device_class_ui = oyConfDomain_GetText( d, "device_class",
+                                                      oyNAME_NAME );
 
     oyOptions_SetFromText(&options, "//" OY_TYPE_STD "/config/command", 
                           "properties", OY_CREATE_NEW);
@@ -327,7 +329,7 @@ int SyDevices::detectDevices(const char * device_type)
     {
         // Set up Synnefo gui "logistics" for a specified device.
         QTreeWidgetItem * device_class_item = new QTreeWidgetItem;
-        device_class_item->setText( ITEM_MAIN, device_class );
+        device_class_item->setText( ITEM_MAIN, device_class_ui );
         QVariant v( device_class );
         device_class_item->setData( 0, Qt::UserRole, v );
         deviceList->insertTopLevelItem( ITEM_MAIN, device_class_item );
