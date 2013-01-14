@@ -143,12 +143,12 @@ void Synnefo::loadSyModules()
     
     //databaseModule = new SyDatabase(0);     // "Synnefo Database"
     devicesModule = new SyDevices(0);       // "Synnefo Devices"
-    infoModule = new SyInfo(0);             // "Synnefo Information"
     settingsModule = new SySettings(0);     // "Synnefo Settings"    
+    infoModule = new SyInfo(0);             // "Synnefo Information"
     
     moduleList.insert( 0, settingsModule );
-    moduleList.insert( 0, infoModule );
-    moduleList.insert( 0, devicesModule ); 
+    moduleList.insert( 1, devicesModule ); 
+    moduleList.insert( 2, infoModule );
     //moduleList.insert( 0, databaseModule );
       
     refreshModuleList();        
