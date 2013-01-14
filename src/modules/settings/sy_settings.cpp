@@ -45,21 +45,20 @@ SySettings::SySettings(QWidget * parent)
     const char    * tooltip = NULL;
     const char   ** names = NULL;
     const char    * name = NULL;
-    oyWIDGET_TYPE_e type = oyWIDGETTYPE_START;
 
   
-    type = oyWidgetTitleGet( oyWIDGET_POLICY, NULL, &name, &tooltip, &flags );
+    oyWidgetTitleGet( oyWIDGET_POLICY, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
     policySettingsBox->setTitle(qs);
     kmsettingsTab->setTabText(0,qs);
     qs = QString::fromLocal8Bit( tooltip );
     policyLabel->setText(qs);
 
-    type = oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES, NULL, &name, &tooltip, &flags );
+    oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
     kmsettingsTab->setTabText(1,qs);
   
-    type = oyWidgetTitleGet( oyWIDGET_GROUP_BEHAVIOUR, NULL, &name, &tooltip, &flags );
+    oyWidgetTitleGet( oyWIDGET_GROUP_BEHAVIOUR, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name,-1);
     kmsettingsTab->setTabText(2,qs);
 

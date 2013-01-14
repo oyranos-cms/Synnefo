@@ -79,7 +79,6 @@ void SyConfig::saveState()
 {
   
     int i = 0;
-    int visibleCount = 0;
     SyModuleConfig * currentConfig = 0;
     
     for (i = 0; i < synnefo_module_count; i++)
@@ -111,8 +110,8 @@ void SyConfig::changeModuleConfig( int rowIndex )
       
     (module_list.at(rowIndex))->attachConfigWidget( moduleConfigStack ); 
     
-    bool moduleHideState = (module_list.at(rowIndex))->isHiding();
     /*
+    bool moduleHideState = (module_list.at(rowIndex))->isHiding();
     if (moduleHideState == true) 
       hideModuleCheckBox->setCheckState(Qt::Checked);
     else if (moduleHideState == false) 

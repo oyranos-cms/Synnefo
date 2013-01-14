@@ -24,7 +24,7 @@ SyDatabase::SyDatabase(QWidget * parent)
 
 int SyDatabase::populateTaxiProfileList()
 {
-
+  return 0;
 }
 
 

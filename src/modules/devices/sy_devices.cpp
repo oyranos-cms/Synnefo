@@ -210,8 +210,6 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
     if ( device_class )
     {  
       oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
-      const char * icc_profile_class = oyConfDomain_GetText( d,
-                                             "icc_profile_class", oyNAME_NICK );
       setCurrentDeviceClass(device_class);
 
       oyConfDomain_Release( &d );
@@ -305,7 +303,7 @@ int SyDevices::checkProfileUpdates(oyConfig_s * device)
     return is_installed;
 }
 
-// General function to detect and retrieve devices via the Oyranos CMM backend.
+// General function to detect and retrieve devices via the Oyranos CMS backend.
 int SyDevices::detectDevices(const char * device_type)
 { 
     int error = 0;
@@ -447,7 +445,6 @@ void SyDevices::populateDeviceListing()
     uint32_t count = 0, i = 1,
            * rank_list = 0;
     char ** texts = 0;
-    int error = 0;
 
     // get all configuration filters
     oyConfigDomainList( "//"OY_TYPE_STD"/config.device.icc_profile",
@@ -455,7 +452,7 @@ void SyDevices::populateDeviceListing()
 
     for (i = 0; i < count; i++)
     {
-      error = detectDevices( texts[i] );
+      detectDevices( texts[i] );
     }
 }
 
@@ -598,28 +595,27 @@ void SyDevices::assignProfile( QString profile_name )
      // If current device pointer points to a MONITOR item, save default profile to Oyranos.
 
      {
-         int error= 0;
          oyConfig_s * device = getCurrentDevice();
          const char * profilename = profile_name.toLocal8Bit();
          char * pn = strdup(profilename);
 
          /* store a existing profile in DB */
          if(strlen(pn) && QString::localeAwareCompare( QString(pn), i18n("automatic")))
-           error = oyDeviceSetProfile ( device, pn );
-         error = oyDeviceUnset( device ); /* unset the device */
+           oyDeviceSetProfile ( device, pn );
+         oyDeviceUnset( device ); /* unset the device */
          /* completly unset the actual profile from DB */
          if(!strlen(pn) || !QString::localeAwareCompare(QString(pn), i18n("automatic")))
          {
-           error = oyConfig_EraseFromDB( device );
+           oyConfig_EraseFromDB( device );
            oyConfig_Release( &device );
            /* reopen the device to forget about the "profile_name" key */
            device = getCurrentDevice();
          }
-         error = oyDeviceSetup( device ); /* reinitialise */
+         oyDeviceSetup( device ); /* reinitialise */
          /* compiz needs some time to exchange the profiles,
             immediately we would get the old colour server profile */
          kmSleep::sleep(0.3);
-         error = syDeviceGetProfile( device, &profile ); /* reget profile */
+         syDeviceGetProfile( device, &profile ); /* reget profile */
 
          /* clear */
          oyConfig_Release( &device );
@@ -686,13 +682,13 @@ int   compareRanks                   ( const void       * rank1,
 // Helper function to get 'best-ranking' profile from the Taxi server. 
 oyConfig_s * getTaxiBestFit(oyConfig_s * device)
 {
-    int error = 0, n, i = 0;
+    int n, i = 0;
     int32_t * ranks;
     oyConfig_s * taxi_dev;
     oyConfigs_s * devices = 0;
     oyOptions_s * options = NULL;
     
-    error = oyOptions_SetFromText(&options,
+    oyOptions_SetFromText(&options,
                                   "//" OY_TYPE_STD "/config/command",
                                   "properties", OY_CREATE_NEW);
 
@@ -707,7 +703,7 @@ oyConfig_s * getTaxiBestFit(oyConfig_s * device)
       {
         taxi_dev = oyConfigs_Get(devices, i);
         ranks[2*i+0] = i;
-        error = oyConfig_Compare(device, taxi_dev, &ranks[2*i+1]);
+        oyConfig_Compare(device, taxi_dev, &ranks[2*i+1]);
 
         oyConfig_Release(&taxi_dev);
       }
@@ -762,10 +758,9 @@ QString SyDevices::checkRecentTaxiProfile(oyConfig_s * device)
 QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
 {  
     QString fileName = "";
-    int error, i = 0;
+    int error;
     oyProfile_s * ip = 0;    
     oyOptions_s * options = NULL;
-    const char * file_name = 0;
     size_t size = 0;
     char * data = 0;
     
@@ -794,7 +789,7 @@ QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
       
         QDataStream out(&file);      
         out.writeRawData(data, size);
-        qWarning("installed -> $s", fileName.toLatin1().data());
+        qWarning("installed -> %s", fileName.toLatin1().data());
 
         file.close();
       

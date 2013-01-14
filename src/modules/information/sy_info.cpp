@@ -173,7 +173,6 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
     char ** texts = 0;
     const char * device_class = 0;
     oyConfDomain_s * d = 0;
-    int error = 0;
 
     // get all configuration filters
     oyConfigDomainList( "//"OY_TYPE_STD"/config.device.icc_profile",
@@ -183,7 +182,7 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
     {
       oyConfigs_s * devices = 0;
       const char * reg_app = strrchr(texts[i],'/')+1;
-      error = oyDevicesGet( OY_TYPE_STD, reg_app, 0, &devices );
+      oyDevicesGet( OY_TYPE_STD, reg_app, 0, &devices );
       n = oyConfigs_Count( devices );
       d = oyConfDomain_FromReg( texts[i], 0 );
 
@@ -208,9 +207,9 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
         char * device_info = 0;
 
         // get expensive informations to see the "model" option
-        error = oyDeviceGetInfo( device, oyNAME_DESCRIPTION, 0,
+        oyDeviceGetInfo( device, oyNAME_DESCRIPTION, 0,
                                  &device_info, malloc );
-        error = oyDeviceGetInfo( device, oyNAME_NAME, 0,
+        oyDeviceGetInfo( device, oyNAME_NAME, 0,
                                  &device_info, malloc );
 
         QTreeWidgetItem * device_child = new QTreeWidgetItem;
@@ -250,7 +249,7 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
 
         oyProfile_s * p = 0;
         oyOptions_s * options = 0;
-        error = oyOptions_SetFromText( &options,
+        oyOptions_SetFromText( &options,
                                        "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
                                        "yes", OY_CREATE_NEW );
         oyDeviceGetProfile( device, options, &p );
