@@ -67,6 +67,7 @@ configure_file(SynnefoConfigVersion.cmake.in
 #   COMPONENT dev)
 
 INSTALL( FILES synnefo.desktop DESTINATION share/applications)
+INSTALL( FILES synnefo.1 DESTINATION share/man/man1)
 
 ########### Uninstall the targets ###############
 CONFIGURE_FILE(
