@@ -1,4 +1,4 @@
- #cmake file for building Synnefo and related modules
+#cmake file for building Synnefo and related modules
  
 PROJECT(synnefo)
 
@@ -8,7 +8,9 @@ cmake_minimum_required(VERSION 2.4)
 
 # project version
 SET( ${PROJECT_NAME}_MAJOR_VERSION 0)
-SET( ${PROJECT_NAME}_MINOR_VERSION 1)
+SET( ${PROJECT_NAME}_MINOR_VERSION 9)
+SET( ${PROJECT_NAME}_MICRO_VERSION 4)
+SET( ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_MICRO_VERSION} )
 
 find_package(Qt4 REQUIRED)
 find_package(Oyranos REQUIRED)
@@ -60,9 +62,9 @@ configure_file(SynnefoConfig.cmake.in
 configure_file(SynnefoConfigVersion.cmake.in
    "${PROJECT_BINARY_DIR}/SynnefoConfigVersion.cmake" @ONLY)
 
-install(EXPORT SynnefoLibraryDepends DESTINATION
-   "${INSTALL_DATA_DIR}/Synnefo/CMake"
-   COMPONENT dev)
+#install(EXPORT SynnefoLibraryDepends DESTINATION
+#   "${INSTALL_DATA_DIR}/Synnefo/CMake"
+#   COMPONENT dev)
 
 ########### Uninstall the targets ###############
 CONFIGURE_FILE(
@@ -72,3 +74,34 @@ CONFIGURE_FILE(
 ADD_CUSTOM_TARGET(uninstall
   "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_BINARY_DIR}/cmake/cmake_uninstall.cmake"
 ) 
+
+ADD_CUSTOM_TARGET( dist
+                COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/ && git archive --prefix=${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}/ --format=tar HEAD > ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar
+                COMMAND echo "git:       git clone git://gitorious.org/~beku/synnefo/bekus-synnefo.git" > ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND echo "git sha1:  " | tr -d "\\n" >> ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR}/ && git rev-parse HEAD >> ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND rm -rf ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION} && tar xf ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar
+                COMMAND tar cf - ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION} | bzip2 > ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2
+                COMMAND echo  "size:      " | tr -d "\\n" >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND du -b ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2 | sed s/[[:space:]][[:print:]]*// >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND echo  "md5sum:    " | tr -d "\\n" >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND cd ${CMAKE_CURRENT_BINARY_DIR}/ && md5sum ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2 >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND echo  "sha1sum:   " | tr -d "\\n" >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND sha1sum ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2 >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND echo  "sha256sum: " | tr -d "\\n" >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMAND sha256sum ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2 >> ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2.hashsum
+                COMMENT Make a ${PROJECT_NAME} source package by using git
+                VERBATIM
+                WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+                )
+ 
+ADD_CUSTOM_TARGET( debsrc
+                COMMAND test -d ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}/ && rm -rf ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}/
+                COMMAND tar xjf ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2
+                COMMAND mv ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}.tar.bz2 ${PROJECT_NAME}_${${PROJECT_NAME}_VERSION}.orig.tar.bz2
+                COMMAND cp -R ${CMAKE_SOURCE_DIR}/extras/debian ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}/
+                COMMAND dpkg-source -b ${PROJECT_NAME}-${${PROJECT_NAME}_VERSION}/
+                DEPENDS dist
+                COMMENT Make a ${PROJECT_NAME} DEB source package
+                VERBATIM
+                )
