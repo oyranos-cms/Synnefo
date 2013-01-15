@@ -347,6 +347,7 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
         infoDialog->setDialogText( MODEL_TAG, "" );
         infoDialog->setDialogText( PCS_TAG, "" );
         infoDialog->setDialogText( PROFILE_PATH_TAG, "" );
+        infoDialog->loadProfileGraph(QString(""));
     }
   
 }
