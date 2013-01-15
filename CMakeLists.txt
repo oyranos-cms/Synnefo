@@ -66,6 +66,8 @@ configure_file(SynnefoConfigVersion.cmake.in
 #   "${INSTALL_DATA_DIR}/Synnefo/CMake"
 #   COMPONENT dev)
 
+INSTALL( FILES synnefo.desktop DESTINATION share/applications)
+
 ########### Uninstall the targets ###############
 CONFIGURE_FILE(
   "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
