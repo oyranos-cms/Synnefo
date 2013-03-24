@@ -43,7 +43,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "syconfig.h"
 
 
-/** Synnefo class ***************************************
+/** SynnefoApp class ***************************************
 
 AUTHOR:
   Joseph Simon
@@ -63,14 +63,14 @@ DESCRIPTION:
   
 **********************************************************/
 
-class Synnefo : public QMainWindow, private Ui::syMainWindow
+class SynnefoApp : public QMainWindow, private Ui::syMainWindow
 {
     Q_OBJECT
     
 public:
     
-    Synnefo (QWidget* parent);
-    ~Synnefo();
+    SynnefoApp (QWidget* parent);
+    ~SynnefoApp();
 
 private slots:    
     

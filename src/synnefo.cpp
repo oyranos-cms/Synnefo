@@ -31,7 +31,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int synnefo_module_count = 3;
 
 
-Synnefo::Synnefo(QWidget * parent)
+SynnefoApp::SynnefoApp(QWidget * parent)
     : QMainWindow(parent)
 {   
     setupUi(this);        // Initialize main Synnefo Ui.
@@ -68,7 +68,7 @@ Synnefo::Synnefo(QWidget * parent)
 //   ********************************
 
 
-void Synnefo::changeModuleSelection(int rowIndex)
+void SynnefoApp::changeModuleSelection(int rowIndex)
 /*  Pre: The user clicks on a module item in the selection list.
     Post: The function passes the index that is clicked by the user (rowIndex),
           changing the appropriate widget item. */
@@ -95,7 +95,7 @@ void Synnefo::changeModuleSelection(int rowIndex)
 
 
 
-void Synnefo::openApplicationSettings()
+void SynnefoApp::openApplicationSettings()
 /*  Pre: The user clicks on the "Application Settings" button in the main dialog.
     Post: Opens the Synnefo Configuration dialog. */
 {  
@@ -112,7 +112,7 @@ void Synnefo::openApplicationSettings()
 
 
 
-void Synnefo::closeSynnefo()
+void SynnefoApp::closeSynnefo()
 /*  Pre: The user clicks on the "Exit" button in the main dialog.
     Post: Closes the Synnefo dialog, and saves the Ui state upon exiting. 
           The isFirstRun flag will be set to FALSE if it isn't already. */
@@ -132,7 +132,7 @@ void Synnefo::closeSynnefo()
 //   ***************************
 
 
-void Synnefo::loadSyModules()
+void SynnefoApp::loadSyModules()
 /*  Pre: SyModule objects and module list are unintialized.
     Post: Initializes each SyModule objects and populates the module listing.
           The module selection in the main Synnefo dialog will be refreshed.*/
@@ -155,7 +155,7 @@ void Synnefo::loadSyModules()
 
 
 
-void Synnefo::refreshModuleList()
+void SynnefoApp::refreshModuleList()
 /*  Post: Updates the module listing in the Synnefo dialog. */
 {
     int i = 0;
@@ -177,7 +177,7 @@ void Synnefo::refreshModuleList()
 
 
 
-void Synnefo::saveState()
+void SynnefoApp::saveState()
 /* Post: Saves the Ui state configuration. */
 {
 
@@ -186,7 +186,7 @@ void Synnefo::saveState()
 
 
 
-void Synnefo::freeSyModules()
+void SynnefoApp::freeSyModules()
 /* Pre: Initialized SyModules and SyModule QList.
    Post: Frees allocated memory from the SyModule list,
          including the individual modules contained in it. */
@@ -202,7 +202,7 @@ void Synnefo::freeSyModules()
 
 
 
-Synnefo::~Synnefo()
+SynnefoApp::~SynnefoApp()
 {
     freeSyModules();
 }

@@ -8,7 +8,7 @@ int main (int argc, char * argv[])
     
     QWidget * widget = new QWidget;
         
-    Synnefo synnefoApp(widget);
+    SynnefoApp synnefoApp(widget);
     synnefoApp.show();
     
     return app.exec();
