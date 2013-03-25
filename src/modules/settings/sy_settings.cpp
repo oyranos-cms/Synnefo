@@ -11,7 +11,7 @@
 
 const char * sy_settings_module_name = "Settings";
 
-SySettings::SySettings(QWidget * parent)
+SySettingsModule::SySettingsModule(QWidget * parent)
     : SyModule(parent)
 {       
     setModuleName(sy_settings_module_name);
@@ -178,7 +178,7 @@ SySettings::SySettings(QWidget * parent)
 
 
 // Last "clicked on" policy by the user.
-void SySettings::selectPolicy(QListWidgetItem* selectedPolicyItem)
+void SySettingsModule::selectPolicy(QListWidgetItem* selectedPolicyItem)
 {
     // If user makes a settings change, and then clicks on a different policy...
     if (modified == true && isCustom == true)   
@@ -224,7 +224,7 @@ void SySettings::selectPolicy(QListWidgetItem* selectedPolicyItem)
 }
 
 
-void SySettings::addNewPolicy()
+void SySettingsModule::addNewPolicy()
 {   
     bool ok;
    
@@ -263,7 +263,7 @@ void SySettings::addNewPolicy()
 }
 
 
-void SySettings::removeCustomPolicy()
+void SySettingsModule::removeCustomPolicy()
 {
     // Remove policy from list file.
     QListWidgetItem * deleted_item = policySettingsList->takeItem(policySettingsList->currentRow());
@@ -283,7 +283,7 @@ void SySettings::removeCustomPolicy()
 
 
 //  Fill the combo boxes in the "Default Profiles" tab with Oyranos-installed profiles.
-void SySettings::populateProfiles()
+void SySettingsModule::populateProfiles()
 {
     // Fill comboboxes with each 'filtered' profile.
     fillProfileComboBoxes(oyEDITING_RGB, combo_EDITING_RGB);
@@ -303,7 +303,7 @@ void SySettings::populateProfiles()
 
 
 // Populate each setting in "Behavior Settings".
-void SySettings::populateBehaviorSettings()
+void SySettingsModule::populateBehaviorSettings()
 { 
     int behavior_setting;
 
@@ -362,7 +362,7 @@ void SySettings::populateBehaviorSettings()
 
 
 //  Refresh profile combo boxes with profiles associated with the current policy.
-void SySettings::refreshProfileSettings()
+void SySettingsModule::refreshProfileSettings()
 {
     int profileSearchIndex;  // Index to match profile stored in a combobox.
 
@@ -418,7 +418,7 @@ void SySettings::refreshProfileSettings()
 }
 
 
-void SySettings::refreshPolicySettings()
+void SySettingsModule::refreshPolicySettings()
 {
     // Load policy.
     int count = 0, current = -1;
@@ -436,7 +436,7 @@ void SySettings::refreshPolicySettings()
 
 
 // This function controls whether or not the settings are read-only.
-void SySettings::setEditableItems(bool itemStatus)
+void SySettingsModule::setEditableItems(bool itemStatus)
 {   
     QComboBox * combobox;
     for (int i = 0; i < editableComboItems.size(); i++)
@@ -458,7 +458,7 @@ void SySettings::setEditableItems(bool itemStatus)
 
 // Load editable comboboxe and checkbox items into a list
 //  (this is convenient to detect each settings change by the user).
-void SySettings::loadEditableItems()
+void SySettingsModule::loadEditableItems()
 {      
     editableComboItems.push_front(combo_EDITING_RGB);
     editableComboItems.push_front(combo_EDITING_CMYK);   
@@ -490,7 +490,7 @@ void SySettings::loadEditableItems()
 
 
 // Filter comboboxes in 'Default Profiles' with appropriate profiles.
-void SySettings::fillProfileComboBoxes(oyPROFILE_e profile_type, QComboBox * profile_combobox)
+void SySettingsModule::fillProfileComboBoxes(oyPROFILE_e profile_type, QComboBox * profile_combobox)
 {
     int current = 0, size, i,
                   sizeofProfilename,
@@ -520,7 +520,7 @@ void SySettings::fillProfileComboBoxes(oyPROFILE_e profile_type, QComboBox * pro
 }
 
 
-void SySettings::saveCustomXmlFile()
+void SySettingsModule::saveCustomXmlFile()
 { 
     saveSettings();
     oyPolicySaveActual(oyGROUP_ALL, selected_policy.toLocal8Bit()); 
@@ -536,14 +536,14 @@ void SySettings::saveCustomXmlFile()
 
 
 
-void SySettings::saveSettingsToXml()
+void SySettingsModule::saveSettingsToXml()
 {     
    saveCustomXmlFile();
    refreshPolicySettings();
 }
 
 
-void SySettings::saveSettings()
+void SySettingsModule::saveSettings()
 { 
     QString stringToXml;    
     int behaviorSetting;    
@@ -629,7 +629,7 @@ void SySettings::saveSettings()
 
 
 // Used to enable the "Apply" button.
-void SySettings::emitChanged()
+void SySettingsModule::emitChanged()
 {
      // Ungrey "Apply" button. 
      modified = true;
@@ -644,7 +644,7 @@ void SySettings::emitChanged()
 
 
 // Function to save/refresh installed policies in system.
-void SySettings::savePolicy()
+void SySettingsModule::savePolicy()
 {
      QString tempProfile;
      QStringList policyList;
@@ -664,7 +664,7 @@ void SySettings::savePolicy()
 }
 
 // Function to load the installed policies in system.
-void SySettings::loadPolicy()
+void SySettingsModule::loadPolicy()
 {
   const char ** names = NULL;
   int count = 0, i, current = -1;
@@ -676,7 +676,7 @@ void SySettings::loadPolicy()
     policySettingsList->addItem( names[i] );
 }
 
-SySettings::~SySettings()
+SySettingsModule::~SySettingsModule()
 {
   
 }

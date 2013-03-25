@@ -44,7 +44,7 @@ SynnefoApp::SynnefoApp(QWidget * parent)
     // NOTE We shall hide the "Application Settings" until the code is done.
     appSettingsButton->setHidden(true);
         
-
+    //m_synnefo = new Synnefo();
     //confiobject->exec();
     
     connect(syModuleListView, 
@@ -141,9 +141,9 @@ void SynnefoApp::loadSyModules()
     //      for # of modules in directory structure.
 
     //databaseModule = new SyDatabase(0);     // "Synnefo Database"
-    devicesModule = new SyDevices(0);       // "Synnefo Devices"
-    settingsModule = new SySettings(0);     // "Synnefo Settings"
-    infoModule = new SyInfo(0);             // "Synnefo Information"
+    devicesModule = new SyDevicesModule(0);       // "Synnefo Devices"
+    settingsModule = new SySettingsModule(0);     // "Synnefo Settings"
+    infoModule = new SyInfoModule(0);             // "Synnefo Information"
 
     moduleList.insert( 0, settingsModule );
     moduleList.insert( 1, devicesModule );

@@ -14,13 +14,13 @@
 // Qt Designer code translation.
 #include "ui_sy_settings.h"    
 
-class SySettings : public SyModule, Ui::sySettingsWidget 
+class SySettingsModule : public SyModule, Ui::sySettingsWidget 
 {
     Q_OBJECT
     
 public:
-    SySettings (QWidget * parent = 0);
-    ~SySettings();
+    SySettingsModule(QWidget * parent = 0);
+    ~SySettingsModule();
         
     
 private slots:

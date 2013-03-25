@@ -15,13 +15,13 @@
 // Qt Designer code translation.
 #include "ui_sy_info.h"          
 
-class SyInfo : public SyModule, Ui::syInfoWidget
+class SyInfoModule : public SyModule, Ui::syInfoWidget
 {
     Q_OBJECT
     
 public:
-    SyInfo (QWidget * parent);
-    ~SyInfo();   
+    SyInfoModule (QWidget * parent);
+    ~SyInfoModule();   
     
     
 // User-defined QT slots.

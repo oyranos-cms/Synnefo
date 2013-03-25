@@ -26,13 +26,13 @@
           Synnefo Devices Module Class Definition                *
 ******************************************************************/
 
-class SyDevices : public SyModule, Ui::syDevicesWidget
+class SyDevicesModule : public SyModule, Ui::syDevicesWidget
 {
     Q_OBJECT
     
 public:
-    SyDevices( QWidget * parent );
-    ~SyDevices();
+    SyDevicesModule( QWidget * parent );
+    ~SyDevicesModule();
     
 private slots:
   

@@ -42,6 +42,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "syconfig.h"
 
+// libSynnefo 
+// #include "lib/libsynnefo.h"
+
 
 /** SynnefoApp class ***************************************
 
@@ -83,6 +86,8 @@ private slots:
 private:      
   
 //  *** Private Functions *********************    
+
+    //Synnefo * m_synnefo;
     
     void loadSyModules();    
     void saveState();
@@ -94,10 +99,10 @@ private:
     QList <SyModule*> moduleList;       // List to store Synnefo modules.
     
     // Synnefo module widget interfaces.
-    SyDatabase* databaseModule;
-    SyDevices* devicesModule;          
-    SyInfo* infoModule;                
-    SySettings* settingsModule;    
+    //SyDatabase* databaseModule;
+    SyDevicesModule* devicesModule;          
+    SyInfoModule* infoModule;                
+    SySettingsModule* settingsModule;    
       
     SyConfig* configDialog;            // Synnefo config dialog.
     

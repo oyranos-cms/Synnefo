@@ -12,7 +12,7 @@
 
 const char * sy_info_module_name = "Information";
 
-SyInfo::SyInfo(QWidget * parent)
+SyInfoModule::SyInfoModule(QWidget * parent)
     : SyModule(parent)
 {       
     current_profile = NULL;
@@ -62,7 +62,7 @@ SyInfo::SyInfo(QWidget * parent)
 
 //  ******** SIGNAL/SLOT Functions *****************
 
-void SyInfo::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, int column)
+void SyInfoModule::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, int column)
 {
     if (column != ITEM_ICON)
        return;
@@ -85,7 +85,7 @@ void SyInfo::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, i
 // ************** Private Functions ********************
 
 // Populate the tree with detected profile items.
-void SyInfo::populateInstalledProfileList()
+void SyInfoModule::populateInstalledProfileList()
 {
 
     QTreeWidgetItem * devicesTree = new QTreeWidgetItem;
@@ -148,7 +148,7 @@ void SyInfo::populateInstalledProfileList()
 
 
 // Function to add profile items into the tree listing.
-void SyInfo::addProfileTreeItem( oyPROFILE_e profile_type, QString description, 
+void SyInfoModule::addProfileTreeItem( oyPROFILE_e profile_type, QString description, 
                                         QTreeWidgetItem * parent_item )
 {
     oyProfile_s * profile = oyProfile_FromStd( profile_type, icc_profile_flags, 0);
@@ -174,7 +174,7 @@ void SyInfo::addProfileTreeItem( oyPROFILE_e profile_type, QString description,
 } 
 
 
-void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
+void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
 {
     int n = 0;
 
@@ -303,7 +303,7 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
 }
 
 // Refresh profile information list.
-void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid)
+void SyInfoModule::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid)
 {
     if (valid)
     {
@@ -356,7 +356,7 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
   
 }
 
-void SyInfo::loadProfileGraph()
+void SyInfoModule::loadProfileGraph()
 {
         infoDialog->loadProfileGraph(m_tempFile.fileName());
 
@@ -364,7 +364,7 @@ void SyInfo::loadProfileGraph()
 }
 
 // Function to write signature head, based on profile, tag type, and QT Label.
-void SyInfo::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagType, DialogString tag )
+void SyInfoModule::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagType, DialogString tag )
 {
      int text_n;
      bool error;
@@ -387,7 +387,7 @@ void SyInfo::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagTy
 }
 
 
-void SyInfo::setPcsTag(oyProfile_s * profile)
+void SyInfoModule::setPcsTag(oyProfile_s * profile)
 {
      QString tagString;
      tagString = oyICCColorSpaceGetName( (icColorSpaceSignature)
@@ -397,7 +397,7 @@ void SyInfo::setPcsTag(oyProfile_s * profile)
 }
 
 
-void SyInfo::setColorSpaceTag(oyProfile_s * profile)
+void SyInfoModule::setColorSpaceTag(oyProfile_s * profile)
 {
      QString tagString;
      tagString = oyICCColorSpaceGetName( (icColorSpaceSignature)
@@ -406,7 +406,7 @@ void SyInfo::setColorSpaceTag(oyProfile_s * profile)
 }
 
 
-void SyInfo::setIccsTag(oyProfile_s * profile)
+void SyInfoModule::setIccsTag(oyProfile_s * profile)
 {
     QString field1, field2, field3;
 
@@ -423,7 +423,7 @@ void SyInfo::setIccsTag(oyProfile_s * profile)
 }
 
 
-void SyInfo::setDeviceClassTag(oyProfile_s * profile)
+void SyInfoModule::setDeviceClassTag(oyProfile_s * profile)
 {
      QString string;
      string = oyICCDeviceClassDescription( (icProfileClassSignature)
@@ -432,7 +432,7 @@ void SyInfo::setDeviceClassTag(oyProfile_s * profile)
 }
 
 
-void SyInfo::setDateTag(oyProfile_s * profile)
+void SyInfoModule::setDateTag(oyProfile_s * profile)
 {
      uint year, month, day; 
      //uint hours, minutes, seconds;
@@ -454,7 +454,7 @@ void SyInfo::setDateTag(oyProfile_s * profile)
 }
 
 
-SyInfo::~SyInfo()
+SyInfoModule::~SyInfoModule()
 {
     delete infoDialog;
 }
