@@ -600,7 +600,7 @@ class kmSleep : public QThread
 
 void SyDevices::assignProfile( QString profile_name )
 {        
-     oyProfile_s * profile;
+     oyProfile_s * profile = 0;
      QString description;
 
      // If current device pointer points to a MONITOR item, save default profile to Oyranos.
