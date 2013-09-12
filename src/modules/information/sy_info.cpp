@@ -386,7 +386,7 @@ void SyInfo::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagTy
 void SyInfo::setPcsTag(oyProfile_s * profile)
 {
      QString tagString;
-     tagString = oyICCColourSpaceGetName( (icColorSpaceSignature)
+     tagString = oyICCColorSpaceGetName( (icColorSpaceSignature)
                          oyProfile_GetSignature(profile, oySIGNATURE_PCS) );
      infoDialog->setDialogText( PCS_TAG, "CIE" + tagString.toLocal8Bit());
      
@@ -396,8 +396,8 @@ void SyInfo::setPcsTag(oyProfile_s * profile)
 void SyInfo::setColorSpaceTag(oyProfile_s * profile)
 {
      QString tagString;
-     tagString = oyICCColourSpaceGetName( (icColorSpaceSignature)
-                         oyProfile_GetSignature(profile, oySIGNATURE_COLOUR_SPACE) );
+     tagString = oyICCColorSpaceGetName( (icColorSpaceSignature)
+                         oyProfile_GetSignature(profile, oySIGNATURE_COLOR_SPACE) );
      infoDialog->setDialogText( COLORSPACE_TAG, tagString);     
 }
 

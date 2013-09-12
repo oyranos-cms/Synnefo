@@ -17,7 +17,7 @@ SyInfoDialog::SyInfoDialog(QWidget * parent)
     manufacturerLabel->setText( oyProfileSignatureName(oySIGNATURE_MANUFACTURER) );
     modelTextLabel->setText( oyProfileSignatureName(oySIGNATURE_MODEL) );
     iccVersionLabel->setText( oyProfileSignatureName(oySIGNATURE_VERSION) );
-    colorspaceLabel->setText( oyProfileSignatureName(oySIGNATURE_COLOUR_SPACE) );
+    colorspaceLabel->setText( oyProfileSignatureName(oySIGNATURE_COLOR_SPACE) );
     pcsTypeLabel->setText( oyProfileSignatureName(oySIGNATURE_PCS) );
 
     connect( closeButton, SIGNAL( clicked() ), this, SLOT( closeDialog() ));
