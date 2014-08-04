@@ -77,6 +77,8 @@ private:
     oyProfile_s * current_profile;
           
     QTemporaryFile m_tempFile;
+
+    int icc_profile_flags;              ///< profile selection flags from oyProfile_s.h
 };
 
 #endif

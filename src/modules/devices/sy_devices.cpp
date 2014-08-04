@@ -7,6 +7,7 @@
 
 #include <oyranos.h>
 #include <oyranos_devices.h>
+#include <oyFilterNode_s.h>
 #include <oyProfiles_s.h>
 
 #define i18n(t) t
@@ -54,7 +55,10 @@ SyDevices::SyDevices(QWidget * parent)
 
     listModified = false;       // avoid action on signals
     init = true;
-    
+
+    // select profiles matching actual capabilities
+    icc_profile_flags = oyICCProfileSelectionFlagsFromOptions( OY_CMM_STD, "//" OY_TYPE_STD "/icc_color", NULL, 0 );
+
     setupUi(this);
     
     deviceList->setMouseTracking(true);
@@ -74,12 +78,13 @@ SyDevices::SyDevices(QWidget * parent)
 }
 
 // small helper to obtain a profile from a device
-int syDeviceGetProfile( oyConfig_s * device, oyProfile_s ** profile )
+int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfile_s ** profile )
 {
     oyOptions_s * options = 0;
     oyOptions_SetFromText( &options,
                      "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
                            "yes", OY_CREATE_NEW );
+    oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
     int error = oyDeviceGetProfile( device, options, profile );
     oyOptions_Release( &options );
     return error;
@@ -393,7 +398,7 @@ int SyDevices::detectDevices(const char * device_type)
             //if (strcmp(device_class, "monitor") == 0)
             //  checkProfileUpdates(device);
 
-            error = syDeviceGetProfile(device, &profile);
+            error = syDeviceGetProfile(device, icc_profile_flags, &profile);
             profile_filename = oyProfile_GetFileName(profile, 0);
  
             SyDevicesItem * deviceItem = new SyDevicesItem(0);
@@ -482,7 +487,7 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
     profile = oyProfile_FromSignature( deviceSignature, oySIGNATURE_CLASS, 0 );
     oyProfiles_MoveIn( patterns, &profile, -1 );
 
-    iccs = oyProfiles_Create( patterns, 0 );
+    iccs = oyProfiles_Create( patterns, icc_profile_flags, 0 );
     oyProfiles_Release( &patterns );
  
     QString getProfileDescription;
@@ -496,7 +501,7 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
 
     itemComboBox.clear();
 
-    syDeviceGetProfile( device, &profile ); /* reget profile */
+    syDeviceGetProfile( device, icc_profile_flags, &profile ); /* reget profile */
     profile_file_name = oyProfile_GetFileName( profile, 0 );
 
     Qt::CheckState show_only_device_related = 
@@ -626,7 +631,7 @@ void SyDevices::assignProfile( QString profile_name )
          /* compiz needs some time to exchange the profiles,
             immediately we would get the old colour server profile */
          kmSleep::sleep(0.3);
-         syDeviceGetProfile( device, &profile ); /* reget profile */
+         syDeviceGetProfile( device, icc_profile_flags, &profile ); /* reget profile */
 
          /* clear */
          oyConfig_Release( &device );

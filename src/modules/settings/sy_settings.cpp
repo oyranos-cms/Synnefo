@@ -5,6 +5,7 @@
 #include "sy_settings.h"
 
 #include <oyranos.h>
+#include <oyFilterNode_s.h>
 #include <oyProfiles_s.h>
 #include <oyranos_devices.h>
 #include <locale.h>
@@ -17,6 +18,9 @@ SySettings::SySettings(QWidget * parent)
     setModuleName(sy_settings_module_name);
     setDescription("Set system-wide profile parameters.");
     
+    // select profiles matching actual capabilities
+    icc_profile_flags = oyICCProfileSelectionFlagsFromOptions( OY_CMM_STD, "//" OY_TYPE_STD "/icc_color", NULL, 0 );
+
     setupUi(this);
     
     SySettingsConfig * settingsConfig = new SySettingsConfig(0, sy_settings_module_name);
@@ -187,6 +191,9 @@ void SySettings::selectPolicy(QListWidgetItem* selectedPolicyItem)
      }
 
      selected_policy = selectedPolicyItem->text();
+
+     if(!selectedPolicyItem)
+       return;
 
      char * full_name = 0;
      oyPolicyFileNameGet( selected_policy.toLocal8Bit(), &full_name, malloc );
@@ -491,7 +498,7 @@ void SySettings::fillProfileComboBoxes(oyPROFILE_e profile_type, QComboBox * pro
 
     QString profile_text, profile_filename;
 
-    iccs = oyProfiles_ForStd( profile_type, &current, 0 );
+    iccs = oyProfiles_ForStd( profile_type, icc_profile_flags, &current, 0 );
 
     size = oyProfiles_Count(iccs);
     for( i = 0; i < size; i++)

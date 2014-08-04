@@ -2,6 +2,7 @@
 #include <oyranos.h>
 #include <oyranos_devices.h>
 #include <oyranos_icc.h>
+#include <oyFilterNode_s.h>
 #include <oyProfiles_s.h>
 
 #include <QProcess>
@@ -26,6 +27,9 @@ SyInfo::SyInfo(QWidget * parent)
     setDescription(QString::fromUtf8(description));
 
     infoDialog = new SyInfoDialog(this);
+
+    // select profiles matching actual capabilities
+    icc_profile_flags = oyICCProfileSelectionFlagsFromOptions( OY_CMM_STD, "//" OY_TYPE_STD "/icc_color", NULL, 0 );
 
     setupUi(this);                  // Load Gui.
 
@@ -148,7 +152,7 @@ void SyInfo::populateInstalledProfileList()
 void SyInfo::addProfileTreeItem( oyPROFILE_e profile_type, QString description, 
                                         QTreeWidgetItem * parent_item )
 {
-    oyProfile_s * profile = oyProfile_FromStd( profile_type, 0);
+    oyProfile_s * profile = oyProfile_FromStd( profile_type, icc_profile_flags, 0);
     const char * text = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
       
     // Add new item.
@@ -268,6 +272,7 @@ void SyInfo::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
         oyOptions_SetFromText( &options,
                                        "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
                                        "yes", OY_CREATE_NEW );
+        oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
         oyDeviceGetProfile( device, options, &p );
         oyOptions_Release( &options );
 
@@ -319,7 +324,7 @@ void SyInfo::populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid
 	
         setDeviceClassTag(profile);
 
-        QString profilePathName = oyProfile_GetFileName( profile, 0 );
+        QString profilePathName = oyProfile_GetFileName( profile, -1 );
         infoDialog->setDialogText( PROFILE_PATH_TAG, profilePathName );
 
 	m_tempFile.open();
