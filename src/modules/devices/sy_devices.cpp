@@ -186,58 +186,6 @@ void SyDevices::changeDeviceItem(int pos)
   }
 } 
 
-// NOTE Dynamic item information (for each item click) update might be removed.
-// When the user clicks on an item in the devices tree list.
-void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
-{  
-    if(!selectedDeviceItem)
-    {
-      return;
-    }
-
-    // Don't count top parent items as a "selected device".
-    if (selectedDeviceItem->parent() == NULL)
-    {
-      return;
-    }
-
-    // The user modifies the list, but clicks away from the selected device item.
-    listModified = false;
-
-    // Convert QString to proper C string.
-    QByteArray raw_string;
-    SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selectedDeviceItem);
-    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
-    setCurrentDeviceName(raw_string.data());
-        
-    char * device_class = 0;
-    if(selectedDeviceItem && selectedDeviceItem->parent())
-    {
-      QVariant v = selectedDeviceItem->parent()->data( 0, Qt::UserRole );
-      QString qs_device_class = v.toString();
-      QByteArray raw_string;
-      raw_string = qs_device_class.toLatin1();
-      device_class = strdup(raw_string.data());
-    }
-
-    // Change "Available Device Profiles" combobox to device-related profiles.
-    if ( device_class )
-    {  
-      oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
-      setCurrentDeviceClass(device_class);
-
-      oyConfDomain_Release( &d );
-      free(device_class); device_class = 0;
-    }
-
-    // Get the device that the user selected.
-    oyConfig_s * device = 0;
-    device = getCurrentDevice();
-
-    oyConfig_Release(&device);
-}
-
-
 // ************** Private Functions ********************
 
 // Helper to obtain device string ID.
@@ -456,7 +404,7 @@ int SyDevices::detectDevices(const char * device_type)
 void SyDevices::populateDeviceListing()
 {
     // TODO Work out a solution to use raw/camera stuff.
-    // detectRaw();  
+    // detectRaw();
 
     uint32_t count = 0, i = 1,
            * rank_list = 0;
