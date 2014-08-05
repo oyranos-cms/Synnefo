@@ -6,6 +6,7 @@
 #include <QSignalMapper>
 #include <QWidget>
 #include <QComboBox>
+#include <QThread>            // sleep
 
 #include "symodule.h"
 #include "sy_devices_item.h"
@@ -42,10 +43,21 @@ private slots:
     void changeDeviceItem( int state );
 
     // When user clicks on a device tree item.
-    void changeDeviceItem( QTreeWidgetItem* );
+    void changeDeviceItem( QTreeWidgetItem*, int );
     
+    void installTaxiProfile();
+
+    // obtain the Taxi DB finished event
+    void getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices );
+
+    // get the ICC profile
+    void downloadFromTaxiDB( );
+
 private:
     
+    // Set new profile and update UI
+    void setProfile( QString baseFileName );
+
     // get the actual device from currentDevice
     oyConfig_s * getCurrentDevice( void );
     
@@ -56,13 +68,16 @@ private:
     void assignProfile( QString profile_name );
     
     // Populate device-specified profile combo box listing.
-    void populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature );
+    void populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature, bool new_device );
 
     // Populate single device profile combo box widget
-    void updateProfileCombo( QTreeWidgetItem * deviceItem );
+    void updateProfileList( QTreeWidgetItem * deviceItem, bool new_device );
 
     // Function to detect all devices/directories.
     void populateDeviceListing();
+
+    // Update the Profile list.
+    void updateLocalProfileList(QTreeWidgetItem * selected_device, bool new_device);
 
     // Convert profile filename into profile description (using Oyranos).
     QString convertFilenameToDescription( QString profileFilename );
@@ -95,6 +110,12 @@ private:
     // Pointer used to store address of 'recently clicked' device item widget.
     SyDevicesConfig * devicesConfig;
 
+    // Pointer used to store address of 'initial' device item widget.
+    QTreeWidgetItem * deviceListPointer;
+
+    // Pointer used to store address of 'recently clicked' device item widget.
+    QTreeWidgetItem * currentDevice;
+
     bool listModified;                // Was the list changed by the user?
     bool init;                        // Are we inside tor?
 
@@ -111,5 +132,33 @@ private:
       current_device_class = strdup(name); };
 };
 
+
+class TaxiLoad : public QThread
+{
+    Q_OBJECT
+
+    oyConfig_s * d_;
+
+        TaxiLoad( ) { d_ = 0; }
+    public:
+        TaxiLoad( oyConfig_s * device ) { d_ = device; }
+        ~TaxiLoad( ) { }
+     
+    signals:
+        void finishedSignal( char * device_name, oyConfigs_s * taxi_devices );
+     
+    protected:
+        void run() {
+            oyConfigs_s * taxi_devices = 0;
+            char * device_name = 0;
+            if(d_)
+            {
+              oyDevicesFromTaxiDB( d_, 0, &taxi_devices, 0);
+              device_name = strdup(oyConfig_FindString( d_, "device_name", NULL ));
+            }
+            oyConfig_Release( &d_ );
+            emit finishedSignal( device_name, taxi_devices );
+        }
+};
 
 #endif

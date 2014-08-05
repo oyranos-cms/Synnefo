@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QFile>
+#include <QTimer>
 
 #include "sy_devices.h"
 #include "sy_devices_config.h"
@@ -8,9 +9,10 @@
 #include <oyranos.h>
 #include <oyranos_devices.h>
 #include <oyFilterNode_s.h>
+#include <oyObject_s.h>
 #include <oyProfiles_s.h>
 
-#define i18n(t) t
+#define i18n(t) QString(t)
 
 // Use the users personal ICC path for installation.
 #define TAXI_DOWNLOAD_PATH OY_USERCOLORDATA OY_SLASH OY_ICCDIRNAME
@@ -50,6 +52,7 @@ SyDevices::SyDevices(QWidget * parent)
     
     setEditable(true);
     
+    currentDevice = 0;
     current_device_name = 0;
     current_device_class = 0;
 
@@ -74,6 +77,10 @@ SyDevices::SyDevices(QWidget * parent)
     
     connect( relatedDeviceCheckBox, SIGNAL(stateChanged( int )),
              this, SLOT( updateDeviceItems( int )) );
+    connect( deviceList, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
+             this, SLOT(changeDeviceItem(QTreeWidgetItem*,int)) );
+    connect( installProfileButton, SIGNAL(clicked()),
+	     this, SLOT(installTaxiProfile()));
     init = false;
 }
 
@@ -91,37 +98,74 @@ int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfi
 }
 
 
-void SyDevices::updateProfileCombo( QTreeWidgetItem * deviceItem )
+void SyDevices::updateProfileList( QTreeWidgetItem * selected_device, bool new_device )
 {
-  QTreeWidgetItem* device_class_item = deviceItem->parent();
-  QVariant v = device_class_item->data( 0, Qt::UserRole );
-  QString qs_device_class = v.toString();
-  QByteArray raw_string = qs_device_class.toLatin1();
-  char * device_class = strdup(raw_string.data());
-  SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(deviceItem);
-  raw_string = device_item->getText(DEVICE_NAME).toLatin1();
-  const char * device_name = strdup(raw_string.data());
-  // Generate profiles in the combobox for current item.
-  oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
-  const char * icc_profile_class = oyConfDomain_GetText( d,
-                                                 "icc_profile_class", oyNAME_NICK );
-  QWidget * w = deviceList->itemWidget(deviceItem, SyDevices::ITEM_COMBOBOX);
+  QWidget * w = deviceList->itemWidget(selected_device, SyDevices::ITEM_COMBOBOX);
+  if(!w) return;
+
   QLayout * layout = w->layout();
   QComboBox * profileAssociationCB = dynamic_cast<QComboBox*> (layout->itemAt(0)->widget());
 
-  setCurrentDeviceClass(device_class);
-  setCurrentDeviceName(device_name);
+    if(!selected_device)
+    {
+      deviceProfileTaxiDBComboBox->clear();
+      deviceProfileTaxiDBComboBox->setEnabled(false);
 
-  if(icc_profile_class && strcmp(icc_profile_class,"display") == 0)
-    populateDeviceComboBox(*profileAssociationCB, icSigDisplayClass);
-  else if(icc_profile_class && strcmp(icc_profile_class,"output") == 0)
-    populateDeviceComboBox(*profileAssociationCB, icSigOutputClass);
-  else if(icc_profile_class && strcmp(icc_profile_class,"input") == 0)
-    populateDeviceComboBox(*profileAssociationCB, icSigInputClass);
+      return;
+    }
 
-  oyConfDomain_Release( &d );
+    // Don't count top parent items as a "selected device".
+    QTreeWidgetItem * parent = selected_device->parent();
+    if (parent == NULL)
+    {
+      deviceProfileTaxiDBComboBox->setEnabled(false);
 
-  qWarning( "%d deviceList: %s - %s", __LINE__,device_class, device_name );
+      return;
+    }
+
+    // The user modifies the list, but clicks away from the selected device item.
+    listModified = false;
+
+    // If we click on a device item, the current device is stored and options are available.
+    deviceProfileTaxiDBComboBox->setEnabled(true);
+
+    currentDevice = selected_device;
+
+    // Convert QString to proper C string.
+    QByteArray raw_string;
+    SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selected_device);
+    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
+    setCurrentDeviceName(raw_string.data());
+
+    char * device_class = 0;
+    if(selected_device && selected_device->parent())
+    {
+      QVariant v = selected_device->parent()->data( 0, Qt::UserRole );
+      QString qs_device_class = v.toString();
+      QByteArray raw_string;
+      raw_string = qs_device_class.toLatin1();
+      device_class = strdup(raw_string.data());
+    }
+
+    // Change "Available Device Profiles" combobox to device-related profiles.
+    if ( device_class )
+    {
+      oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
+      const char * icc_profile_class = oyConfDomain_GetText( d,
+                                             "icc_profile_class", oyNAME_NICK );
+      setCurrentDeviceClass(device_class);
+
+      if(icc_profile_class && strcmp(icc_profile_class,"display") == 0)
+        populateDeviceComboBox(*profileAssociationCB, icSigDisplayClass, new_device);
+      else if(icc_profile_class && strcmp(icc_profile_class,"output") == 0)
+        populateDeviceComboBox(*profileAssociationCB, icSigOutputClass, new_device);
+      else if(icc_profile_class && strcmp(icc_profile_class,"input") == 0)
+        populateDeviceComboBox(*profileAssociationCB, icSigInputClass, new_device);
+
+      oyConfDomain_Release( &d );
+      free(device_class); device_class = 0;
+    }
+
 }
 
 //  ******** SIGNAL/SLOT Functions *****************
@@ -135,7 +179,7 @@ void SyDevices::updateDeviceItems(int state)
       for(int j = 0; j < device_class_item->childCount(); ++j)
       {
         QTreeWidgetItem * deviceItem = device_class_item->child(j);
-        updateProfileCombo( deviceItem );
+        updateProfileList( deviceItem, false );
         qWarning( "deviceList: [%d][%d]", i,j );
       }
     }
@@ -145,7 +189,7 @@ void SyDevices::updateDeviceItems(int state)
 void SyDevices::changeDeviceItem(int pos)
 {
   SyDeviceItem * combo = dynamic_cast<SyDeviceItem*>(sender());
-  if(combo && !init)
+  if(combo && !init && pos >= 0)
   {
     SyDevicesItem * device_item = combo->getParent();
     // unselect all tree items
@@ -160,7 +204,7 @@ void SyDevices::changeDeviceItem(int pos)
       }
     }
     // select the belonging widget to this combobox
-    device_item->setSelected(true);
+    //device_item->setSelected(true);
 
     // get infos
     QVariant v = device_item->parent()->data( 0, Qt::UserRole );
@@ -188,32 +232,31 @@ void SyDevices::changeDeviceItem(int pos)
 
 // NOTE Dynamic item information (for each item click) update might be removed.
 // When the user clicks on an item in the devices tree list.
-void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
-{  
-    if(!selectedDeviceItem)
+void SyDevices::changeDeviceItem(QTreeWidgetItem * selected_device, int pos)
+{
+    deviceProfileTaxiDBComboBox->clear();
+    installProfileButton->setEnabled(false);
+
+    QWidget * w = deviceList->itemWidget(selected_device, SyDevices::ITEM_COMBOBOX);
+    if(!w)
     {
+      deviceProfileTaxiDBComboBox->setEnabled(false);
       return;
     }
 
-    // Don't count top parent items as a "selected device".
-    if (selectedDeviceItem->parent() == NULL)
-    {
-      return;
-    }
-
-    // The user modifies the list, but clicks away from the selected device item.
-    listModified = false;
+    currentDevice = selected_device;
 
     // Convert QString to proper C string.
     QByteArray raw_string;
-    SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selectedDeviceItem);
+    SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selected_device);
     raw_string = device_item->getText(DEVICE_NAME).toLatin1();
-    setCurrentDeviceName(raw_string.data());
-        
+    const char * t = raw_string.data();
+    setCurrentDeviceName(t);
+
     char * device_class = 0;
-    if(selectedDeviceItem && selectedDeviceItem->parent())
+    if(selected_device && selected_device->parent())
     {
-      QVariant v = selectedDeviceItem->parent()->data( 0, Qt::UserRole );
+      QVariant v = selected_device->parent()->data( 0, Qt::UserRole );
       QString qs_device_class = v.toString();
       QByteArray raw_string;
       raw_string = qs_device_class.toLatin1();
@@ -222,19 +265,217 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selectedDeviceItem)
 
     // Change "Available Device Profiles" combobox to device-related profiles.
     if ( device_class )
-    {  
-      oyConfDomain_s * d = oyConfDomain_FromReg( device_class, 0 );
       setCurrentDeviceClass(device_class);
 
-      oyConfDomain_Release( &d );
-      free(device_class); device_class = 0;
+    // asynchronous Taxi DB query
+    oyConfig_s * device = getCurrentDevice();
+    if(device)
+    {
+      deviceProfileTaxiDBComboBox->clear();
+
+      // msgWidget->setMessageType(QMessageBox::Information);
+      msgWidget->setText(i18n("Looking for Device Profiles in Taxi DB ..."));
+
+      TaxiLoad * loader = new TaxiLoad( oyConfig_Copy( device, oyObject_New() ) );
+      connect(loader, SIGNAL(finishedSignal( char *, oyConfigs_s * )), this, SLOT( getTaxiSlot( char*, oyConfigs_s* )));
+      loader->start();
+
+      /* clear */
+      oyConfig_Release( &device );
+    } else
+      deviceProfileTaxiDBComboBox->setEnabled(false);
+}
+
+void SyDevices::installTaxiProfile()
+{
+    // msgWidget->setMessageType(QMessageBox::Information);
+    msgWidget->setText(i18n("Downloading Profile from Taxi DB ..."));
+
+    QTimer::singleShot(100, this, SLOT(downloadFromTaxiDB()));
+}
+
+void SyDevices::downloadFromTaxiDB( )
+{
+    oyProfile_s * ip = 0;
+    oyOptions_s * options = 0;
+    char * id = (char*)calloc(sizeof(char), 1024);
+
+    snprintf(id, 1024, "%s/0", deviceProfileTaxiDBComboBox->itemData(deviceProfileTaxiDBComboBox->currentIndex()).toString().toStdString().c_str());
+
+    oyOptions_SetFromText(&options, "//" OY_TYPE_STD "/db/TAXI_id",
+                          id,
+                          OY_CREATE_NEW);
+
+    ip = oyProfile_FromTaxiDB(options, NULL);
+
+    oyOptions_Release(&options);
+
+    oyOptions_SetFromText(&options,
+			  "////device", "1",
+			  OY_CREATE_NEW);
+
+    int error = oyProfile_Install(ip, options);
+
+    if(!ip) {
+        // msgWidget->setMessageType(QMessageBox::Information);
+	msgWidget->setText(i18n("No valid profile obtained"));
     }
+
+    if(error == oyERROR_DATA_AMBIGUITY) {
+	// msgWidget->setMessageType(QMessageBox::Information);
+	msgWidget->setText(i18n("Profile already installed"));
+        setProfile( QString(oyProfile_GetFileName( ip, 0 )) );
+        updateProfileList( currentDevice, false );
+    } else if(error == oyERROR_DATA_WRITE) {
+	// msgWidget->setMessageType(QMessageBox::Error);
+	msgWidget->setText(i18n("User Path can not be written"));
+    } else if(error == oyCORRUPTED) {
+	// msgWidget->setMessageType(QMessageBox::Error);
+	msgWidget->setText(i18n("Profile not useable"));
+    } else if(error > 0) {
+	QString text = i18n("Internal error") + " - " + QString::number(error);
+	// msgWidget->setMessageType(QMessageBox::Error);
+	msgWidget->setText(text);
+    } else {
+	// msgWidget->setMessageType(QMessageBox::Positive);
+	msgWidget->setText(i18n("Profile has been installed"));
+        setProfile( QString(oyProfile_GetFileName( ip, 0 )) );
+        updateProfileList( currentDevice, false );
+    }
+
+    oyOptions_Release(&options);
+    oyProfile_Release(&ip);
+}
+
+// small helper to obtain a profile from a device
+int SyDeviceGetProfile( oyConfig_s * device, oyProfile_s ** profile )
+{
+  oyOptions_s * options = 0;
+  oyOptions_SetFromText( &options,
+                   "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
+                         "yes", OY_CREATE_NEW );
+  int error = oyDeviceGetProfile( device, options, profile );
+  oyOptions_Release( &options );
+  return error;
+}
+
+// obtain the Taxi DB query result
+void SyDevices::getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices )
+{
+    int count = oyConfigs_Count(taxi_devices);
+
+    int32_t rank = 0;
+    oyConfig_s * taxi_device;
+    oyConfig_s * device = getCurrentDevice();
+
+    if(!oyConfig_FindString( device, "device_name", for_device) )
+    {
+      QString text = i18n("wrong device") + " ... " + QString(for_device);
+      if(oy_debug)
+        msgWidget->setText(text);
+      goto clean_getTaxiSlot;
+    }
+
+    for (int i = 0; i < count; i++) {
+	taxi_device = oyConfigs_Get( taxi_devices, i );
+
+	oyConfig_Compare(device, taxi_device, &rank);
+
+	if (rank > 0) {
+	    QString text = "[" + QString::number(rank) + "]";
+	    text += " ";
+	    text += oyConfig_FindString(taxi_device, "TAXI_profile_description", 0);
+	    deviceProfileTaxiDBComboBox->addItem(text, oyConfig_FindString(taxi_device, "TAXI_id", 0));
+	}
+        oyConfig_Release(&taxi_device);
+    }
+
+    // msgWidget->setMessageType(QMessageBox::Information);
+    if (deviceProfileTaxiDBComboBox->count() > 0) {
+	msgWidget->setText(i18n("You can select and install a profile"));
+	installProfileButton->setEnabled(true);
+        deviceProfileTaxiDBComboBox->setEnabled(true);
+    } else {
+	msgWidget->setText(i18n("Not found any profile for the selected device in Taxi DB"));
+	installProfileButton->setEnabled(false);
+    }
+
+  clean_getTaxiSlot:
+    oyConfigs_Release(&taxi_devices);
+    oyConfig_Release(&device);
+    if( for_device ) free( for_device );
+}
+
+// Set a new Profile and update UI.
+void SyDevices::setProfile( QString baseFileName )
+{
+    //emit changed(true);
+    listModified = true;
+
+    assignProfile( baseFileName );
+
+    // Convert QString to proper C string.
+    QByteArray raw_string;
+    raw_string = (currentDevice->text(DEVICE_NAME)).toLatin1();
+    setCurrentDeviceName(raw_string.data());
+
+    // Update column width of device list.
+    for(int i = 0; i < deviceList->columnCount(); i++)
+        deviceList->resizeColumnToContents(i);
 
     // Get the device that the user selected.
     oyConfig_s * device = 0;
     device = getCurrentDevice();
 
     oyConfig_Release(&device);
+}
+
+void SyDevices::updateLocalProfileList(QTreeWidgetItem * selected_device,
+                                 bool new_device)
+{
+    if(!selected_device)
+    {
+      deviceProfileTaxiDBComboBox->clear();
+      deviceProfileTaxiDBComboBox->setEnabled(false);
+
+      return;
+    }
+
+    // Don't count top parent items as a "selected device".
+    if (selected_device->parent() == NULL)
+    {
+      deviceProfileTaxiDBComboBox->setEnabled(false);
+
+      return;
+    }
+
+    // The user modifies the list, but clicks away from the selected device item.
+    listModified = false;
+
+    // If we click on a device item, the current device is stored and options are available.
+    deviceProfileTaxiDBComboBox->setEnabled(true);
+
+    currentDevice = selected_device;
+
+    // Convert QString to proper C string.
+    QByteArray raw_string;
+    SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selected_device);
+    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
+    setCurrentDeviceName(raw_string.data());
+
+    char * device_class = 0;
+    if(selected_device && selected_device->parent())
+    {
+      QVariant v = selected_device->parent()->data( 0, Qt::UserRole );
+      QString qs_device_class = v.toString();
+      QByteArray raw_string;
+      raw_string = qs_device_class.toLatin1();
+      device_class = strdup(raw_string.data());
+    }
+
+    // Change "Available Device Profiles" combobox to device-related profiles.
+    if ( device_class )
+      setCurrentDeviceClass(device_class);
 }
 
 
@@ -437,7 +678,7 @@ int SyDevices::detectDevices(const char * device_type)
             device_class_item->addChild( deviceItem );
             deviceList->setItemWidget( deviceItem, ITEM_COMBOBOX, w);
 
-            updateProfileCombo( deviceItem );
+            updateProfileList( deviceItem, false );
 
             oyConfig_Release(&device);
         }
@@ -456,7 +697,6 @@ int SyDevices::detectDevices(const char * device_type)
 void SyDevices::populateDeviceListing()
 {
     // TODO Work out a solution to use raw/camera stuff.
-    // detectRaw();  
 
     uint32_t count = 0, i = 1,
            * rank_list = 0;
@@ -470,12 +710,13 @@ void SyDevices::populateDeviceListing()
     {
       detectDevices( texts[i] );
     }
+
 }
 
 
 
 // Populate "Assign Profile" combobox.  Depending on the device selected, the profile list will vary.
-void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature )
+void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature, bool new_device )
 {
     int size, i, current = -1, current_tmp, pos = 0;
     oyProfile_s * profile = 0, * temp_profile = 0;
@@ -512,10 +753,8 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
     {
       const char * temp_profile_file_name;
          temp_profile = oyProfiles_Get( iccs, i );
-         getProfileDescription = oyProfile_GetText( temp_profile, oyNAME_DESCRIPTION );
          // show rank number
-	 if (rank_list[i] > 0)
-	    getProfileDescription = "[" + QString::number(rank_list[i]) + "] ";
+         getProfileDescription = "[" + QString::number(rank_list[i]) + "] ";
 
          getProfileDescription += oyProfile_GetText( temp_profile, oyNAME_DESCRIPTION );
          temp_profile_file_name = oyProfile_GetFileName( temp_profile, 0);
@@ -600,8 +839,7 @@ oyConfig_s * SyDevices::getCurrentDevice( void )
     return device;
 }
 
-#include <QThread>
-class kmSleep : public QThread
+class SySleep : public QThread
 {
   public:
      static void sleep(double seconds)
@@ -635,7 +873,7 @@ void SyDevices::assignProfile( QString profile_name )
          oyDeviceSetup( device ); /* reinitialise */
          /* compiz needs some time to exchange the profiles,
             immediately we would get the old colour server profile */
-         kmSleep::sleep(0.3);
+         SySleep::sleep(0.3);
          syDeviceGetProfile( device, icc_profile_flags, &profile ); /* reget profile */
 
          /* clear */
