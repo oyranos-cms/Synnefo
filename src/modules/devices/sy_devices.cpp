@@ -371,7 +371,7 @@ int SyDevices::detectDevices(const char * device_type)
 
             deviceItem->refreshText();
     
-            // NOTE: New code to add association combo box in tree widget.
+            // add association combo box in tree widget.
             SyDeviceItem * profileAssociationCB = new SyDeviceItem();
             connect( profileAssociationCB, SIGNAL(currentIndexChanged( int )),
                      this, SLOT( changeDeviceItem( int )) );
@@ -782,10 +782,11 @@ QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
 QString SyDevices::convertFilenameToDescription(QString profileFilename)
 {    
     QString profileDescriptionName;
-    oyProfile_s * profile_name;
+    oyProfile_s * profile;
     
-    profile_name = oyProfile_FromFile( profileFilename.toLocal8Bit(), 0, 0);
-    profileDescriptionName = oyProfile_GetText( profile_name, oyNAME_DESCRIPTION );
+    profile = oyProfile_FromFile( profileFilename.toLocal8Bit(), 0, 0);
+    profileDescriptionName = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
+    oyProfile_Release( &profile );
 
     return profileDescriptionName;
 }
