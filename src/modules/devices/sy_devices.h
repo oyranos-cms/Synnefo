@@ -104,7 +104,7 @@ private:
     { if(current_device_name) free(current_device_name);
       current_device_name = strdup(name); };
     void setCurrentDeviceClass(const char * name)
-    { if(current_device_name) free(current_device_class);
+    { if(current_device_class) free(current_device_class);
       current_device_class = strdup(name); };
 };
 
