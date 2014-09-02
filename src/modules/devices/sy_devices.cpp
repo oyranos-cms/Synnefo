@@ -158,7 +158,7 @@ void SyDevices::updateProfileList( QTreeWidgetItem * selected_device, bool new_d
     // Convert QString to proper C string.
     QByteArray raw_string;
     SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selected_device);
-    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
+    raw_string = device_item->getText(DEVICE_NAME).toLocal8Bit();
     setCurrentDeviceName(raw_string.data());
 
     char * device_class = 0;
@@ -167,7 +167,7 @@ void SyDevices::updateProfileList( QTreeWidgetItem * selected_device, bool new_d
       QVariant v = selected_device->parent()->data( 0, Qt::UserRole );
       QString qs_device_class = v.toString();
       QByteArray raw_string;
-      raw_string = qs_device_class.toLatin1();
+      raw_string = qs_device_class.toLocal8Bit();
       device_class = strdup(raw_string.data());
     }
 
@@ -233,20 +233,20 @@ void SyDevices::changeDeviceItem(int pos)
     // get infos
     QVariant v = device_item->parent()->data( 0, Qt::UserRole );
     QString qs = v.toString();
-    QByteArray raw_string = qs.toLatin1();
+    QByteArray raw_string = qs.toLocal8Bit();
     char * device_class = strdup(raw_string.data());
     v = combo->itemData(pos, Qt::UserRole);
     qs = v.toString();
-    raw_string = qs.toLatin1();
+    raw_string = qs.toLocal8Bit();
     char * profile_name = strdup(raw_string.data());
-    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
+    raw_string = device_item->getText(DEVICE_NAME).toLocal8Bit();
     char * device_name = raw_string.data();
 
     // set internal context
     setCurrentDeviceClass(device_class);
     setCurrentDeviceName(device_name);
     qWarning( "%d deviceItem: %d %s %s: %s", __LINE__,pos, device_class,
-              device_item->getText(DEVICE_NAME).toLatin1().data(),
+              device_item->getText(DEVICE_NAME).toLocal8Bit().data(),
               profile_name);
 
     // set profile
@@ -273,7 +273,7 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selected_device, int pos)
     // Convert QString to proper C string.
     QByteArray raw_string;
     SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selected_device);
-    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
+    raw_string = device_item->getText(DEVICE_NAME).toLocal8Bit();
     const char * t = raw_string.data();
     setCurrentDeviceName(t);
 
@@ -283,7 +283,7 @@ void SyDevices::changeDeviceItem(QTreeWidgetItem * selected_device, int pos)
       QVariant v = selected_device->parent()->data( 0, Qt::UserRole );
       QString qs_device_class = v.toString();
       QByteArray raw_string;
-      raw_string = qs_device_class.toLatin1();
+      raw_string = qs_device_class.toLocal8Bit();
       device_class = strdup(raw_string.data());
     }
 
@@ -348,7 +348,7 @@ void SyDevices::downloadFromTaxiDB( )
     if(error == oyERROR_DATA_AMBIGUITY) {
 	// msgWidget->setMessageType(QMessageBox::Information);
 	msgWidget->setText(i18n("Profile already installed"));
-        setProfile( QString(oyProfile_GetFileName( ip, 0 )) );
+        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )) );
         updateProfileList( currentDevice, false );
     } else if(error == oyERROR_DATA_WRITE) {
 	// msgWidget->setMessageType(QMessageBox::Error);
@@ -363,7 +363,7 @@ void SyDevices::downloadFromTaxiDB( )
     } else {
 	// msgWidget->setMessageType(QMessageBox::Positive);
 	msgWidget->setText(i18n("Profile has been installed"));
-        setProfile( QString(oyProfile_GetFileName( ip, 0 )) );
+        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )) );
         updateProfileList( currentDevice, false );
     }
 
@@ -394,7 +394,7 @@ void SyDevices::getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices )
 
     if(!oyConfig_FindString( device, "device_name", for_device) )
     {
-      QString text = i18n("wrong device") + " ... " + QString(for_device);
+      QString text = i18n("wrong device") + " ... " + QString::fromLocal8Bit(for_device);
       if(oy_debug)
         msgWidget->setText(text);
       goto clean_getTaxiSlot;
@@ -440,7 +440,7 @@ void SyDevices::setProfile( QString baseFileName )
 
     // Convert QString to proper C string.
     QByteArray raw_string;
-    raw_string = (currentDevice->text(DEVICE_NAME)).toLatin1();
+    raw_string = (currentDevice->text(DEVICE_NAME)).toLocal8Bit();
     setCurrentDeviceName(raw_string.data());
 
     // Update column width of device list.
@@ -484,7 +484,7 @@ void SyDevices::updateLocalProfileList(QTreeWidgetItem * selected_device,
     // Convert QString to proper C string.
     QByteArray raw_string;
     SyDevicesItem * device_item = dynamic_cast<SyDevicesItem*>(selected_device);
-    raw_string = device_item->getText(DEVICE_NAME).toLatin1();
+    raw_string = device_item->getText(DEVICE_NAME).toLocal8Bit();
     setCurrentDeviceName(raw_string.data());
 
     char * device_class = 0;
@@ -493,7 +493,7 @@ void SyDevices::updateLocalProfileList(QTreeWidgetItem * selected_device,
       QVariant v = selected_device->parent()->data( 0, Qt::UserRole );
       QString qs_device_class = v.toString();
       QByteArray raw_string;
-      raw_string = qs_device_class.toLatin1();
+      raw_string = qs_device_class.toLocal8Bit();
       device_class = strdup(raw_string.data());
     }
 
@@ -511,7 +511,7 @@ QString getDeviceName(oyConfig_s * device)
     const char * manufacturer = oyConfig_FindString( device,"manufacturer",0);
     const char * model = oyConfig_FindString( device, "model", 0);
     const char * serial = oyConfig_FindString( device, "serial", 0); 
-    return QString(manufacturer)+" "+QString(model)+" "+QString(serial);  
+    return QString::fromLocal8Bit(manufacturer)+" "+QString::fromLocal8Bit(model)+" "+QString::fromLocal8Bit(serial);  
 }
 
 int SyDevices::installTaxiProfile(oyConfig_s * device)
@@ -615,7 +615,7 @@ int SyDevices::detectDevices(const char * device_type)
 
         QIcon device_icon;
         QSize icon_size(64, 64);
-        QString iconPath = QString(":/resources/") + device_class + ".png";
+        QString iconPath = QString(":/resources/") + QString::fromLocal8Bit(device_class) + ".png";
         device_icon.addFile( iconPath.toLower(), icon_size , QIcon::Normal, QIcon::On);
 
         QString taxiProfileDescription = "";
@@ -648,15 +648,15 @@ int SyDevices::detectDevices(const char * device_type)
             // A printer will only take a "device model"
             if (strcmp(device_class,"printer") != 0)
             {
-                deviceItemString.append(device_manufacturer);
+                deviceItemString.append(QString::fromLocal8Bit(device_manufacturer));
                 deviceItemString.append(" ");
             }
 
-            deviceItemString.append(device_model);
+            deviceItemString.append(QString::fromLocal8Bit(device_model));
             if(device_serial)
             {
               deviceItemString.append(" ");
-              deviceItemString.append(device_serial);
+              deviceItemString.append(QString::fromLocal8Bit(device_serial));
             }
             
             // TESTING Check device for Taxi updates.
@@ -670,20 +670,20 @@ int SyDevices::detectDevices(const char * device_type)
 
             if (profile_filename == NULL)
             {
-                deviceProfileDescription = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
+                deviceProfileDescription = QString::fromLocal8Bit( oyProfile_GetText( profile, oyNAME_DESCRIPTION ) );
                 if(!deviceProfileDescription.count())
                   deviceProfileDescription = "(No Profile Installed!)";
                 profile_filename = "------";
             }
             else
-                deviceProfileDescription = convertFilenameToDescription(profile_filename);
+                deviceProfileDescription = convertFilenameToDescription(QString::fromLocal8Bit(profile_filename));
 
             deviceItem->setIcon( ITEM_MAIN, device_icon );
             
             deviceItem->addText(DEVICE_DESCRIPTION, deviceItemString);
-            deviceItem->addText(DEVICE_NAME, device_designation);
+            deviceItem->addText(DEVICE_NAME, QString::fromLocal8Bit(device_designation));
             deviceItem->addText(PROFILE_DESCRIPTION, deviceProfileDescription);   
-            deviceItem->addText(PROFILE_FILENAME, profile_filename);
+            deviceItem->addText(PROFILE_FILENAME, QString::fromLocal8Bit(profile_filename));
             deviceItem->setDevice(device);
 
             deviceItem->refreshText();
@@ -780,8 +780,8 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
          // show rank number
          getProfileDescription = "[" + QString::number(rank_list[i]) + "] ";
 
-         getProfileDescription += oyProfile_GetText( temp_profile, oyNAME_DESCRIPTION );
-         temp_profile_file_name = oyProfile_GetFileName( temp_profile, 0);
+         getProfileDescription += QString::fromLocal8Bit( oyProfile_GetText( temp_profile, oyNAME_DESCRIPTION ) );
+         temp_profile_file_name = oyProfile_GetFileName( temp_profile, 0 );
  
          current_tmp = -1;
 
@@ -808,9 +808,9 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
             current_tmp != -1)
          {
            getProfileDescription.append("\t(");
-           getProfileDescription.append(temp_profile_file_name);
+           getProfileDescription.append(QString::fromLocal8Bit(temp_profile_file_name));
            getProfileDescription.append(")");
-           itemComboBox.addItem(getProfileDescription, temp_profile_file_name);
+           itemComboBox.addItem(getProfileDescription, QString::fromLocal8Bit(temp_profile_file_name));
            ++pos;
          }
       oyProfile_Release( &temp_profile );
@@ -826,7 +826,7 @@ void SyDevices::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClass
     
     if(current == -1 && profile_file_name)
     {
-      getProfileDescription = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
+      getProfileDescription = QString::fromLocal8Bit( oyProfile_GetText( profile, oyNAME_DESCRIPTION ) );
       getProfileDescription.append("\t(");
       getProfileDescription.append(profile_file_name);
       getProfileDescription.append(")");
@@ -906,7 +906,7 @@ void SyDevices::assignProfile( QString profile_name )
      }
 
      // Convert profile into description name...
-     description = oyProfile_GetText( profile, oyNAME_DESCRIPTION);
+     description = QString::fromLocal8Bit( oyProfile_GetText( profile, oyNAME_DESCRIPTION) );
 
      if(!description.count())
        description = "(No Profile Installed!)";
@@ -1060,7 +1060,7 @@ QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
       ip = oyProfile_FromTaxiDB(options, NULL);  
       
       const char * taxi_profile_name = oyProfile_GetText( ip, oyNAME_DESCRIPTION );
-      fileName = QString(TAXI_DOWNLOAD_PATH) + OY_SLASH + taxi_profile_name
+      fileName = QString(TAXI_DOWNLOAD_PATH) + OY_SLASH + QString::fromLocal8Bit( taxi_profile_name )
                  + ".icc";
       
       data = (char*)oyProfile_GetMem(ip, &size, 0, malloc);
@@ -1072,7 +1072,7 @@ QString SyDevices::downloadTaxiProfile(oyConfig_s * device)
       
         QDataStream out(&file);      
         out.writeRawData(data, size);
-        qWarning("installed -> %s", fileName.toLatin1().data());
+        qWarning("installed -> %s", fileName.toLocal8Bit().data());
 
         file.close();
       
@@ -1099,7 +1099,7 @@ QString SyDevices::convertFilenameToDescription(QString profileFilename)
     oyProfile_s * profile;
     
     profile = oyProfile_FromFile( profileFilename.toLocal8Bit(), 0, 0);
-    profileDescriptionName = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
+    profileDescriptionName = QString::fromLocal8Bit( oyProfile_GetText( profile, oyNAME_DESCRIPTION ) );
     oyProfile_Release( &profile );
 
     return profileDescriptionName;
