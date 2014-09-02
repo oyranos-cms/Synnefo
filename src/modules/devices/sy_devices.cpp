@@ -37,7 +37,8 @@ SyDevices::SyDevices(QWidget * parent)
     setDescription("Set profiles for the devices on your system.");
     
     const char    * name = NULL,
-                  * description = NULL;
+                  * description = NULL,
+                  * tooltip = NULL;
 
     oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES, NULL, &name,
                       NULL, NULL );
@@ -68,6 +69,29 @@ SyDevices::SyDevices(QWidget * parent)
 
     // Set column width of device list.
     deviceList->setColumnWidth(0, 400);
+
+    /* i18n */
+    QString qs;
+
+    oyWidgetTitleGet( oyWIDGET_DEVICES_RELATED, NULL, &name, &tooltip, NULL );
+    qs = QString::fromUtf8(tooltip);
+    relatedDeviceCheckBox->setText(qs);
+    oyWidgetDescriptionGet( oyWIDGET_DEVICES_RELATED, &description, 0 );
+    qs = QString::fromUtf8(description);
+    relatedDeviceCheckBox->setToolTip(qs);
+
+    oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES_PROFILES_TAXI, NULL, &name, &tooltip, NULL );
+    qs = QString::fromUtf8(tooltip);
+    taxiGroupBox->setTitle(qs);
+    oyWidgetDescriptionGet( oyWIDGET_GROUP_DEVICES_PROFILES_TAXI, &description, 0 );
+    qs = QString::fromUtf8(description);
+    deviceProfileTaxiDBComboBox->setToolTip(qs);
+
+    oyWidgetTitleGet( oyWIDGET_TAXI_PROFILE_INSTALL, NULL, &name, &tooltip, NULL );
+    qs = QString::fromUtf8(tooltip);
+    installProfileButton->setText(qs);
+    // first select a device, then we can do something useful
+    installProfileButton->setEnabled(false);
 
     // Load directories and device listing.
     populateDeviceListing();

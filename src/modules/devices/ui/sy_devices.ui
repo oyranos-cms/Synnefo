@@ -92,7 +92,7 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
       <item row="0" column="0">
-       <layout class="QHBoxLayout" name="horizontalLayout_4" stretch="5,3">
+       <layout class="QHBoxLayout" name="relatedDeviceLayout" stretch="5,3">
         <item>
          <widget class="QCheckBox" name="relatedDeviceCheckBox">
           <property name="text">
@@ -112,7 +112,7 @@
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="taxiGroupBox">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>

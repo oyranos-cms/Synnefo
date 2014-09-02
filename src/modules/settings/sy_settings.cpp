@@ -57,6 +57,10 @@ SySettings::SySettings(QWidget * parent)
     setModuleName(QString::fromUtf8(name));
     setDescription(QString::fromUtf8(description));
   
+    oyWidgetTitleGet( oyWIDGET_POLICY_ACTIVE, NULL, &name, &tooltip, &flags );
+    qs = QString::fromUtf8(name);
+    currentPolicyTitleLabel->setText(qs);
+
     oyWidgetTitleGet( oyWIDGET_POLICY, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
     policySettingsBox->setTitle(qs);
