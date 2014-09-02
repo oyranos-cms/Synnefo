@@ -8,7 +8,6 @@
 #include <oyFilterNode_s.h>
 #include <oyProfiles_s.h>
 #include <oyranos_devices.h>
-#include <locale.h>
 
 const char * sy_settings_module_name = "Settings";
 
@@ -54,11 +53,11 @@ SySettings::SySettings(QWidget * parent)
     oyWidgetTitleGet( oyWIDGET_GROUP_ALL, NULL, &name,
                       NULL, NULL );
     oyWidgetDescriptionGet( oyWIDGET_GROUP_ALL, &description, 0 );
-    setModuleName(QString::fromUtf8(name));
-    setDescription(QString::fromUtf8(description));
+    setModuleName(QString::fromLocal8Bit(name));
+    setDescription(QString::fromLocal8Bit(description));
   
     oyWidgetTitleGet( oyWIDGET_POLICY_ACTIVE, NULL, &name, &tooltip, &flags );
-    qs = QString::fromUtf8(name);
+    qs = QString::fromLocal8Bit(name);
     currentPolicyTitleLabel->setText(qs);
 
     oyWidgetTitleGet( oyWIDGET_POLICY, NULL, &name, &tooltip, &flags );
@@ -73,7 +72,7 @@ SySettings::SySettings(QWidget * parent)
     kmsettingsTab->setTabText(1,qs);
   
     oyWidgetTitleGet( oyWIDGET_GROUP_BEHAVIOUR, NULL, &name, &tooltip, &flags );
-    qs = QString::fromLocal8Bit(name,-1);
+    qs = QString::fromLocal8Bit(name);
     kmsettingsTab->setTabText(2,qs);
 
 #define SET_OY_PROFILE_WIDGET( widget ) \
@@ -227,7 +226,6 @@ void SySettings::selectPolicy(QListWidgetItem* selectedPolicyItem)
 
 void SySettings::addNewPolicy()
 {   
-    QString newPolicyString;
     bool ok;
    
     // New policy name dialog.

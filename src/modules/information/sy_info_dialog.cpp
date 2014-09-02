@@ -12,13 +12,13 @@ SyInfoDialog::SyInfoDialog(QWidget * parent)
 {
     setupUi(this);
 
-    dateTextLabel->setText( oyProfileSignatureName(oySIGNATURE_DATETIME_YEAR) );
-    dcTextLabel->setText( oyProfileSignatureName(oySIGNATURE_CLASS) );
-    manufacturerLabel->setText( oyProfileSignatureName(oySIGNATURE_MANUFACTURER) );
-    modelTextLabel->setText( oyProfileSignatureName(oySIGNATURE_MODEL) );
-    iccVersionLabel->setText( oyProfileSignatureName(oySIGNATURE_VERSION) );
-    colorspaceLabel->setText( oyProfileSignatureName(oySIGNATURE_COLOR_SPACE) );
-    pcsTypeLabel->setText( oyProfileSignatureName(oySIGNATURE_PCS) );
+    dateTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_DATETIME_YEAR)) );
+    dcTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_CLASS)) );
+    manufacturerLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_MANUFACTURER)) );
+    modelTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_MODEL)) );
+    iccVersionLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_VERSION)) );
+    colorspaceLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_COLOR_SPACE)) );
+    pcsTypeLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_PCS)) );
 
     connect( closeButton, SIGNAL( clicked() ), this, SLOT( closeDialog() ));
     connect( launchICCExaminButton, SIGNAL(clicked()), this, SLOT(launchICCExamin())); 
@@ -133,13 +133,13 @@ bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
 {
 
 # ifdef __WIN32__
-     QChar pathSep = QChar::fromLatin1(';');
+     QChar pathSep(';');
      const QString iccExamin = QString::fromLocal8Bit("iccexamin.exe");
 #elif defined (__APPLE__)
-     QChar pathSep = QChar::fromLatin1(':'); 
+     QChar pathSep(':'); 
      const QString iccExamin = QString::fromLocal8Bit("iccexamin.app/Contents/MacOS/ICC Examin");
 # else
-     QChar pathSep = QChar::fromLatin1(':');  
+     QChar pathSep(':');  
      const QString iccExamin = QString::fromLocal8Bit("iccexamin");
 # endif /* __WIN32__ */
 

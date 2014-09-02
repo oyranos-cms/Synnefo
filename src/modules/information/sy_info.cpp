@@ -23,8 +23,8 @@ SyInfo::SyInfo(QWidget * parent)
     oyWidgetTitleGet( oyWIDGET_GROUP_INFORMATION, NULL, &name,
                       NULL, NULL );
     oyWidgetDescriptionGet( oyWIDGET_GROUP_INFORMATION, &description, 0 );
-    setModuleName(QString::fromUtf8(name));
-    setDescription(QString::fromUtf8(description));
+    setModuleName(QString::fromLocal8Bit(name));
+    setDescription(QString::fromLocal8Bit(description));
 
     infoDialog = new SyInfoDialog(this);
 
@@ -43,10 +43,10 @@ SyInfo::SyInfo(QWidget * parent)
 
     installedProfilesTree->expandAll();
 
-    examineIcon.addFile(QString::fromUtf8(":/resources/examine.png"),
+    examineIcon.addFile(QString::fromLocal8Bit(":/resources/examine.png"),
                                   QSize(10, 10), QIcon::Normal, QIcon::On);
  
-    examineIcon.addFile(QString::fromUtf8(":/resources/examine_select.png"),
+    examineIcon.addFile(QString::fromLocal8Bit(":/resources/examine_select.png"),
                                   QSize(10, 10), QIcon::Active, QIcon::On);
 
     // Display oyEDITING_XYZ info for now.
@@ -94,21 +94,20 @@ void SyInfo::populateInstalledProfileList()
     const char * g_name = NULL;
     oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES, NULL, &g_name,
                       NULL, NULL );
-    devicesTree->setText( ITEM_NAME, QString::fromUtf8(g_name));
+    devicesTree->setText( ITEM_NAME, QString::fromLocal8Bit(g_name));
     populateDeviceProfiles( devicesTree );
 
     // Save tree list parents to QTreeWidgetItem pointers.
-    QString name;
     QTreeWidgetItem * editingCsTree = new QTreeWidgetItem;
     installedProfilesTree->addTopLevelItem( editingCsTree );
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_EDIT, NULL, &g_name,
                       NULL, NULL );
-    editingCsTree->setText( ITEM_NAME, name.fromUtf8(g_name));
+    editingCsTree->setText( ITEM_NAME, QString::fromLocal8Bit(g_name));
     QTreeWidgetItem * assumedCsTree = new QTreeWidgetItem;
     installedProfilesTree->addTopLevelItem( assumedCsTree );
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_ASSUMED, NULL, &g_name,
                       NULL, NULL );
-    assumedCsTree->setText( ITEM_NAME, name.fromUtf8(g_name));
+    assumedCsTree->setText( ITEM_NAME, QString::fromLocal8Bit(g_name));
 
     // For convenience, we expand colorspace trees.
     installedProfilesTree->expandItem(editingCsTree);
@@ -117,34 +116,34 @@ void SyInfo::populateInstalledProfileList()
     // Populate colorspace items.
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_RGB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_RGB, name.fromUtf8(g_name), editingCsTree);
+        addProfileTreeItem( oyEDITING_RGB, QString::fromLocal8Bit(g_name), editingCsTree);
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_CMYK, NULL, &g_name, NULL,NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyEDITING_CMYK, name.fromUtf8(g_name), editingCsTree);
+       addProfileTreeItem( oyEDITING_CMYK, QString::fromLocal8Bit(g_name), editingCsTree);
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_XYZ, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_XYZ, name.fromUtf8(g_name), editingCsTree );
+        addProfileTreeItem( oyEDITING_XYZ, QString::fromLocal8Bit(g_name), editingCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_LAB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_LAB, name.fromUtf8(g_name), editingCsTree );
+        addProfileTreeItem( oyEDITING_LAB, QString::fromLocal8Bit(g_name), editingCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_GRAY, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyEDITING_GRAY, name.fromUtf8(g_name), editingCsTree );
+        addProfileTreeItem( oyEDITING_GRAY, QString::fromLocal8Bit(g_name), editingCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_RGB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_RGB, name.fromUtf8(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_RGB, QString::fromLocal8Bit(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_CMYK, NULL, &g_name, NULL,NULL );
     if (strlen(g_name) > 0)
-        addProfileTreeItem( oyASSUMED_CMYK, name.fromUtf8(g_name), assumedCsTree );
+        addProfileTreeItem( oyASSUMED_CMYK, QString::fromLocal8Bit(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_XYZ, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_XYZ, name.fromUtf8(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_XYZ, QString::fromLocal8Bit(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_LAB, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_LAB, name.fromUtf8(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_LAB, QString::fromLocal8Bit(g_name), assumedCsTree );
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_GRAY, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
-       addProfileTreeItem( oyASSUMED_GRAY, name.fromUtf8(g_name), assumedCsTree );
+       addProfileTreeItem( oyASSUMED_GRAY, QString::fromLocal8Bit(g_name), assumedCsTree );
 }
 
 
@@ -393,7 +392,7 @@ void SyInfo::setPcsTag(oyProfile_s * profile)
      QString tagString;
      tagString = oyICCColorSpaceGetName( (icColorSpaceSignature)
                          oyProfile_GetSignature(profile, oySIGNATURE_PCS) );
-     infoDialog->setDialogText( PCS_TAG, "CIE" + tagString.toLocal8Bit());
+     infoDialog->setDialogText( PCS_TAG, QString("CIE") + tagString);
      
 }
 
@@ -429,7 +428,7 @@ void SyInfo::setDeviceClassTag(oyProfile_s * profile)
      QString string;
      string = oyICCDeviceClassDescription( (icProfileClassSignature)
                          oyProfile_GetSignature(profile, oySIGNATURE_CLASS) );
-     infoDialog->setDialogText( DEVICE_TAG, string.toLocal8Bit());     
+     infoDialog->setDialogText( DEVICE_TAG, string );     
 }
 
 

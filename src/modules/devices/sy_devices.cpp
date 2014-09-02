@@ -43,8 +43,8 @@ SyDevices::SyDevices(QWidget * parent)
     oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES, NULL, &name,
                       NULL, NULL );
     oyWidgetDescriptionGet( oyWIDGET_GROUP_DEVICES, &description, 0 );
-    setModuleName(QString::fromUtf8(name));
-    setDescription(QString::fromUtf8(description));
+    setModuleName(QString::fromLocal8Bit(name));
+    setDescription(QString::fromLocal8Bit(description));
 
     this->setParent(parent);
     
@@ -74,21 +74,21 @@ SyDevices::SyDevices(QWidget * parent)
     QString qs;
 
     oyWidgetTitleGet( oyWIDGET_DEVICES_RELATED, NULL, &name, &tooltip, NULL );
-    qs = QString::fromUtf8(tooltip);
+    qs = QString::fromLocal8Bit(tooltip);
     relatedDeviceCheckBox->setText(qs);
     oyWidgetDescriptionGet( oyWIDGET_DEVICES_RELATED, &description, 0 );
-    qs = QString::fromUtf8(description);
+    qs = QString::fromLocal8Bit(description);
     relatedDeviceCheckBox->setToolTip(qs);
 
     oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES_PROFILES_TAXI, NULL, &name, &tooltip, NULL );
-    qs = QString::fromUtf8(tooltip);
+    qs = QString::fromLocal8Bit(tooltip);
     taxiGroupBox->setTitle(qs);
     oyWidgetDescriptionGet( oyWIDGET_GROUP_DEVICES_PROFILES_TAXI, &description, 0 );
-    qs = QString::fromUtf8(description);
+    qs = QString::fromLocal8Bit(description);
     deviceProfileTaxiDBComboBox->setToolTip(qs);
 
     oyWidgetTitleGet( oyWIDGET_TAXI_PROFILE_INSTALL, NULL, &name, &tooltip, NULL );
-    qs = QString::fromUtf8(tooltip);
+    qs = QString::fromLocal8Bit(tooltip);
     installProfileButton->setText(qs);
     // first select a device, then we can do something useful
     installProfileButton->setEnabled(false);
@@ -608,7 +608,7 @@ int SyDevices::detectDevices(const char * device_type)
     {
         // Set up Synnefo gui "logistics" for a specified device.
         QTreeWidgetItem * device_class_item = new QTreeWidgetItem;
-        device_class_item->setText( ITEM_MAIN, device_class_ui );
+        device_class_item->setText( ITEM_MAIN, QString::fromLocal8Bit(device_class_ui) );
         QVariant v( device_class );
         device_class_item->setData( 0, Qt::UserRole, v );
         deviceList->insertTopLevelItem( ITEM_MAIN, device_class_item );
