@@ -42,6 +42,13 @@ void SyInfoDialog::launchICCExamin()
     oyProfile_s * p = (oyProfile_s *) descriptionTagLabel->text().toULongLong();
     
     //v.toULongLong()
+    
+    if (!iccExaminIsInstalled(iccExaminCommand))
+    {
+      launchICCExaminButton->setText(tr("For more details install ICC Examin."));
+      launchICCExaminButton->setIcon(QIcon());
+      return;
+    }
 
     if(!directoryListingTag->text().isNull())
       exec = iccExaminCommand + " -g \"" + directoryListingTag->text() + "\"&";
@@ -117,11 +124,7 @@ void SyInfoDialog::setDialogText( DialogString e, QString text )
 void SyInfoDialog::showDialog()
 {   
     this->show(); 
-    
-    if (iccExaminIsInstalled(iccExaminCommand))
-        launchICCExaminButton->show();
-    else
-        launchICCExaminButton->hide(); 
+    launchICCExaminButton->setText("");
 }
 
 
