@@ -1,13 +1,8 @@
 project (synnefo)
 
-find_package(Qt4)
 INCLUDE(   ${QT_USE_FILE}   )
 
-set( synnefo_SRCS
-    # core sources
-    main.cpp    
-    synnefo.cpp   
-
+set( synnefo-common_SRCS
     classes/syconfig.cpp
 
     # synnefo class
@@ -18,10 +13,10 @@ set( synnefo_SRCS
     modules/database/sy_database.cpp
     modules/devices/sy_devices.cpp
     modules/information/sy_info.cpp
-    modules/settings/sy_settings.cpp    
+    modules/settings/sy_settings.cpp
 
     modules/devices/sy_devices_item.cpp
-    modules/information/sy_info_dialog.cpp    
+    modules/information/sy_info_dialog.cpp
 
     modules/database/sy_database_config.cpp
     modules/devices/sy_devices_config.cpp
@@ -29,15 +24,17 @@ set( synnefo_SRCS
     modules/settings/sy_settings_config.cpp
 )
  
-SET( synnefo_MOC_HEADERS
-    # main window
-    synnefo.h
-
-    # config 
+set( synnefo-common_PUBLIC
+    # config
     classes/syconfig.h
 
     # module config
     modules/symoduleconfig.h
+)
+
+set( synnefo-common_MOC_HEADERS
+    # config
+    ${synnefo-common_PUBLIC}
 
     # modules
     modules/database/sy_database.h
@@ -54,10 +51,7 @@ SET( synnefo_MOC_HEADERS
     modules/database/sy_database_config.h
 )
 
-set( synnefo_UIs
-    # main ui file
-    ui/synnefo.ui
- 
+set( synnefo-common_UIs
     # config ui file
     ui/synnefo-config.ui
 
@@ -92,33 +86,29 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set(synnefo_RCCS
-      ui/resources.qrc
+set(synnefo-common_RCCS
       modules/information/icons.qrc      
       modules/devices/icons.qrc            
       )
 
-QT4_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
+QT4_ADD_RESOURCES(synnefo-common_RCC_SRCS ${synnefo-common_RCCS})
 
-QT4_WRAP_UI (synnefo_SRCS ${synnefo_UIs})
+QT4_WRAP_UI (synnefo-common_SRCS ${synnefo-common_UIs})
 
-QT4_WRAP_CPP(synnefo_SRCS ${synnefo_MOC_HEADERS})
+QT4_WRAP_CPP(synnefo-common_SRCS ${synnefo-common_MOC_HEADERS})
 
 
-IF(UNIX)
-  add_executable(synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
-ELSEIF(APPLE)
-  add_executable(synnefo MACOSX_BUNDLE ${synnefo_SRCS} ${synnefo_RCC_SRCS})
-ELSEIF (WIN32)
-  add_executable(synnefo WIN32 ${synnefo_SRCS} ${synnefo_RCC_SRCS})
-ENDIF ()
+add_library(synnefo-common SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
 
 IF(WIN32)
-  target_link_libraries(synnefo ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
+  target_link_libraries(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
 ELSE()
-  target_link_libraries(synnefo ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+  target_link_libraries(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
 ENDIF()
 
-install(TARGETS synnefo
-  EXPORT SynnefoLibraryDepends
-  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
+
+INSTALL (TARGETS synnefo-common DESTINATION lib${LIB_SUFFIX})
+INSTALL (FILES ${synnefo-common_PUBLIC} DESTINATION include/${PROJECT_NAME})
+
+add_subdirectory(app)
+
