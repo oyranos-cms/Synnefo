@@ -8,14 +8,14 @@
 #include <QTemporaryFile>
 #include <QTreeWidgetItem>
 
-#include <oyranos_devices.h>
-
 #include "symodule.h"          
 #include "sy_info_dialog.h"
 
 namespace Ui {
   class syInfoWidget;
 }
+
+struct oyProfile_s;
 
 class SyInfoModule : public SyModule
 {
@@ -39,7 +39,7 @@ private:
     void populateInstalledProfileList();
     
     // Add an item to the tree.
-    void addProfileTreeItem( oyPROFILE_e, QString description, QTreeWidgetItem * parent_item );
+    void addProfileTreeItem( unsigned int profile_type, QString description, QTreeWidgetItem * parent_item );
     
     // Populate tree list items relating to device-specific profiles (printers, monitors, etc.)
     void populateDeviceProfiles
@@ -49,7 +49,7 @@ private:
     void populateDeviceProfileDescriptions(oyProfile_s * profile, bool valid);
     
     // Function to write tag descriptions to individual labels
-    void setTagDescriptions(oyProfile_s *, icTagSignature, DialogString);
+    void setTagDescriptions(oyProfile_s *, unsigned int, DialogString);
     
     // The following provide additonal tags to be displayed.
     void setPcsTag(oyProfile_s * profile);

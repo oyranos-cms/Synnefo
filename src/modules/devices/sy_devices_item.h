@@ -3,7 +3,6 @@
 
 #include <QListWidgetItem>
 #include <QTreeWidgetItem>
-#include <oyranos_devices.h>
 
  enum ItemText {
       DEVICE_DESCRIPTION,
@@ -18,16 +17,18 @@
    information for each device.
    */
 
+struct oyConfig_s;
+
 class SyDevicesItem : public QTreeWidgetItem
 {
   public:
     SyDevicesItem (QTreeWidget * parent);
-    ~SyDevicesItem() {oyConfig_Release( &device );}
+    ~SyDevicesItem();
     void addText (ItemText, QString );
     QString getText (ItemText);
     
     void refreshText();
-    void setDevice( oyConfig_s * d ) {device = oyConfig_Copy(d, 0);}
+    void setDevice( oyConfig_s * d );
   private:    
     QString deviceDescription;
     QString deviceName;

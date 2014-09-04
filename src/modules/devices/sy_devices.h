@@ -12,14 +12,14 @@
 #include "sy_devices_item.h"
 #include "sy_devices_config.h"
 
-#include <oyranos_devices.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 
 namespace Ui {
   class syDevicesWidget;
 }
+struct oyConfigs_s;
+struct oyConfig_s;
 
 /*****************************************************************
           Synnefo Devices Module Class Definition                *
@@ -67,7 +67,7 @@ private:
     void assignProfile( QString profile_name );
     
     // Populate device-specified profile combo box listing.
-    void populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature, bool new_device );
+    void populateDeviceComboBox( QComboBox & itemComboBox, unsigned int deviceSignature, bool new_device );
 
     // Populate single device profile combo box widget
     void updateProfileList( QTreeWidgetItem * deviceItem, bool new_device );
@@ -149,17 +149,7 @@ class TaxiLoad : public QThread
         void finishedSignal( char * device_name, oyConfigs_s * taxi_devices );
      
     protected:
-        void run() {
-            oyConfigs_s * taxi_devices = 0;
-            char * device_name = 0;
-            if(d_)
-            {
-              oyDevicesFromTaxiDB( d_, 0, &taxi_devices, 0);
-              device_name = strdup(oyConfig_FindString( d_, "device_name", NULL ));
-            }
-            oyConfig_Release( &d_ );
-            emit finishedSignal( device_name, taxi_devices );
-        }
+        void run();
 };
 
 #endif

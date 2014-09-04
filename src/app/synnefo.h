@@ -32,7 +32,7 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <QWidget>
 
 // Qt Designer code translation.
-#include "ui_synnefo.h"   
+#include "ui_synnefo.h"
 
 // Synnefo Module Headers
 #include "sy_database.h"

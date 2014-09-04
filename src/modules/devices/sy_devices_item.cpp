@@ -1,5 +1,6 @@
 #include "sy_devices_item.h"
 
+#include <oyranos_devices.h>
 
 SyDevicesItem::SyDevicesItem( QTreeWidget * parent )
     : QTreeWidgetItem( parent, 0 )
@@ -77,4 +78,14 @@ void  SyDevicesItem::refreshText()
     if(miscDescription.size())
       deviceItemText += "\n" + miscDescription;
     this->setText (0, deviceItemText);
+}
+
+void SyDevicesItem::setDevice( oyConfig_s * d )
+{
+  device = oyConfig_Copy(d, 0);
+}
+
+SyDevicesItem::~SyDevicesItem()
+{
+  oyConfig_Release( &device );
 }

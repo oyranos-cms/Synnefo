@@ -9,8 +9,6 @@
 #include <QListWidgetItem>
 #include <QWidget>
 
-#include <oyranos.h>
-
 #include "symodule.h"
 #include "sy_settings_config.h"
 
@@ -68,7 +66,7 @@ private:
     void writeNewXmlFile(QString policyname, QString filename);
 
     // Filter default profiles.
-    void fillProfileComboBoxes(oyPROFILE_e, QComboBox *);
+    void fillProfileComboBoxes(unsigned int profile_type, QComboBox *);
  
     // Save policies
     void savePolicy();

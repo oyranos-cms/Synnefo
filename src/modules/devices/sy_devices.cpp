@@ -744,7 +744,7 @@ void SyDevicesModule::populateDeviceListing()
 
 
 // Populate "Assign Profile" combobox.  Depending on the device selected, the profile list will vary.
-void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, icProfileClassSignature deviceSignature, bool new_device )
+void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned int sig, bool new_device )
 {
     int size, i, current = -1, current_tmp, pos = 0;
     oyProfile_s * profile = 0, * temp_profile = 0;
@@ -752,6 +752,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, icProfil
                  * iccs = 0;
     oyConfig_s * device = getCurrentDevice();
     const char * profile_file_name = 0;
+    icProfileClassSignature deviceSignature = (icProfileClassSignature) sig;
 
     profile = oyProfile_FromSignature( deviceSignature, oySIGNATURE_CLASS, 0 );
     oyProfiles_MoveIn( patterns, &profile, -1 );
@@ -1113,4 +1114,19 @@ QString SyDevicesModule::convertFilenameToDescription(QString profileFilename)
 SyDevicesModule::~SyDevicesModule()
 {
   delete ui; 
+}
+
+void TaxiLoad::run()
+{
+  oyConfigs_s * taxi_devices = 0;
+  char * device_name = 0;
+
+  if(d_)
+  {
+    oyDevicesFromTaxiDB( d_, 0, &taxi_devices, 0);
+    device_name = strdup(oyConfig_FindString( d_, "device_name", NULL ));
+  }
+  oyConfig_Release( &d_ );
+
+  emit finishedSignal( device_name, taxi_devices );
 }

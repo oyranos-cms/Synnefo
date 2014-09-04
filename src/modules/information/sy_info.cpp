@@ -152,12 +152,13 @@ void SyInfoModule::populateInstalledProfileList()
 
 
 // Function to add profile items into the tree listing.
-void SyInfoModule::addProfileTreeItem( oyPROFILE_e profile_type, QString description, 
+void SyInfoModule::addProfileTreeItem( unsigned int type, QString description, 
                                         QTreeWidgetItem * parent_item )
 {
+    oyPROFILE_e profile_type = (oyPROFILE_e) type;
     oyProfile_s * profile = oyProfile_FromStd( profile_type, icc_profile_flags, 0);
     const char * text = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
-      
+
     // Add new item.
     QTreeWidgetItem * new_child = new QTreeWidgetItem();
     
@@ -368,10 +369,11 @@ void SyInfoModule::loadProfileGraph()
 }
 
 // Function to write signature head, based on profile, tag type, and QT Label.
-void SyInfoModule::setTagDescriptions(oyProfile_s * profile_name, icTagSignature tagType, DialogString tag )
+void SyInfoModule::setTagDescriptions(oyProfile_s * profile_name, unsigned int type, DialogString tag )
 {
      int text_n;
      bool error;
+     icTagSignature tagType = (icTagSignature) type;
      
      //oyObject_s  object;
      char** tagText = 0;

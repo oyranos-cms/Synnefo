@@ -494,13 +494,14 @@ void SySettingsModule::loadEditableItems()
 
 
 // Filter comboboxes in 'Default Profiles' with appropriate profiles.
-void SySettingsModule::fillProfileComboBoxes(oyPROFILE_e profile_type, QComboBox * profile_combobox)
+void SySettingsModule::fillProfileComboBoxes(unsigned int type, QComboBox * profile_combobox)
 {
     int current = 0, size, i,
                   sizeofProfilename,
                   indexofProfilename;
     oyProfile_s * temp_prof = 0;
     oyProfiles_s * iccs = 0;
+    oyPROFILE_e profile_type = (oyPROFILE_e) type;
 
     QString profile_text, profile_filename;
 
