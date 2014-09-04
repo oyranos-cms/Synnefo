@@ -1,0 +1,46 @@
+# - Find Synnefo
+# Find the native Synnefo headers and libraries.
+#
+#  SYNNEFO_FOUND        - True if Synnefo found.
+#  SYNNEFO_INCLUDE_DIRS - where to find kdb.h, etc.
+#  SYNNEFO_LIBRARIES    - List of libraries when using Synnefo.
+#
+#  SYNNEFO_VERSION       - The version of synnefo (x.y.z)
+#  SYNNEFO_VERSION_MAJOR - The major version of synnefo (x)
+#  SYNNEFO_VERSION_MINOR - The minor version of synnefo (y)
+#  SYNNEFO_VERSION_MICRO - The patch version of synnefo (z)
+#
+
+
+
+# Set path to the header file.
+FIND_PATH(SYNNEFO_INCLUDE_DIR
+	NAMES sy_info.h
+	PATHS @CMAKE_INSTALL_PREFIX@/include/@TARGET_INCLUDE_FOLDER@
+	NO_DEFAULT_PATH
+)
+MARK_AS_ADVANCED(SYNNEFO_INCLUDE_DIR)
+
+
+# Set path to the library.
+FIND_LIBRARY(SYNNEFO_LIBRARY
+	NAMES synnefo-common  synnefo-common-static
+	PATHS @CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@
+	NO_DEFAULT_PATH
+)
+MARK_AS_ADVANCED(SYNNEFO_LIBRARY)
+
+# handle the QUIETLY and REQUIRED arguments and set SYNNEFO_FOUND to TRUE if
+# all listed variables are TRUE
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Synnefo DEFAULT_MSG SYNNEFO_LIBRARY SYNNEFO_INCLUDE_DIR)
+
+if (SYNNEFO_FOUND)
+        SET( SYNNEFO_VERSION_MAJOR @SYNNEFO_VERSION_MAJOR@ )
+        SET( SYNNEFO_VERSION_MINOR @SYNNEFO_VERSION_MINOR@ )
+        SET( SYNNEFO_VERSION_MICRO @SYNNEFO_VERSION_MICRO@ )
+        SET( SYNNEFO_VERSION @SYNNEFO_VERSION@ )
+        SET( HAVE_SYNNEFO TRUE )
+	SET(SYNNEFO_INCLUDE_DIRS ${SYNNEFO_INCLUDE_DIR})
+	SET(SYNNEFO_LIBRARIES    ${SYNNEFO_LIBRARY} )
+endif (SYNNEFO_FOUND)
