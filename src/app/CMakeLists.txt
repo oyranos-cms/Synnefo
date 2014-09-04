@@ -5,15 +5,19 @@ cmake_minimum_required(VERSION 2.4)
 find_package(Qt4 REQUIRED)
 INCLUDE(   ${QT_USE_FILE}   )
 
-find_package(Oyranos REQUIRED)
-include_directories(${OYRANOS_INCLUDE_DIR})
+# test standalone
+IF (NOT OYRANOS_FOUND)
+  find_package(Synnefo REQUIRED)
+  include_directories(${SYNNEFO_INCLUDE_DIR})
+ENDIF (NOT OYRANOS_FOUND)
 
-set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
-
+# rely on library in tar ball
+IF    (NOT SYNNEFO_FOUND)
+  SET( SYNNEFO_LIBRARY synnefo-common )
 # set up include-directories
-set( synnefo_modules_path
-     ../modules )
-include_directories(
+  set( synnefo_modules_path
+       ../modules )
+  include_directories(
   "${PROJECT_SOURCE_DIR}"   # to find foo/foo.h
   "${PROJECT_BINARY_DIR}"   # to find foo/config.h
   "${synnefo_modules_path}/"# modules
@@ -22,7 +26,15 @@ include_directories(
   "${synnefo_modules_path}/information/"
   "${synnefo_modules_path}/settings/"
   "../classes"
-                   )
+                     )
+  LINK_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/../../build/src/" )
+ENDIF (NOT SYNNEFO_FOUND)
+
+set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+
+include_directories(
+  "${PROJECT_SOURCE_DIR}"   # to find foo/foo.h
+  "${PROJECT_BINARY_DIR}")  # to find foo/config.h
 
 set( synnefo_SRCS
     # core sources
@@ -51,7 +63,6 @@ QT4_WRAP_UI (synnefo_SRCS ${synnefo_UIs})
 QT4_WRAP_CPP(synnefo_SRCS ${synnefo_MOC_HEADERS})
 
 
-LINK_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/../../build/src/" )
 
 IF(UNIX)
   add_executable(synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
@@ -61,7 +72,7 @@ ELSEIF (WIN32)
   add_executable(synnefo WIN32 ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ENDIF ()
 
-target_link_libraries(synnefo synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+target_link_libraries(synnefo ${SYNNEFO_LIBRARY} ${QT_LIBRARIES})
 
 install(TARGETS synnefo
   EXPORT SynnefoLibraryDepends
