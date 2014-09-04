@@ -30,10 +30,13 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#include <oyranos_config.h>
 #include <oyranos_devices.h>
 
+#include "ui_sy_database_config.h"
+#include "ui_sy_database.h"
+
 SyDatabaseConfig::SyDatabaseConfig (QWidget * parent, QString moduleId) :
    SyModuleConfig(parent, moduleId)
 {        
-
+  ui = new Ui::syDatabaseConfig;
 }
 
 
@@ -51,5 +54,5 @@ void SyDatabaseConfig::loadWidgetState()
 
 SyDatabaseConfig::~SyDatabaseConfig()
 {
-  
+  delete ui;
 }

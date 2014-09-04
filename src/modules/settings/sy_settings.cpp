@@ -4,6 +4,9 @@
  
 #include "sy_settings.h"
 
+// Qt Designer code translation.
+#include "ui_sy_settings.h"    
+
 #include <oyranos.h>
 #include <oyFilterNode_s.h>
 #include <oyProfiles_s.h>
@@ -20,7 +23,8 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     // select profiles matching actual capabilities
     icc_profile_flags = oyICCProfileSelectionFlagsFromOptions( OY_CMM_STD, "//" OY_TYPE_STD "/icc_color", NULL, 0 );
 
-    setupUi(this);
+    ui = new Ui::sySettingsWidget();
+    ui->setupUi(this);
     
     SySettingsConfig * settingsConfig = new SySettingsConfig(0, sy_settings_module_name);
     
@@ -30,7 +34,7 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     
     loadPolicy();
 
-    removePolicyButton->setEnabled(false);
+    ui->removePolicyButton->setEnabled(false);
 
     loadEditableItems();        // Store all setting widgets into a convenient list structure.
 
@@ -58,63 +62,63 @@ SySettingsModule::SySettingsModule(QWidget * parent)
   
     oyWidgetTitleGet( oyWIDGET_POLICY_ACTIVE, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
-    currentPolicyTitleLabel->setText(qs);
+    ui->currentPolicyTitleLabel->setText(qs);
 
     oyWidgetTitleGet( oyWIDGET_POLICY, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
-    policySettingsBox->setTitle(qs);
-    kmsettingsTab->setTabText(0,qs);
+    ui->policySettingsBox->setTitle(qs);
+    ui->kmsettingsTab->setTabText(0,qs);
     qs = QString::fromLocal8Bit( tooltip );
-    policyLabel->setText(qs);
+    ui->policyLabel->setText(qs);
 
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
-    kmsettingsTab->setTabText(1,qs);
+    ui->kmsettingsTab->setTabText(1,qs);
   
     oyWidgetTitleGet( oyWIDGET_GROUP_BEHAVIOUR, NULL, &name, &tooltip, &flags );
     qs = QString::fromLocal8Bit(name);
-    kmsettingsTab->setTabText(2,qs);
+    ui->kmsettingsTab->setTabText(2,qs);
 
 #define SET_OY_PROFILE_WIDGET( widget ) \
     oyWidgetTitleGet( oyWIDGET_##widget, NULL, &name, &tooltip, &flags ); \
     qs = QString::fromLocal8Bit(name); \
-    label_##widget->setText( qs ); \
+    ui->label_##widget->setText( qs ); \
     qs = QString::fromLocal8Bit( tooltip ); \
-    label_##widget->setToolTip( qs ); \
-    combo_##widget->setToolTip( qs );
+    ui->label_##widget->setToolTip( qs ); \
+    ui->combo_##widget->setToolTip( qs );
 
 #define SET_OY_BOX_WIDGET( widget ) \
     oyWidgetTitleGet( oyWIDGET_##widget, NULL, &name, &tooltip, &flags ); \
     qs = QString::fromLocal8Bit(name); \
-    box_##widget->setTitle( qs ); \
+    ui->box_##widget->setTitle( qs ); \
     qs = QString::fromLocal8Bit( tooltip ); \
-    box_##widget->setToolTip( qs );
+    ui->box_##widget->setToolTip( qs );
 
 #define SET_OY_COMBO_WIDGET( widget ) \
     oyWidgetTitleGet( oyWIDGET_##widget, NULL, &name, &tooltip, &flags ); \
     oyOptionChoicesGet( oyWIDGET_##widget, &count, &names, &current ); \
     qs = QString::fromLocal8Bit( tooltip ); \
-    combo_##widget->setToolTip( qs ); \
-    combo_##widget->clear(); \
+    ui->combo_##widget->setToolTip( qs ); \
+    ui->combo_##widget->clear(); \
     for(i = 0; i < count; ++i) \
     { \
       qs = QString::fromLocal8Bit( names[i] ); \
-      combo_##widget->addItem( qs ); \
+      ui->combo_##widget->addItem( qs ); \
     }
 
 #define SET_OY_CHECK_WIDGET( widget ) \
     oyWidgetTitleGet( oyWIDGET_##widget, NULL, &name, &tooltip, &flags ); \
     qs = QString::fromLocal8Bit( name ); \
-    check_##widget->setText( qs ); \
+    ui->check_##widget->setText( qs ); \
     qs = QString::fromLocal8Bit( tooltip ); \
-    check_##widget->setToolTip( qs );
+    ui->check_##widget->setToolTip( qs );
 
 #define SET_OY_LABEL_WIDGET( widget ) \
     oyWidgetTitleGet( oyWIDGET_##widget, NULL, &name, &tooltip, &flags ); \
     qs = QString::fromLocal8Bit(name); \
-    label_##widget->setText( qs ); \
+    ui->label_##widget->setText( qs ); \
     qs = QString::fromLocal8Bit( tooltip ); \
-    label_##widget->setToolTip( qs );
+    ui->label_##widget->setToolTip( qs );
 
     SET_OY_PROFILE_WIDGET( EDITING_RGB );
     SET_OY_PROFILE_WIDGET( EDITING_CMYK );
@@ -157,10 +161,10 @@ SySettingsModule::SySettingsModule(QWidget * parent)
 
     // QT-related SIGNAL/SLOT functions, such as button presses and clicking
     // on a particular item.
-    connect(policySettingsList, SIGNAL(itemClicked(QListWidgetItem*)), 
+    connect(ui->policySettingsList, SIGNAL(itemClicked(QListWidgetItem*)), 
          this, SLOT(selectPolicy(QListWidgetItem*)));   
-    connect(addNewPolicyButton, SIGNAL(clicked()), this, SLOT(addNewPolicy()));
-    connect(removePolicyButton, SIGNAL(clicked()), this, SLOT(removeCustomPolicy()));
+    connect(ui->addNewPolicyButton, SIGNAL(clicked()), this, SLOT(addNewPolicy()));
+    connect(ui->removePolicyButton, SIGNAL(clicked()), this, SLOT(removeCustomPolicy()));
 
    int k = 0, n = editableComboItems.size();
    // When a user clicks on any combo box, the "Apply" button will be enabled.
@@ -205,7 +209,7 @@ void SySettingsModule::selectPolicy(QListWidgetItem* selectedPolicyItem)
      {
          isCustom = true;             // This is a custom policy.
          
-         removePolicyButton->setEnabled(true);
+         ui->removePolicyButton->setEnabled(true);
           
          oyPolicySet( selectedPolicyItem->text().toLocal8Bit(), 0 );
      }
@@ -214,7 +218,7 @@ void SySettingsModule::selectPolicy(QListWidgetItem* selectedPolicyItem)
    
      // Make sure the user doesn't delete the current policy settings!
      if(default_policy == selectedPolicyItem->text())
-         removePolicyButton->setEnabled(false);
+         ui->removePolicyButton->setEnabled(false);
 
      populateBehaviorSettings();       // Refresh settings in "Behavior Settings"
      refreshProfileSettings();         // Refresh comboboxes in "Default Profiles"
@@ -238,9 +242,9 @@ void SySettingsModule::addNewPolicy()
         int i;
         QListWidgetItem * temp_item;
 
-        for(i = 0; i < policySettingsList->count(); i++)
+        for(i = 0; i < ui->policySettingsList->count(); i++)
         {
-             temp_item = policySettingsList->item(i);
+             temp_item = ui->policySettingsList->item(i);
              if (xmlFileName == temp_item->text())
              {
                   // TODO Display "Policy exists" Error message.
@@ -249,7 +253,7 @@ void SySettingsModule::addNewPolicy()
              }
         }    
        
-        policySettingsList->addItem(xmlFileName);     // Add policy name to list.
+        ui->policySettingsList->addItem(xmlFileName);     // Add policy name to list.
     }
     else 
        return;
@@ -266,7 +270,7 @@ void SySettingsModule::addNewPolicy()
 void SySettingsModule::removeCustomPolicy()
 {
     // Remove policy from list file.
-    QListWidgetItem * deleted_item = policySettingsList->takeItem(policySettingsList->currentRow());
+    QListWidgetItem * deleted_item = ui->policySettingsList->takeItem(ui->policySettingsList->currentRow());
     savePolicy();
 
     // Remove actual Xml file from directory.
@@ -286,19 +290,19 @@ void SySettingsModule::removeCustomPolicy()
 void SySettingsModule::populateProfiles()
 {
     // Fill comboboxes with each 'filtered' profile.
-    fillProfileComboBoxes(oyEDITING_RGB, combo_EDITING_RGB);
-    fillProfileComboBoxes(oyEDITING_CMYK, combo_EDITING_CMYK);
-    fillProfileComboBoxes(oyEDITING_LAB, combo_EDITING_LAB);
-    fillProfileComboBoxes(oyEDITING_XYZ, combo_EDITING_XYZ);
-    fillProfileComboBoxes(oyEDITING_GRAY, combo_EDITING_GRAY);
+    fillProfileComboBoxes(oyEDITING_RGB, ui->combo_EDITING_RGB);
+    fillProfileComboBoxes(oyEDITING_CMYK, ui->combo_EDITING_CMYK);
+    fillProfileComboBoxes(oyEDITING_LAB, ui->combo_EDITING_LAB);
+    fillProfileComboBoxes(oyEDITING_XYZ, ui->combo_EDITING_XYZ);
+    fillProfileComboBoxes(oyEDITING_GRAY, ui->combo_EDITING_GRAY);
 
-    fillProfileComboBoxes(oyASSUMED_RGB, combo_ASSUMED_RGB);
-    fillProfileComboBoxes(oyASSUMED_CMYK, combo_ASSUMED_CMYK);
-    fillProfileComboBoxes(oyASSUMED_LAB, combo_ASSUMED_LAB);
-    fillProfileComboBoxes(oyASSUMED_XYZ, combo_ASSUMED_XYZ);
-    fillProfileComboBoxes(oyASSUMED_GRAY, combo_ASSUMED_GRAY);  
+    fillProfileComboBoxes(oyASSUMED_RGB, ui->combo_ASSUMED_RGB);
+    fillProfileComboBoxes(oyASSUMED_CMYK, ui->combo_ASSUMED_CMYK);
+    fillProfileComboBoxes(oyASSUMED_LAB, ui->combo_ASSUMED_LAB);
+    fillProfileComboBoxes(oyASSUMED_XYZ, ui->combo_ASSUMED_XYZ);
+    fillProfileComboBoxes(oyASSUMED_GRAY, ui->combo_ASSUMED_GRAY);  
 
-    fillProfileComboBoxes(oyPROFILE_PROOF, combo_PROFILE_PROOF);
+    fillProfileComboBoxes(oyPROFILE_PROOF, ui->combo_PROFILE_PROOF);
 }
 
 
@@ -308,56 +312,56 @@ void SySettingsModule::populateBehaviorSettings()
     int behavior_setting;
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_RENDERING_INTENT);
-    combo_RENDERING_INTENT->setCurrentIndex(behavior_setting);
+    ui->combo_RENDERING_INTENT->setCurrentIndex(behavior_setting);
 
 //  Populate Mismatch Handling Settings
    
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_ACTION_UNTAGGED_ASSIGN);
-    combo_ACTION_UNTAGGED_ASSIGN->setCurrentIndex(behavior_setting);
+    ui->combo_ACTION_UNTAGGED_ASSIGN->setCurrentIndex(behavior_setting);
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_ACTION_OPEN_MISMATCH_RGB);
-    combo_ACTION_OPEN_MISMATCH_RGB->setCurrentIndex(behavior_setting);
+    ui->combo_ACTION_OPEN_MISMATCH_RGB->setCurrentIndex(behavior_setting);
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_ACTION_OPEN_MISMATCH_CMYK);
-    combo_ACTION_OPEN_MISMATCH_CMYK->setCurrentIndex(behavior_setting);
+    ui->combo_ACTION_OPEN_MISMATCH_CMYK->setCurrentIndex(behavior_setting);
 
 //  Set up Proofing Settings  
   
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_RENDERING_INTENT_PROOF);
-    combo_RENDERING_INTENT_PROOF->setCurrentIndex(behavior_setting);
+    ui->combo_RENDERING_INTENT_PROOF->setCurrentIndex(behavior_setting);
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_RENDERING_BPC);
     if(behavior_setting == 1)
-         check_RENDERING_BPC->setChecked(true);
+         ui->check_RENDERING_BPC->setChecked(true);
     else 
-         check_RENDERING_BPC->setChecked(false);
+         ui->check_RENDERING_BPC->setChecked(false);
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_RENDERING_GAMUT_WARNING);
     if(behavior_setting == 1)
-         check_RENDERING_GAMUT_WARNING->setChecked(true);
+         ui->check_RENDERING_GAMUT_WARNING->setChecked(true);
     else 
-         check_RENDERING_GAMUT_WARNING->setChecked(false);
+         ui->check_RENDERING_GAMUT_WARNING->setChecked(false);
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_PROOF_SOFT);
     if(behavior_setting == 1)
-         check_PROOF_SOFT->setChecked(true);
+         ui->check_PROOF_SOFT->setChecked(true);
     else 
-         check_PROOF_SOFT->setChecked(false);
+         ui->check_PROOF_SOFT->setChecked(false);
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_PROOF_HARD);
 
     if(behavior_setting == 1)
-         check_PROOF_HARD->setChecked(true);
+         ui->check_PROOF_HARD->setChecked(true);
     else 
-         check_PROOF_HARD->setChecked(false);
+         ui->check_PROOF_HARD->setChecked(false);
 
 // Set up Mixed Color Settings
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_SCREEN);
-    combo_MIXED_MOD_DOCUMENTS_SCREEN->setCurrentIndex(behavior_setting);
+    ui->combo_MIXED_MOD_DOCUMENTS_SCREEN->setCurrentIndex(behavior_setting);
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_PRINT);
-    combo_MIXED_MOD_DOCUMENTS_PRINT->setCurrentIndex(behavior_setting);     
+    ui->combo_MIXED_MOD_DOCUMENTS_PRINT->setCurrentIndex(behavior_setting);     
 }
 
 
@@ -373,48 +377,48 @@ void SySettingsModule::refreshProfileSettings()
        under each combo box in "Default Profiles".  The combobox will then display
        the default profile.                                                     */
     xmlToString = oyGetDefaultProfileName (oyEDITING_RGB, 0); 
-    profileSearchIndex = combo_EDITING_RGB->findText( xmlToString, Qt::MatchExactly);
-    combo_EDITING_RGB->setCurrentIndex(profileSearchIndex);
+    profileSearchIndex = ui->combo_EDITING_RGB->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_EDITING_RGB->setCurrentIndex(profileSearchIndex);
      
     xmlToString = oyGetDefaultProfileName (oyEDITING_CMYK, 0);
-    profileSearchIndex = combo_EDITING_CMYK->findText( xmlToString, Qt::MatchExactly);
-    combo_EDITING_CMYK->setCurrentIndex(profileSearchIndex);
+    profileSearchIndex = ui->combo_EDITING_CMYK->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_EDITING_CMYK->setCurrentIndex(profileSearchIndex);
      
     xmlToString = oyGetDefaultProfileName (oyEDITING_XYZ, 0);
-    profileSearchIndex = combo_EDITING_XYZ->findText( xmlToString, Qt::MatchExactly);
-    combo_EDITING_XYZ->setCurrentIndex(profileSearchIndex);
+    profileSearchIndex = ui->combo_EDITING_XYZ->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_EDITING_XYZ->setCurrentIndex(profileSearchIndex);
     
     xmlToString = oyGetDefaultProfileName (oyEDITING_LAB, 0);
-    profileSearchIndex = combo_EDITING_LAB->findText( xmlToString, Qt::MatchExactly);
-    combo_EDITING_LAB->setCurrentIndex(profileSearchIndex);
+    profileSearchIndex = ui->combo_EDITING_LAB->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_EDITING_LAB->setCurrentIndex(profileSearchIndex);
 
     xmlToString = oyGetDefaultProfileName (oyEDITING_GRAY, 0);
-    profileSearchIndex = combo_EDITING_GRAY->findText( xmlToString, Qt::MatchExactly);
-    combo_EDITING_GRAY->setCurrentIndex(profileSearchIndex);  
+    profileSearchIndex = ui->combo_EDITING_GRAY->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_EDITING_GRAY->setCurrentIndex(profileSearchIndex);  
      
     xmlToString = oyGetDefaultProfileName (oyASSUMED_RGB, 0);
-    profileSearchIndex = combo_ASSUMED_RGB->findText( xmlToString, Qt::MatchExactly);
-    combo_ASSUMED_RGB->setCurrentIndex(profileSearchIndex);
+    profileSearchIndex = ui->combo_ASSUMED_RGB->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_ASSUMED_RGB->setCurrentIndex(profileSearchIndex);
      
     xmlToString = oyGetDefaultProfileName (oyASSUMED_CMYK, 0);
-    profileSearchIndex = combo_EDITING_CMYK->findText( xmlToString, Qt::MatchExactly);
-    combo_ASSUMED_CMYK->setCurrentIndex(profileSearchIndex);
+    profileSearchIndex = ui->combo_EDITING_CMYK->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_ASSUMED_CMYK->setCurrentIndex(profileSearchIndex);
      
     xmlToString = oyGetDefaultProfileName (oyASSUMED_XYZ, 0);
-    profileSearchIndex = combo_EDITING_XYZ->findText( xmlToString, Qt::MatchExactly);
-    combo_ASSUMED_XYZ->setCurrentIndex(profileSearchIndex);
+    profileSearchIndex = ui->combo_EDITING_XYZ->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_ASSUMED_XYZ->setCurrentIndex(profileSearchIndex);
     
     xmlToString = oyGetDefaultProfileName (oyASSUMED_LAB, 0);
-    profileSearchIndex = combo_ASSUMED_LAB->findText( xmlToString, Qt::MatchExactly);
-    combo_ASSUMED_LAB->setCurrentIndex(profileSearchIndex);  
+    profileSearchIndex = ui->combo_ASSUMED_LAB->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_ASSUMED_LAB->setCurrentIndex(profileSearchIndex);  
 
     xmlToString = oyGetDefaultProfileName (oyASSUMED_GRAY, 0);
-    profileSearchIndex = combo_ASSUMED_GRAY->findText( xmlToString, Qt::MatchExactly);
-    combo_ASSUMED_GRAY->setCurrentIndex(profileSearchIndex);  
+    profileSearchIndex = ui->combo_ASSUMED_GRAY->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_ASSUMED_GRAY->setCurrentIndex(profileSearchIndex);  
 
     xmlToString = oyGetDefaultProfileName (oyPROFILE_PROOF, 0);
-    profileSearchIndex = combo_PROFILE_PROOF->findText( xmlToString, Qt::MatchExactly);
-    combo_PROFILE_PROOF->setCurrentIndex(profileSearchIndex);    
+    profileSearchIndex = ui->combo_PROFILE_PROOF->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_PROFILE_PROOF->setCurrentIndex(profileSearchIndex);    
 }
 
 
@@ -428,10 +432,10 @@ void SySettingsModule::refreshPolicySettings()
     {
       selected_policy = names[current];
       // Set user selected policy as system default.
-      currentPolicyLabel->setText(selected_policy);      // Update default policy label.
+      ui->currentPolicyLabel->setText(selected_policy);      // Update default policy label.
       printf( "actual policy: %s\n", names[current] );
     } else
-      currentPolicyLabel->setText("----");
+      ui->currentPolicyLabel->setText("----");
 }
 
 
@@ -460,31 +464,31 @@ void SySettingsModule::setEditableItems(bool itemStatus)
 //  (this is convenient to detect each settings change by the user).
 void SySettingsModule::loadEditableItems()
 {      
-    editableComboItems.push_front(combo_EDITING_RGB);
-    editableComboItems.push_front(combo_EDITING_CMYK);   
-    editableComboItems.push_front(combo_EDITING_XYZ);
-    editableComboItems.push_front(combo_EDITING_LAB);
-    editableComboItems.push_front(combo_ASSUMED_RGB);
-    editableComboItems.push_front(combo_ASSUMED_CMYK);   
-    editableComboItems.push_front(combo_ASSUMED_XYZ);
-    editableComboItems.push_front(combo_ASSUMED_LAB);
+    editableComboItems.push_front(ui->combo_EDITING_RGB);
+    editableComboItems.push_front(ui->combo_EDITING_CMYK);   
+    editableComboItems.push_front(ui->combo_EDITING_XYZ);
+    editableComboItems.push_front(ui->combo_EDITING_LAB);
+    editableComboItems.push_front(ui->combo_ASSUMED_RGB);
+    editableComboItems.push_front(ui->combo_ASSUMED_CMYK);   
+    editableComboItems.push_front(ui->combo_ASSUMED_XYZ);
+    editableComboItems.push_front(ui->combo_ASSUMED_LAB);
 
-    editableComboItems.push_front(combo_EDITING_GRAY);
-    editableComboItems.push_front(combo_ASSUMED_GRAY);   
+    editableComboItems.push_front(ui->combo_EDITING_GRAY);
+    editableComboItems.push_front(ui->combo_ASSUMED_GRAY);   
      
-    editableComboItems.push_front(combo_RENDERING_INTENT);
-    editableComboItems.push_front(combo_ACTION_UNTAGGED_ASSIGN);    
-    editableComboItems.push_front(combo_ACTION_OPEN_MISMATCH_RGB);
-    editableComboItems.push_front(combo_ACTION_OPEN_MISMATCH_CMYK);
-    editableComboItems.push_front(combo_RENDERING_INTENT_PROOF);    
-    editableComboItems.push_front(combo_MIXED_MOD_DOCUMENTS_SCREEN);
-    editableComboItems.push_front(combo_MIXED_MOD_DOCUMENTS_PRINT);     
-    editableComboItems.push_front(combo_PROFILE_PROOF);
+    editableComboItems.push_front(ui->combo_RENDERING_INTENT);
+    editableComboItems.push_front(ui->combo_ACTION_UNTAGGED_ASSIGN);    
+    editableComboItems.push_front(ui->combo_ACTION_OPEN_MISMATCH_RGB);
+    editableComboItems.push_front(ui->combo_ACTION_OPEN_MISMATCH_CMYK);
+    editableComboItems.push_front(ui->combo_RENDERING_INTENT_PROOF);    
+    editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_SCREEN);
+    editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_PRINT);     
+    editableComboItems.push_front(ui->combo_PROFILE_PROOF);
 
-    editableCheckBoxItems.push_front(check_PROOF_SOFT);
-    editableCheckBoxItems.push_front(check_PROOF_HARD);
-    editableCheckBoxItems.push_front(check_RENDERING_BPC);
-    editableCheckBoxItems.push_front(check_RENDERING_GAMUT_WARNING);
+    editableCheckBoxItems.push_front(ui->check_PROOF_SOFT);
+    editableCheckBoxItems.push_front(ui->check_PROOF_HARD);
+    editableCheckBoxItems.push_front(ui->check_RENDERING_BPC);
+    editableCheckBoxItems.push_front(ui->check_RENDERING_GAMUT_WARNING);
      
 }
 
@@ -548,78 +552,78 @@ void SySettingsModule::saveSettings()
     QString stringToXml;    
     int behaviorSetting;    
    
-    stringToXml = combo_EDITING_RGB->currentText();
+    stringToXml = ui->combo_EDITING_RGB->currentText();
     oySetDefaultProfile(oyEDITING_RGB, stringToXml.toLocal8Bit()); 
  
-    stringToXml = combo_EDITING_CMYK->currentText();
+    stringToXml = ui->combo_EDITING_CMYK->currentText();
     oySetDefaultProfile(oyEDITING_CMYK, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_EDITING_XYZ->currentText();
+    stringToXml = ui->combo_EDITING_XYZ->currentText();
     oySetDefaultProfile(oyEDITING_XYZ, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_EDITING_LAB->currentText();
+    stringToXml = ui->combo_EDITING_LAB->currentText();
     oySetDefaultProfile(oyEDITING_LAB, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_EDITING_GRAY->currentText();
+    stringToXml = ui->combo_EDITING_GRAY->currentText();
     oySetDefaultProfile(oyEDITING_GRAY, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_ASSUMED_RGB->currentText();
+    stringToXml = ui->combo_ASSUMED_RGB->currentText();
     oySetDefaultProfile(oyASSUMED_RGB, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_ASSUMED_CMYK->currentText();
+    stringToXml = ui->combo_ASSUMED_CMYK->currentText();
     oySetDefaultProfile(oyASSUMED_CMYK, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_ASSUMED_LAB->currentText();
+    stringToXml = ui->combo_ASSUMED_LAB->currentText();
     oySetDefaultProfile(oyASSUMED_LAB, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_ASSUMED_XYZ->currentText();
+    stringToXml = ui->combo_ASSUMED_XYZ->currentText();
     oySetDefaultProfile(oyASSUMED_XYZ, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_ASSUMED_GRAY->currentText();
+    stringToXml = ui->combo_ASSUMED_GRAY->currentText();
     oySetDefaultProfile(oyASSUMED_GRAY, stringToXml.toLocal8Bit());
 
-    stringToXml = combo_PROFILE_PROOF->currentText();
+    stringToXml = ui->combo_PROFILE_PROOF->currentText();
     oySetDefaultProfile(oyPROFILE_PROOF, stringToXml.toLocal8Bit());
 
     //----------------------------------------------------------------
 
-    behaviorSetting = combo_RENDERING_INTENT->currentIndex();
+    behaviorSetting = ui->combo_RENDERING_INTENT->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT, behaviorSetting );
 
-    behaviorSetting = combo_ACTION_UNTAGGED_ASSIGN->currentIndex();
+    behaviorSetting = ui->combo_ACTION_UNTAGGED_ASSIGN->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_ACTION_UNTAGGED_ASSIGN, behaviorSetting );
 
-    behaviorSetting = combo_ACTION_OPEN_MISMATCH_RGB->currentIndex();
+    behaviorSetting = ui->combo_ACTION_OPEN_MISMATCH_RGB->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_ACTION_OPEN_MISMATCH_RGB , behaviorSetting );
   
-    behaviorSetting = combo_ACTION_OPEN_MISMATCH_CMYK->currentIndex();
+    behaviorSetting = ui->combo_ACTION_OPEN_MISMATCH_CMYK->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_ACTION_OPEN_MISMATCH_CMYK , behaviorSetting );
 
-    behaviorSetting = combo_RENDERING_INTENT_PROOF->currentIndex();
+    behaviorSetting = ui->combo_RENDERING_INTENT_PROOF->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT_PROOF , behaviorSetting );
 
-    behaviorSetting = combo_MIXED_MOD_DOCUMENTS_SCREEN->currentIndex();
+    behaviorSetting = ui->combo_MIXED_MOD_DOCUMENTS_SCREEN->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_SCREEN , behaviorSetting );
 
-    behaviorSetting = combo_MIXED_MOD_DOCUMENTS_PRINT->currentIndex();
+    behaviorSetting = ui->combo_MIXED_MOD_DOCUMENTS_PRINT->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_PRINT , behaviorSetting );
 
-    if (check_RENDERING_BPC->isChecked())
+    if (ui->check_RENDERING_BPC->isChecked())
         oySetBehaviour ( oyBEHAVIOUR_RENDERING_BPC , 1 );
     else
         oySetBehaviour ( oyBEHAVIOUR_RENDERING_BPC , 0 );
 
-    if (check_RENDERING_GAMUT_WARNING->isChecked())
+    if (ui->check_RENDERING_GAMUT_WARNING->isChecked())
         oySetBehaviour ( oyBEHAVIOUR_RENDERING_GAMUT_WARNING , 1 );
     else
         oySetBehaviour ( oyBEHAVIOUR_RENDERING_GAMUT_WARNING , 0 );
 
-    if (check_PROOF_SOFT->isChecked())
+    if (ui->check_PROOF_SOFT->isChecked())
         oySetBehaviour ( oyBEHAVIOUR_PROOF_SOFT , 1 );
     else
         oySetBehaviour ( oyBEHAVIOUR_PROOF_SOFT , 0 );
 
-    if (check_PROOF_HARD->isChecked())
+    if (ui->check_PROOF_HARD->isChecked())
         oySetBehaviour( oyBEHAVIOUR_PROOF_HARD , 1 );
     else 
         oySetBehaviour(oyBEHAVIOUR_PROOF_HARD  , 0 );
@@ -649,13 +653,13 @@ void SySettingsModule::savePolicy()
      QString tempProfile;
      QStringList policyList;
 
-     if ( policySettingsList->count() >= 4)
+     if ( ui->policySettingsList->count() >= 4)
      {
          QListWidgetItem * temp_item;
 
-         for (int i = 4; i < policySettingsList->count(); i++)
+         for (int i = 4; i < ui->policySettingsList->count(); i++)
          {
-              temp_item = policySettingsList->item(i);
+              temp_item = ui->policySettingsList->item(i);
               tempProfile = temp_item->text();
 
               policyList.insert(0, tempProfile);
@@ -669,11 +673,11 @@ void SySettingsModule::loadPolicy()
   const char ** names = NULL;
   int count = 0, i, current = -1;
 
-  policySettingsList->clear();
+  ui->policySettingsList->clear();
 
   oyOptionChoicesGet( oyWIDGET_POLICY, &count, &names, &current );
   for(i = 0; i < count; ++i)
-    policySettingsList->addItem( names[i] );
+    ui->policySettingsList->addItem( names[i] );
 }
 
 SySettingsModule::~SySettingsModule()

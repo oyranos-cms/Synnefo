@@ -5,6 +5,11 @@
 #include <oyranos_icc.h>
 #include <oyranos_devices.h>
 
+// Qt Designer code translation.
+#include "ui_sy_database.h"   
+#include "sy_database_config.h"
+
+
 const char * sy_database_module_name = "Database";
 
 SyDatabase::SyDatabase(QWidget * parent)
@@ -15,8 +20,9 @@ SyDatabase::SyDatabase(QWidget * parent)
     
     SyDatabaseConfig * databaseConfig = new SyDatabaseConfig(0, sy_database_module_name);
     setConfigWidget( databaseConfig );
-    
-    setupUi(this);
+
+    ui = new Ui::syDatabaseWidget();
+    ui->setupUi(this);
     
     populateTaxiProfileList();
 }
@@ -31,5 +37,5 @@ int SyDatabase::populateTaxiProfileList()
 
 SyDatabase::~SyDatabase()
 {
-  
+  delete ui;
 }

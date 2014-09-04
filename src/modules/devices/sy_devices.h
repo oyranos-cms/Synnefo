@@ -12,21 +12,20 @@
 #include "sy_devices_item.h"
 #include "sy_devices_config.h"
 
-// Qt Designer code translation.
-#include "ui_sy_devices.h"          
-
 #include <oyranos_devices.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 
-
+namespace Ui {
+  class syDevicesWidget;
+}
 
 /*****************************************************************
           Synnefo Devices Module Class Definition                *
 ******************************************************************/
 
-class SyDevicesModule : public SyModule, Ui::syDevicesWidget
+class SyDevicesModule : public SyModule
 {
     Q_OBJECT
     
@@ -130,6 +129,8 @@ private:
     void setCurrentDeviceClass(const char * name)
     { if(current_device_class) free(current_device_class);
       current_device_class = strdup(name); };
+
+    Ui::syDevicesWidget * ui;
 };
 
 

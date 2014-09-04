@@ -6,16 +6,18 @@
 #include <QSignalMapper>
 #include <QWidget>
 #include <QTemporaryFile>
+#include <QTreeWidgetItem>
 
 #include <oyranos_devices.h>
 
 #include "symodule.h"          
 #include "sy_info_dialog.h"
 
-// Qt Designer code translation.
-#include "ui_sy_info.h"          
+namespace Ui {
+  class syInfoWidget;
+}
 
-class SyInfoModule : public SyModule, Ui::syInfoWidget
+class SyInfoModule : public SyModule
 {
     Q_OBJECT
     
@@ -79,6 +81,8 @@ private:
     QTemporaryFile m_tempFile;
 
     int icc_profile_flags;              ///< profile selection flags from oyProfile_s.h
+
+    Ui::syInfoWidget * ui;
 };
 
 #endif

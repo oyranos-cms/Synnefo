@@ -3,8 +3,6 @@
 
 #include <QDialog>
 
-#include "ui_sy_info_dialog.h"
-
 
 /* Enumerations used to set tag strings in the dialog. */
 enum DialogString {
@@ -21,8 +19,12 @@ enum DialogString {
    PROFILE_PATH_TAG
 };
 
+namespace Ui {
+  class syInfoDialog;
+}
+
 /*  SyInfoDialog is a class that handles the Profile Information dialog. */
-class SyInfoDialog : public QDialog, Ui::syInfoDialog
+class SyInfoDialog : public QDialog
 {
     Q_OBJECT
     
@@ -46,7 +48,8 @@ class SyInfoDialog : public QDialog, Ui::syInfoDialog
     bool iccExaminIsInstalled(QString &iccExaminPath);
     
     QString iccExaminCommand;
-    
+
+    Ui::syInfoDialog * ui;
 };
 
 #endif

@@ -10,6 +10,9 @@
 #include "sy_info.h"
 #include "sy_info_config.h"
 
+// Qt Designer code translation.
+#include "ui_sy_info.h"          
+
 const char * sy_info_module_name = "Information";
 
 SyInfoModule::SyInfoModule(QWidget * parent)
@@ -31,17 +34,18 @@ SyInfoModule::SyInfoModule(QWidget * parent)
     // select profiles matching actual capabilities
     icc_profile_flags = oyICCProfileSelectionFlagsFromOptions( OY_CMM_STD, "//" OY_TYPE_STD "/icc_color", NULL, 0 );
 
-    setupUi(this);                  // Load Gui.
+    ui = new Ui::syInfoWidget();
+    ui->setupUi(this);                  // Load Gui.
 
     SyInfoConfig * infoConfig = new SyInfoConfig(0, sy_info_module_name);
     setConfigWidget( infoConfig );
 
     setEditable(false);
 
-    installedProfilesTree->setColumnWidth(0, 350);
-    installedProfilesTree->setColumnWidth(1, 150);
+    ui->installedProfilesTree->setColumnWidth(0, 350);
+    ui->installedProfilesTree->setColumnWidth(1, 150);
 
-    installedProfilesTree->expandAll();
+    ui->installedProfilesTree->expandAll();
 
     examineIcon.addFile(QString::fromLocal8Bit(":/resources/examine.png"),
                                   QSize(10, 10), QIcon::Normal, QIcon::On);
@@ -52,9 +56,9 @@ SyInfoModule::SyInfoModule(QWidget * parent)
     // Display oyEDITING_XYZ info for now.
     populateInstalledProfileList();
 
-    installedProfilesTree->expandAll();
+    ui->installedProfilesTree->expandAll();
 
-    connect( installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
+    connect( ui->installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
              this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
 
 }
@@ -89,7 +93,7 @@ void SyInfoModule::populateInstalledProfileList()
 {
 
     QTreeWidgetItem * devicesTree = new QTreeWidgetItem;
-    installedProfilesTree->addTopLevelItem( devicesTree );
+    ui->installedProfilesTree->addTopLevelItem( devicesTree );
 
     const char * g_name = NULL;
     oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES, NULL, &g_name,
@@ -99,19 +103,19 @@ void SyInfoModule::populateInstalledProfileList()
 
     // Save tree list parents to QTreeWidgetItem pointers.
     QTreeWidgetItem * editingCsTree = new QTreeWidgetItem;
-    installedProfilesTree->addTopLevelItem( editingCsTree );
+    ui->installedProfilesTree->addTopLevelItem( editingCsTree );
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_EDIT, NULL, &g_name,
                       NULL, NULL );
     editingCsTree->setText( ITEM_NAME, QString::fromLocal8Bit(g_name));
     QTreeWidgetItem * assumedCsTree = new QTreeWidgetItem;
-    installedProfilesTree->addTopLevelItem( assumedCsTree );
+    ui->installedProfilesTree->addTopLevelItem( assumedCsTree );
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_ASSUMED, NULL, &g_name,
                       NULL, NULL );
     assumedCsTree->setText( ITEM_NAME, QString::fromLocal8Bit(g_name));
 
     // For convenience, we expand colorspace trees.
-    installedProfilesTree->expandItem(editingCsTree);
-    installedProfilesTree->expandItem(assumedCsTree);
+    ui->installedProfilesTree->expandItem(editingCsTree);
+    ui->installedProfilesTree->expandItem(assumedCsTree);
 
     // Populate colorspace items.
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_RGB, NULL, &g_name, NULL, NULL );
@@ -165,8 +169,8 @@ void SyInfoModule::addProfileTreeItem( oyPROFILE_e profile_type, QString descrip
     QVariant v((qulonglong) oyProfile_Copy(profile,0));
     new_child->setData( ITEM_NAME, Qt::UserRole, v );
     
-    installedProfilesTree->setUniformRowHeights(false);
-    installedProfilesTree->setAllColumnsShowFocus(false);;
+    ui->installedProfilesTree->setUniformRowHeights(false);
+    ui->installedProfilesTree->setAllColumnsShowFocus(false);;
     
     parent_item->addChild(new_child);    
     

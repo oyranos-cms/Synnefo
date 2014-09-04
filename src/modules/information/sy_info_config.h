@@ -2,9 +2,10 @@
 #ifndef SY_INFO_CONFIG_H
 #define SY_INFO_CONFIG_H
 
-#include "symoduleconfig.h"
+#include <QCheckBox>
+#include <QLabel>
 
-#include "ui_sy_info_config.h"
+#include "symoduleconfig.h"
 
 class SyInfoConfig : public SyModuleConfig
 {
@@ -13,8 +14,6 @@ class SyInfoConfig : public SyModuleConfig
   public:
     SyInfoConfig(QWidget * parent = 0, QString moduleId = "");
     ~SyInfoConfig();    
-    
-    Ui::syInfoConfig ui_;
     
     void saveWidgetState();
     void loadWidgetState();

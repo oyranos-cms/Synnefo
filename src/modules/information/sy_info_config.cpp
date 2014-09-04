@@ -14,10 +14,10 @@ SyInfoConfig::SyInfoConfig (QWidget * parent, QString moduleId) :
 
 void SyInfoConfig::populateOptionGrid()
 {
-    syModuleConfigGrid->setColumnStretch(1, 50);
+    syModuleConfigGrid()->setColumnStretch(1, 50);
     
-    syModuleConfigGrid->addWidget(viewDetailOptLabel, 0,0,0);
-    syModuleConfigGrid->addWidget(viewDetailOptCheckBox, 0,1,0);  
+    syModuleConfigGrid()->addWidget(viewDetailOptLabel, 0,0,0);
+    syModuleConfigGrid()->addWidget(viewDetailOptCheckBox, 0,1,0);  
 }
 
 void SyInfoConfig::saveWidgetState()

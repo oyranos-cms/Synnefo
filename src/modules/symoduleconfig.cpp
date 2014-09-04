@@ -1,19 +1,21 @@
  
 #include "symoduleconfig.h"
+#include "ui_symoduleconfig.h"
 
 SyModuleConfig::SyModuleConfig(QWidget * parent, QString moduleName) : QWidget(parent)
 {
     moduleNameId = moduleName;
     configRegistration = QString("synnefo/modules/" + moduleNameId + "/config/");
     
-    setupUi(this);
+    ui = new Ui::syModuleConfigWidget();
+    ui->setupUi(this);
     
     loadModuleHidingState();
 }
 
 void SyModuleConfig::saveModuleHidingState()
 {
-    isHidden = hideModuleCheckBox->isChecked();
+    isHidden = ui->hideModuleCheckBox->isChecked();
   
     moduleConfig.beginGroup(configRegistration);
     moduleConfig.setValue("is_hidden", isHidden);
@@ -28,9 +30,19 @@ void SyModuleConfig::loadModuleHidingState()
     moduleConfig.endGroup();
     
     if(isHidden == true)
-      hideModuleCheckBox->setCheckState(Qt::Checked);
+      ui->hideModuleCheckBox->setCheckState(Qt::Checked);
     else if (isHidden == false)
-      hideModuleCheckBox->setCheckState(Qt::Unchecked);
+      ui->hideModuleCheckBox->setCheckState(Qt::Unchecked);
+}
+
+void SyModuleConfig::attachConfigModule(QWidget* newModule)
+{
+  ui->syModuleConfigGrid->addWidget(newModule, 0,0,0);
+}
+
+QGridLayout * SyModuleConfig::syModuleConfigGrid()
+{
+  return ui->syModuleConfigGrid;
 }
 
 void SyModuleConfig::saveWidgetState()
@@ -45,5 +57,5 @@ void SyModuleConfig::loadWidgetState()
 
 SyModuleConfig::~SyModuleConfig()
 {
-    
+  delete ui;   
 }

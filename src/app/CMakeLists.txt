@@ -21,7 +21,6 @@ include_directories(
   "${synnefo_modules_path}/devices/"
   "${synnefo_modules_path}/information/"
   "${synnefo_modules_path}/settings/"
-  "../../build/src"         # ui_ headers
   "../classes"
                    )
 

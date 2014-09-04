@@ -7,21 +7,24 @@
 
 #include "sy_info_dialog.h"
 
+#include "ui_sy_info_dialog.h"
+
 SyInfoDialog::SyInfoDialog(QWidget * parent) 
     : QDialog(parent, 0)
 {
-    setupUi(this);
+    ui = new Ui::syInfoDialog();
+    ui->setupUi(this);
 
-    dateTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_DATETIME_YEAR)) );
-    dcTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_CLASS)) );
-    manufacturerLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_MANUFACTURER)) );
-    modelTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_MODEL)) );
-    iccVersionLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_VERSION)) );
-    colorspaceLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_COLOR_SPACE)) );
-    pcsTypeLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_PCS)) );
+    ui->dateTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_DATETIME_YEAR)) );
+    ui->dcTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_CLASS)) );
+    ui->manufacturerLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_MANUFACTURER)) );
+    ui->modelTextLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_MODEL)) );
+    ui->iccVersionLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_VERSION)) );
+    ui->colorspaceLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_COLOR_SPACE)) );
+    ui->pcsTypeLabel->setText( QString::fromLocal8Bit(oyProfileSignatureName(oySIGNATURE_PCS)) );
 
-    connect( closeButton, SIGNAL( clicked() ), this, SLOT( closeDialog() ));
-    connect( launchICCExaminButton, SIGNAL(clicked()), this, SLOT(launchICCExamin())); 
+    connect( ui->closeButton, SIGNAL( clicked() ), this, SLOT( closeDialog() ));
+    connect( ui->launchICCExaminButton, SIGNAL(clicked()), this, SLOT(launchICCExamin())); 
 }
 
 
@@ -39,19 +42,19 @@ void SyInfoDialog::launchICCExamin()
     QString exec;
     
     // NOTE: This needs double-checking.
-    oyProfile_s * p = (oyProfile_s *) descriptionTagLabel->text().toULongLong();
+    oyProfile_s * p = (oyProfile_s *) ui->descriptionTagLabel->text().toULongLong();
     
     //v.toULongLong()
     
     if (!iccExaminIsInstalled(iccExaminCommand))
     {
-      launchICCExaminButton->setText(tr("For more details install ICC Examin."));
-      launchICCExaminButton->setIcon(QIcon());
+      ui->launchICCExaminButton->setText(tr("For more details install ICC Examin."));
+      ui->launchICCExaminButton->setIcon(QIcon());
       return;
     }
 
-    if(!directoryListingTag->text().isNull())
-      exec = iccExaminCommand + " -g \"" + directoryListingTag->text() + "\"&";
+    if(!ui->directoryListingTag->text().isNull())
+      exec = iccExaminCommand + " -g \"" + ui->directoryListingTag->text() + "\"&";
     else
     {
       // Write to a temporary file.
@@ -83,37 +86,37 @@ void SyInfoDialog::setDialogText( DialogString e, QString text )
     switch (e)
     {
       case COLORSPACE_TAG:
-        colorspaceTagLabel->setText( text );
+        ui->colorspaceTagLabel->setText( text );
         break;
       case COPYRIGHT_TAG:
-        copyrightTagLabel->setText( text );
+        ui->copyrightTagLabel->setText( text );
         break;
       case DATE_CREATED_TAG:
-        dateTagLabel->setText( text );
+        ui->dateTagLabel->setText( text );
         break;
       case DESCRIPTION_TAG:
-        descriptionTagLabel->setText( text );
+        ui->descriptionTagLabel->setText( text );
         break;
       case DEVICE_TAG:
-        deviceClassTagLabel->setText( text );
+        ui->deviceClassTagLabel->setText( text );
         break;
       case FILENAME_TAG:
-        filenameTagLabel->setText( text );
+        ui->filenameTagLabel->setText( text );
         break;
       case ICC_VERSION_TAG:
-        iccVerTagLabel->setText( text );
+        ui->iccVerTagLabel->setText( text );
         break;
       case MANUFACTURER_TAG:
-        mfgTagLabel->setText( text );
+        ui->mfgTagLabel->setText( text );
         break;
       case MODEL_TAG:
-        modelTagLabel->setText( text );
+        ui->modelTagLabel->setText( text );
         break;
       case PCS_TAG:
-        pcsTagLabel->setText( text );
+        ui->pcsTagLabel->setText( text );
         break;
       case PROFILE_PATH_TAG:
-        directoryListingTag->setText( text );
+        ui->directoryListingTag->setText( text );
         break;
     }
     
@@ -124,7 +127,7 @@ void SyInfoDialog::setDialogText( DialogString e, QString text )
 void SyInfoDialog::showDialog()
 {   
     this->show(); 
-    launchICCExaminButton->setText("");
+    ui->launchICCExaminButton->setText("");
 }
 
 
@@ -185,6 +188,6 @@ bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
 void SyInfoDialog::loadProfileGraph(QString fileName)
 {
     QPixmap mypix(fileName);
-    launchICCExaminButton->setIcon(QIcon(mypix));
+    ui->launchICCExaminButton->setIcon(QIcon(mypix));
 }
 

@@ -30,22 +30,26 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "symoduleconfig.h"
 
-#include "ui_sy_database_config.h"
-#include "ui_sy_database.h"      
+namespace Ui {
+  class syDatabaseConfig;
+  class syDatabaseWidget;
+}
 
-class SyDatabaseConfig : public SyModuleConfig, Ui::syDatabaseConfig
+class SyDatabaseConfig : public SyModuleConfig
 {
   Q_OBJECT
   
   public:
     SyDatabaseConfig(QWidget * parent = 0, QString moduleId = "SyDatabase");
-    ~SyDatabaseConfig();   
-    
+    ~SyDatabaseConfig();
+ 
     void loadWidgetState();
     void saveWidgetState();
-    
+
   private:
-    Ui::syDatabaseWidget ui_;    // Variable to access 'Settings' widget objects.
+    Ui::syDatabaseConfig * ui;
+    Ui::syDatabaseWidget * ui_;    // Variable to access 'Settings' widget objects.
 };
 
 #endif
+

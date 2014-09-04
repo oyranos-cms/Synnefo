@@ -6,6 +6,9 @@
 #include "sy_devices.h"
 #include "sy_devices_config.h"
 
+// Qt Designer code translation.
+#include "ui_sy_devices.h"          
+
 #include <oyranos.h>
 #include <oyranos_devices.h>
 #include <oyFilterNode_s.h>
@@ -63,47 +66,48 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
     // select profiles matching actual capabilities
     icc_profile_flags = oyICCProfileSelectionFlagsFromOptions( OY_CMM_STD, "//" OY_TYPE_STD "/icc_color", NULL, 0 );
 
-    setupUi(this);
+    ui = new Ui::syDevicesWidget;
+    ui->setupUi(this);
     
-    deviceList->setMouseTracking(true);
+    ui->deviceList->setMouseTracking(true);
 
     // Set column width of device list.
-    deviceList->setColumnWidth(0, 400);
+    ui->deviceList->setColumnWidth(0, 400);
 
     /* i18n */
     QString qs;
 
     oyWidgetTitleGet( oyWIDGET_DEVICES_RELATED, NULL, &name, &tooltip, NULL );
     qs = QString::fromLocal8Bit(tooltip);
-    relatedDeviceCheckBox->setText(qs);
+    ui->relatedDeviceCheckBox->setText(qs);
     oyWidgetDescriptionGet( oyWIDGET_DEVICES_RELATED, &description, 0 );
     qs = QString::fromLocal8Bit(description);
-    relatedDeviceCheckBox->setToolTip(qs);
+    ui->relatedDeviceCheckBox->setToolTip(qs);
 
     oyWidgetTitleGet( oyWIDGET_GROUP_DEVICES_PROFILES_TAXI, NULL, &name, &tooltip, NULL );
     qs = QString::fromLocal8Bit(tooltip);
-    taxiGroupBox->setTitle(qs);
+    ui->taxiGroupBox->setTitle(qs);
     oyWidgetDescriptionGet( oyWIDGET_GROUP_DEVICES_PROFILES_TAXI, &description, 0 );
     qs = QString::fromLocal8Bit(description);
-    deviceProfileTaxiDBComboBox->setToolTip(qs);
+    ui->deviceProfileTaxiDBComboBox->setToolTip(qs);
 
     oyWidgetTitleGet( oyWIDGET_TAXI_PROFILE_INSTALL, NULL, &name, &tooltip, NULL );
     qs = QString::fromLocal8Bit(tooltip);
-    installProfileButton->setText(qs);
+    ui->installProfileButton->setText(qs);
     // first select a device, then we can do something useful
-    installProfileButton->setEnabled(false);
+    ui->installProfileButton->setEnabled(false);
 
     // Load directories and device listing.
     populateDeviceListing();
     
     // Expand list for user.
-    deviceList->expandAll();
+    ui->deviceList->expandAll();
     
-    connect( relatedDeviceCheckBox, SIGNAL(stateChanged( int )),
+    connect( ui->relatedDeviceCheckBox, SIGNAL(stateChanged( int )),
              this, SLOT( updateDeviceItems( int )) );
-    connect( deviceList, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
+    connect( ui->deviceList, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
              this, SLOT(changeDeviceItem(QTreeWidgetItem*,int)) );
-    connect( installProfileButton, SIGNAL(clicked()),
+    connect( ui->installProfileButton, SIGNAL(clicked()),
 	     this, SLOT(installTaxiProfile()));
     init = false;
 }
@@ -124,7 +128,7 @@ int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfi
 
 void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool new_device )
 {
-  QWidget * w = deviceList->itemWidget(selected_device, SyDevicesModule::ITEM_COMBOBOX);
+  QWidget * w = ui->deviceList->itemWidget(selected_device, SyDevicesModule::ITEM_COMBOBOX);
   if(!w) return;
 
   QLayout * layout = w->layout();
@@ -132,8 +136,8 @@ void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool
 
     if(!selected_device)
     {
-      deviceProfileTaxiDBComboBox->clear();
-      deviceProfileTaxiDBComboBox->setEnabled(false);
+      ui->deviceProfileTaxiDBComboBox->clear();
+      ui->deviceProfileTaxiDBComboBox->setEnabled(false);
 
       return;
     }
@@ -142,7 +146,7 @@ void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool
     QTreeWidgetItem * parent = selected_device->parent();
     if (parent == NULL)
     {
-      deviceProfileTaxiDBComboBox->setEnabled(false);
+      ui->deviceProfileTaxiDBComboBox->setEnabled(false);
 
       return;
     }
@@ -151,7 +155,7 @@ void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool
     listModified = false;
 
     // If we click on a device item, the current device is stored and options are available.
-    deviceProfileTaxiDBComboBox->setEnabled(true);
+    ui->deviceProfileTaxiDBComboBox->setEnabled(true);
 
     currentDevice = selected_device;
 
@@ -197,9 +201,9 @@ void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool
 void SyDevicesModule::updateDeviceItems(int state)
 {
     init = true;  // skip signals in changeDeviceItem
-    for(int i = 0; i < deviceList->topLevelItemCount(); ++i)
+    for(int i = 0; i < ui->deviceList->topLevelItemCount(); ++i)
     {
-      QTreeWidgetItem* device_class_item = deviceList->topLevelItem(i);
+      QTreeWidgetItem* device_class_item = ui->deviceList->topLevelItem(i);
       for(int j = 0; j < device_class_item->childCount(); ++j)
       {
         QTreeWidgetItem * deviceItem = device_class_item->child(j);
@@ -217,9 +221,9 @@ void SyDevicesModule::changeDeviceItem(int pos)
   {
     SyDevicesItem * device_item = combo->getParent();
     // unselect all tree items
-    for(int i = 0; i < deviceList->topLevelItemCount(); ++i)
+    for(int i = 0; i < ui->deviceList->topLevelItemCount(); ++i)
     {
-      QTreeWidgetItem* device_class_item = deviceList->topLevelItem(i);
+      QTreeWidgetItem* device_class_item = ui->deviceList->topLevelItem(i);
       for(int j = 0; j < device_class_item->childCount(); ++j)
       {
         QTreeWidgetItem * deviceItem = device_class_item->child(j);
@@ -258,13 +262,13 @@ void SyDevicesModule::changeDeviceItem(int pos)
 // When the user clicks on an item in the devices tree list.
 void SyDevicesModule::changeDeviceItem(QTreeWidgetItem * selected_device, int pos)
 {
-    deviceProfileTaxiDBComboBox->clear();
-    installProfileButton->setEnabled(false);
+    ui->deviceProfileTaxiDBComboBox->clear();
+    ui->installProfileButton->setEnabled(false);
 
-    QWidget * w = deviceList->itemWidget(selected_device, SyDevicesModule::ITEM_COMBOBOX);
+    QWidget * w = ui->deviceList->itemWidget(selected_device, SyDevicesModule::ITEM_COMBOBOX);
     if(!w)
     {
-      deviceProfileTaxiDBComboBox->setEnabled(false);
+      ui->deviceProfileTaxiDBComboBox->setEnabled(false);
       return;
     }
 
@@ -295,10 +299,10 @@ void SyDevicesModule::changeDeviceItem(QTreeWidgetItem * selected_device, int po
     oyConfig_s * device = getCurrentDevice();
     if(device)
     {
-      deviceProfileTaxiDBComboBox->clear();
+      ui->deviceProfileTaxiDBComboBox->clear();
 
       // msgWidget->setMessageType(QMessageBox::Information);
-      msgWidget->setText(i18n("Looking for Device Profiles in Taxi DB ..."));
+      ui->msgWidget->setText(i18n("Looking for Device Profiles in Taxi DB ..."));
 
       TaxiLoad * loader = new TaxiLoad( oyConfig_Copy( device, oyObject_New() ) );
       connect(loader, SIGNAL(finishedSignal( char *, oyConfigs_s * )), this, SLOT( getTaxiSlot( char*, oyConfigs_s* )));
@@ -307,13 +311,13 @@ void SyDevicesModule::changeDeviceItem(QTreeWidgetItem * selected_device, int po
       /* clear */
       oyConfig_Release( &device );
     } else
-      deviceProfileTaxiDBComboBox->setEnabled(false);
+      ui->deviceProfileTaxiDBComboBox->setEnabled(false);
 }
 
 void SyDevicesModule::installTaxiProfile()
 {
     // msgWidget->setMessageType(QMessageBox::Information);
-    msgWidget->setText(i18n("Downloading Profile from Taxi DB ..."));
+    ui->msgWidget->setText(i18n("Downloading Profile from Taxi DB ..."));
 
     QTimer::singleShot(100, this, SLOT(downloadFromTaxiDB()));
 }
@@ -324,7 +328,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
     oyOptions_s * options = 0;
     char * id = (char*)calloc(sizeof(char), 1024);
 
-    snprintf(id, 1024, "%s/0", deviceProfileTaxiDBComboBox->itemData(deviceProfileTaxiDBComboBox->currentIndex()).toString().toStdString().c_str());
+    snprintf(id, 1024, "%s/0", ui->deviceProfileTaxiDBComboBox->itemData(ui->deviceProfileTaxiDBComboBox->currentIndex()).toString().toStdString().c_str());
 
     oyOptions_SetFromText(&options, "//" OY_TYPE_STD "/db/TAXI_id",
                           id,
@@ -342,27 +346,27 @@ void SyDevicesModule::downloadFromTaxiDB( )
 
     if(!ip) {
         // msgWidget->setMessageType(QMessageBox::Information);
-	msgWidget->setText(i18n("No valid profile obtained"));
+	ui->msgWidget->setText(i18n("No valid profile obtained"));
     }
 
     if(error == oyERROR_DATA_AMBIGUITY) {
 	// msgWidget->setMessageType(QMessageBox::Information);
-	msgWidget->setText(i18n("Profile already installed"));
+	ui->msgWidget->setText(i18n("Profile already installed"));
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )) );
         updateProfileList( currentDevice, false );
     } else if(error == oyERROR_DATA_WRITE) {
 	// msgWidget->setMessageType(QMessageBox::Error);
-	msgWidget->setText(i18n("User Path can not be written"));
+	ui->msgWidget->setText(i18n("User Path can not be written"));
     } else if(error == oyCORRUPTED) {
 	// msgWidget->setMessageType(QMessageBox::Error);
-	msgWidget->setText(i18n("Profile not useable"));
+	ui->msgWidget->setText(i18n("Profile not useable"));
     } else if(error > 0) {
 	QString text = i18n("Internal error") + " - " + QString::number(error);
 	// msgWidget->setMessageType(QMessageBox::Error);
-	msgWidget->setText(text);
+	ui->msgWidget->setText(text);
     } else {
 	// msgWidget->setMessageType(QMessageBox::Positive);
-	msgWidget->setText(i18n("Profile has been installed"));
+	ui->msgWidget->setText(i18n("Profile has been installed"));
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )) );
         updateProfileList( currentDevice, false );
     }
@@ -396,7 +400,7 @@ void SyDevicesModule::getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices
     {
       QString text = i18n("wrong device") + " ... " + QString::fromLocal8Bit(for_device);
       if(oy_debug)
-        msgWidget->setText(text);
+        ui->msgWidget->setText(text);
       goto clean_getTaxiSlot;
     }
 
@@ -409,19 +413,19 @@ void SyDevicesModule::getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices
 	    QString text = "[" + QString::number(rank) + "]";
 	    text += " ";
 	    text += oyConfig_FindString(taxi_device, "TAXI_profile_description", 0);
-	    deviceProfileTaxiDBComboBox->addItem(text, oyConfig_FindString(taxi_device, "TAXI_id", 0));
+	    ui->deviceProfileTaxiDBComboBox->addItem(text, oyConfig_FindString(taxi_device, "TAXI_id", 0));
 	}
         oyConfig_Release(&taxi_device);
     }
 
     // msgWidget->setMessageType(QMessageBox::Information);
-    if (deviceProfileTaxiDBComboBox->count() > 0) {
-	msgWidget->setText(i18n("You can select and install a profile"));
-	installProfileButton->setEnabled(true);
-        deviceProfileTaxiDBComboBox->setEnabled(true);
+    if (ui->deviceProfileTaxiDBComboBox->count() > 0) {
+	ui->msgWidget->setText(i18n("You can select and install a profile"));
+	ui->installProfileButton->setEnabled(true);
+        ui->deviceProfileTaxiDBComboBox->setEnabled(true);
     } else {
-	msgWidget->setText(i18n("Not found any profile for the selected device in Taxi DB"));
-	installProfileButton->setEnabled(false);
+	ui->msgWidget->setText(i18n("Not found any profile for the selected device in Taxi DB"));
+	ui->installProfileButton->setEnabled(false);
     }
 
   clean_getTaxiSlot:
@@ -444,8 +448,8 @@ void SyDevicesModule::setProfile( QString baseFileName )
     setCurrentDeviceName(raw_string.data());
 
     // Update column width of device list.
-    for(int i = 0; i < deviceList->columnCount(); i++)
-        deviceList->resizeColumnToContents(i);
+    for(int i = 0; i < ui->deviceList->columnCount(); i++)
+        ui->deviceList->resizeColumnToContents(i);
 
     // Get the device that the user selected.
     oyConfig_s * device = 0;
@@ -459,8 +463,8 @@ void SyDevicesModule::updateLocalProfileList(QTreeWidgetItem * selected_device,
 {
     if(!selected_device)
     {
-      deviceProfileTaxiDBComboBox->clear();
-      deviceProfileTaxiDBComboBox->setEnabled(false);
+      ui->deviceProfileTaxiDBComboBox->clear();
+      ui->deviceProfileTaxiDBComboBox->setEnabled(false);
 
       return;
     }
@@ -468,7 +472,7 @@ void SyDevicesModule::updateLocalProfileList(QTreeWidgetItem * selected_device,
     // Don't count top parent items as a "selected device".
     if (selected_device->parent() == NULL)
     {
-      deviceProfileTaxiDBComboBox->setEnabled(false);
+      ui->deviceProfileTaxiDBComboBox->setEnabled(false);
 
       return;
     }
@@ -477,7 +481,7 @@ void SyDevicesModule::updateLocalProfileList(QTreeWidgetItem * selected_device,
     listModified = false;
 
     // If we click on a device item, the current device is stored and options are available.
-    deviceProfileTaxiDBComboBox->setEnabled(true);
+    ui->deviceProfileTaxiDBComboBox->setEnabled(true);
 
     currentDevice = selected_device;
 
@@ -611,7 +615,7 @@ int SyDevicesModule::detectDevices(const char * device_type)
         device_class_item->setText( ITEM_MAIN, QString::fromLocal8Bit(device_class_ui) );
         QVariant v( device_class );
         device_class_item->setData( 0, Qt::UserRole, v );
-        deviceList->insertTopLevelItem( ITEM_MAIN, device_class_item );
+        ui->deviceList->insertTopLevelItem( ITEM_MAIN, device_class_item );
 
         QIcon device_icon;
         QSize icon_size(64, 64);
@@ -700,7 +704,7 @@ int SyDevicesModule::detectDevices(const char * device_type)
             w->setLayout(layout);
  
             device_class_item->addChild( deviceItem );
-            deviceList->setItemWidget( deviceItem, ITEM_COMBOBOX, w);
+            ui->deviceList->setItemWidget( deviceItem, ITEM_COMBOBOX, w);
 
             updateProfileList( deviceItem, false );
 
@@ -770,7 +774,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, icProfil
     profile_file_name = oyProfile_GetFileName( profile, 0 );
 
     Qt::CheckState show_only_device_related = 
-                                          relatedDeviceCheckBox->checkState();
+                                          ui->relatedDeviceCheckBox->checkState();
     int empty_added = -1;
 
     for( i = 0; i < size; ++i)
@@ -1108,5 +1112,5 @@ QString SyDevicesModule::convertFilenameToDescription(QString profileFilename)
 
 SyDevicesModule::~SyDevicesModule()
 {
-  
+  delete ui; 
 }

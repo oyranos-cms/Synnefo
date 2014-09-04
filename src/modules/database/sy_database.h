@@ -1,19 +1,16 @@
 
 #include "symodule.h"
 
-// Qt Designer code translation.
-#include "ui_sy_database.h"   
-#include "sy_database_config.h"
-
-
 
 /*****************************************************************
           Synnefo Database Module Class Definition               *
 ******************************************************************/
 
+namespace Ui {
+  class syDatabaseWidget;
+}
 
-
-class SyDatabase : public SyModule, Ui::syDatabaseWidget
+class SyDatabase : public SyModule
 {
     Q_OBJECT
     
@@ -23,4 +20,5 @@ public:
     
 private:
     int populateTaxiProfileList();    
+    Ui::syDatabaseWidget * ui;
 };
