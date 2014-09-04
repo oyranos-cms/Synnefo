@@ -30,17 +30,17 @@ set( synnefo-common_PUBLIC
 
     # module config
     modules/symoduleconfig.h
-)
-
-set( synnefo-common_MOC_HEADERS
-    # config
-    ${synnefo-common_PUBLIC}
 
     # modules
     modules/database/sy_database.h
     modules/devices/sy_devices.h
     modules/information/sy_info.h
     modules/settings/sy_settings.h    
+)
+
+set( synnefo-common_MOC_HEADERS
+    # config
+    ${synnefo-common_PUBLIC}
 
     modules/devices/sy_devices_config.h
 
@@ -108,7 +108,13 @@ ENDIF()
 
 
 INSTALL (TARGETS synnefo-common DESTINATION lib${LIB_SUFFIX})
-INSTALL (FILES ${synnefo-common_PUBLIC} DESTINATION include/${PROJECT_NAME})
+INSTALL (FILES ${synnefo-common_PUBLIC}
+               modules/symodule.h
+               modules/devices/sy_devices_config.h
+               modules/devices/sy_devices_item.h
+               modules/information/sy_info_dialog.h
+               modules/settings/sy_settings_config.h
+         DESTINATION include/${PROJECT_NAME})
 
 add_subdirectory(app)
 
