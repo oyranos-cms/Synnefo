@@ -97,17 +97,25 @@ QT4_WRAP_UI (synnefo-common_SRCS ${synnefo-common_UIs})
 
 QT4_WRAP_CPP(synnefo-common_SRCS ${synnefo-common_MOC_HEADERS})
 
-
 add_library(synnefo-common SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
+add_library(synnefo-common-static STATIC ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
+
+# versions for libraries
+SET_TARGET_PROPERTIES(   synnefo-common synnefo-common-static
+    PROPERTIES VERSION   ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_MICRO_VERSION}}
+               SOVERSION ${${PROJECT_NAME}_MAJOR_VERSION}}
+                     )
 
 IF(WIN32)
+  target_link_libraries(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
   target_link_libraries(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
 ELSE()
+  target_link_libraries(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
   target_link_libraries(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
 ENDIF()
 
 
-INSTALL (TARGETS synnefo-common DESTINATION lib${LIB_SUFFIX})
+INSTALL (TARGETS synnefo-common synnefo-common-static DESTINATION lib${LIB_SUFFIX})
 INSTALL (FILES ${synnefo-common_PUBLIC}
                modules/symodule.h
                modules/devices/sy_devices_config.h
