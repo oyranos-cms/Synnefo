@@ -4,12 +4,15 @@
 
 #include <QWidget>
 #include <QSettings>
-#include <QCheckBox>
+#include <QDialog>
 
-#include "ui_synnefo-config.h"
 #include "symodule.h"
 
-class SyConfig : public QDialog, Ui::syConfigDialog
+namespace Ui {
+  class syConfigDialog;
+}
+
+class SyConfig : public QDialog
 {
   Q_OBJECT
   
@@ -31,6 +34,7 @@ class SyConfig : public QDialog, Ui::syConfigDialog
     void changeModuleStatus( bool );
     
   private:
+    Ui::syConfigDialog * ui;
     
     void setModuleHiding(int, bool);
     

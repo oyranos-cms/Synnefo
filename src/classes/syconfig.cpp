@@ -1,3 +1,4 @@
+#include "ui_synnefo-config.h"
 #include "syconfig.h"
 
 extern int synnefo_module_count;
@@ -5,16 +6,16 @@ extern int synnefo_module_count;
 SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent) 
      : QDialog(parent, 0)
 {
-  
-    setupUi(this);     
+    ui = new Ui::syConfigDialog();
+    ui->setupUi(this);     
     
     module_list = QList <SyModule*> (modules);
        
     loadState();
     
-    connect(okButton, SIGNAL(clicked()), this, SLOT(closeAndSaveDialog()));
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
-    connect(availableModuleList, SIGNAL (currentRowChanged (int)),
+    connect(ui->okButton, SIGNAL(clicked()), this, SLOT(closeAndSaveDialog()));
+    connect(ui->cancelButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
+    connect(ui->availableModuleList, SIGNAL (currentRowChanged (int)),
               this, SLOT (changeModuleConfig (int)));
 /*
     connect( hideModuleCheckBox, SIGNAL (clicked (bool)),
@@ -30,9 +31,9 @@ void SyConfig::setModuleHiding (int moduleIndex, bool newHidingStatus)
     (module_list.at(moduleIndex))->setHiding(newHidingStatus);
 
     if (newHidingStatus == true)
-       ( availableModuleList->item(moduleIndex) )->setText(moduleName + " <HIDDEN>");
+       ( ui->availableModuleList->item(moduleIndex) )->setText(moduleName + " <HIDDEN>");
     else if (newHidingStatus == false)
-       ( availableModuleList->item(moduleIndex) )->setText(moduleName);
+       ( ui->availableModuleList->item(moduleIndex) )->setText(moduleName);
     
     mainConfig.beginGroup("modulesVisible");
     mainConfig.setValue(moduleName, newHidingStatus); 
@@ -43,7 +44,7 @@ void SyConfig::setModuleHiding (int moduleIndex, bool newHidingStatus)
 void SyConfig::changeModuleStatus( bool newState )
 {
   
-    int currentIndex = availableModuleList->currentRow();
+    int currentIndex = ui->availableModuleList->currentRow();
         
     if (newState == true) 
        setModuleHiding( currentIndex, true );
@@ -66,9 +67,9 @@ void SyConfig::loadState()
       moduleName = currentConfig->getModuleName();
       
       if(currentConfig->isHiding())
-        availableModuleList->addItem(moduleName + " <HIDDEN>");
+        ui->availableModuleList->addItem(moduleName + " <HIDDEN>");
       else
-        availableModuleList->addItem(moduleName);  
+        ui->availableModuleList->addItem(moduleName);  
       
 
     }
@@ -93,22 +94,22 @@ void SyConfig::saveState()
 void SyConfig::changeModuleConfig( int rowIndex )
 {
     // Pop the previous widget off the stackedWidget.
-    QWidget * previousWidget = moduleConfigStack->currentWidget();    
-    moduleConfigStack->removeWidget( previousWidget );
+    QWidget * previousWidget = ui->moduleConfigStack->currentWidget();    
+    ui->moduleConfigStack->removeWidget( previousWidget );
     
-    QString moduleName = (availableModuleList->item(rowIndex))->text();       
+    QString moduleName = (ui->availableModuleList->item(rowIndex))->text();       
     
     int i;
     for (i = 0; i < synnefo_module_count; i++)
     {
         if (moduleName == (module_list.at(i))->getName())
         {
-            (module_list.at(i))->attachConfigWidget( moduleConfigStack );
+            (module_list.at(i))->attachConfigWidget( ui->moduleConfigStack );
             break;
 	}
     }
       
-    (module_list.at(rowIndex))->attachConfigWidget( moduleConfigStack ); 
+    (module_list.at(rowIndex))->attachConfigWidget( ui->moduleConfigStack ); 
     
     /*
     bool moduleHideState = (module_list.at(rowIndex))->isHiding();
@@ -133,6 +134,5 @@ void SyConfig::closeAndSaveDialog()
 
 SyConfig::~SyConfig() 
 {        
- 
-
+  delete ui;
 }
