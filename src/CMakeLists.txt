@@ -102,8 +102,8 @@ add_library(synnefo-common-static STATIC ${synnefo-common_SRCS} ${synnefo-common
 
 # versions for libraries
 SET_TARGET_PROPERTIES(   synnefo-common synnefo-common-static
-    PROPERTIES VERSION   ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_MICRO_VERSION}}
-               SOVERSION ${${PROJECT_NAME}_MAJOR_VERSION}}
+    PROPERTIES VERSION   ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_MICRO_VERSION}
+               SOVERSION ${${PROJECT_NAME}_MAJOR_VERSION}
                      )
 
 IF(WIN32)
