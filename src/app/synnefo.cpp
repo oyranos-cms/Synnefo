@@ -27,9 +27,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "synnefo.h"
 
 
-// Assume we have the three default modules currently installed.
-int synnefo_module_count = 3;
-
 
 SynnefoApp::SynnefoApp(QWidget * parent)
     : QMainWindow(parent)
@@ -79,7 +76,8 @@ void SynnefoApp::changeModuleSelection(int rowIndex)
     
     QString moduleName = (syModuleListView->item(rowIndex))->text();       
     
-    int i;
+    int i,
+        synnefo_module_count = moduleList.count();
     for (i = 0; i < synnefo_module_count; i++) {
         if (moduleName == (moduleList.at(i))->getName()) {
 
@@ -158,7 +156,8 @@ void SynnefoApp::loadSyModules()
 void SynnefoApp::refreshModuleList()
 /*  Post: Updates the module listing in the Synnefo dialog. */
 {
-    int i = 0;
+    int i = 0,
+        synnefo_module_count = moduleList.count();
     QString moduleName = "";
     SyModule * currentModule = 0;
 

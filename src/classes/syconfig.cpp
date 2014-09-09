@@ -1,8 +1,6 @@
 #include "ui_synnefo-config.h"
 #include "syconfig.h"
 
-extern int synnefo_module_count;
-
 SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent) 
      : QDialog(parent, 0)
 {
@@ -55,10 +53,11 @@ void SyConfig::changeModuleStatus( bool newState )
 
 void SyConfig::loadState()
 {   
-    int i = 0;
+    int i = 0,
+        synnefo_module_count = module_list.count();
     QString moduleName = "";
     SyModuleConfig * currentConfig = 0;
-    
+
     for (i = 0; i < synnefo_module_count; i++)    
     {
       currentConfig = (SyModuleConfig*)module_list.at(i)->getConfigWidget();
@@ -79,7 +78,8 @@ void SyConfig::loadState()
 void SyConfig::saveState()
 {
   
-    int i = 0;
+    int i = 0,
+        synnefo_module_count = module_list.count();
     SyModuleConfig * currentConfig = 0;
     
     for (i = 0; i < synnefo_module_count; i++)
@@ -99,7 +99,8 @@ void SyConfig::changeModuleConfig( int rowIndex )
     
     QString moduleName = (ui->availableModuleList->item(rowIndex))->text();       
     
-    int i;
+    int i,
+        synnefo_module_count = module_list.count();
     for (i = 0; i < synnefo_module_count; i++)
     {
         if (moduleName == (module_list.at(i))->getName())
