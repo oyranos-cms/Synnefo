@@ -25,17 +25,22 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include "synnefo.h"
+#include <oyranos.h>
 
-
+extern "C" {
+int oyGuiMessageFunc( int code, void * c, const char * format, ... );
+}
 
 SynnefoApp::SynnefoApp(QWidget * parent)
     : QMainWindow(parent)
 {   
+    oyMessageFuncSet( oyGuiMessageFunc );
+
     setupUi(this);        // Initialize main Synnefo Ui.
-    
+
     // Check if running is Synnefo for the first time.
     isFirstRun = configuration.value("first-run", true).toBool();
-        
+   
     loadSyModules();
     
     // NOTE We shall hide the "Application Settings" until the code is done.
