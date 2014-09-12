@@ -347,21 +347,26 @@ void SyDevicesModule::downloadFromTaxiDB( )
     if(!ip) {
         // msgWidget->setMessageType(QMessageBox::Information);
 	ui->msgWidget->setText(i18n("No valid profile obtained"));
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("No valid profile obtained").toLocal8Bit().data());
     }
 
     if(error == oyERROR_DATA_AMBIGUITY) {
 	// msgWidget->setMessageType(QMessageBox::Information);
 	ui->msgWidget->setText(i18n("Profile already installed"));
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("Profile already installed").toLocal8Bit().data());
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )) );
         updateProfileList( currentDevice, false );
     } else if(error == oyERROR_DATA_WRITE) {
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(i18n("User Path can not be written"));
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("User Path can not be written").toLocal8Bit().data());
     } else if(error == oyCORRUPTED) {
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(i18n("Profile not useable"));
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("Profile not useable").toLocal8Bit().data());
     } else if(error > 0) {
 	QString text = i18n("Internal error") + " - " + QString::number(error);
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", text.toLocal8Bit().data());
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(text);
     } else {
