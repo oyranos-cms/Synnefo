@@ -27,10 +27,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "synnefo.h"
 #include <oyranos.h>
 
-extern "C" {
-int oyGuiMessageFunc( int code, void * c, const char * format, ... );
-}
-
 SynnefoApp::SynnefoApp(QWidget * parent)
     : QMainWindow(parent)
 {   
