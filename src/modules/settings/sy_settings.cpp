@@ -163,6 +163,8 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     // on a particular item.
     connect(ui->policySettingsList, SIGNAL(itemClicked(QListWidgetItem*)), 
          this, SLOT(selectPolicy(QListWidgetItem*)));   
+    connect(ui->currentPolicyCombo, SIGNAL(activated(int)), 
+         this, SLOT(selectPolicy(int)));   
     connect(ui->addNewPolicyButton, SIGNAL(clicked()), this, SLOT(addNewPolicy()));
     connect(ui->removePolicyButton, SIGNAL(clicked()), this, SLOT(removeCustomPolicy()));
 
@@ -181,7 +183,6 @@ SySettingsModule::SySettingsModule(QWidget * parent)
 // ******* SIGNAL/SLOT Functions *******
 
 
-// Last "clicked on" policy by the user.
 void SySettingsModule::selectPolicy(QListWidgetItem* selectedPolicyItem)
 {
     // If user makes a settings change, and then clicks on a different policy...
@@ -202,29 +203,20 @@ void SySettingsModule::selectPolicy(QListWidgetItem* selectedPolicyItem)
      if(!selectedPolicyItem)
        return;
 
-     char * full_name = 0;
-     oyPolicyFileNameGet( selected_policy.toLocal8Bit(), &full_name, malloc );
-     QFile file( full_name );
-     if(file.permissions() & QFile::WriteOwner)
-     {
-         isCustom = true;             // This is a custom policy.
-         
-         ui->removePolicyButton->setEnabled(true);
-          
-         oyPolicySet( selectedPolicyItem->text().toLocal8Bit(), 0 );
-     }
-     if(full_name) free( full_name );
+     checkPolicy(1);
+}
 
-   
-     // Make sure the user doesn't delete the current policy settings!
-     if(default_policy == selectedPolicyItem->text())
-         ui->removePolicyButton->setEnabled(false);
+// Selected policy from combo box by the user.
+void SySettingsModule::selectPolicy(int current)
+{
+     selected_policy = ui->currentPolicyCombo->currentText();
 
-     populateBehaviorSettings();       // Refresh settings in "Behavior Settings"
-     refreshProfileSettings();         // Refresh comboboxes in "Default Profiles"
-     refreshPolicySettings();
+     if(!selected_policy.count())
+       return;
 
-     setEditableItems(isCustom);
+     oyPolicySet( selected_policy.toLocal8Bit(), 0 );
+
+     checkPolicy(0);
 }
 
 
@@ -428,14 +420,18 @@ void SySettingsModule::refreshPolicySettings()
     int count = 0, current = -1;
     const char ** names = 0;
     oyOptionChoicesGet( oyWIDGET_POLICY, &count, &names, &current );
+
+    ui->currentPolicyCombo->clear();
+    for(int i = 0; i < count; ++i)
+      ui->currentPolicyCombo->insertItem(i, names[i], 0);
+
+    ui->currentPolicyCombo->setCurrentIndex(-1);
     if(names && count && current >= 0)
     {
       selected_policy = names[current];
       // Set user selected policy as system default.
-      ui->currentPolicyLabel->setText(selected_policy);      // Update default policy label.
-      printf( "actual policy: %s\n", names[current] );
-    } else
-      ui->currentPolicyLabel->setText("----");
+      ui->currentPolicyCombo->setCurrentIndex(current);
+    }
 }
 
 
@@ -667,6 +663,47 @@ void SySettingsModule::savePolicy()
          }
      }
 }
+
+// check if the current policy is editable
+void SySettingsModule::checkPolicy(int set)
+{
+     if(!selected_policy.count())
+       return;
+
+     char * full_name = 0;
+     oyPolicyFileNameGet( selected_policy.toLocal8Bit(), &full_name, malloc );
+     QFile file( full_name );
+     if(file.permissions() & QFile::WriteOwner)
+     {
+         isCustom = true;             // This is a custom policy.
+         
+         ui->removePolicyButton->setEnabled(true);
+
+         if(set)
+           oyPolicySet( selected_policy.toLocal8Bit(), 0 );
+     }
+     if(full_name) free( full_name );
+
+   
+     // Make sure the user doesn't delete the current policy settings!
+     if(default_policy == selected_policy)
+         ui->removePolicyButton->setEnabled(false);
+
+
+     for (int i = 0; i < ui->policySettingsList->count(); i++)
+     {
+       QListWidgetItem * temp_item = ui->policySettingsList->item(i);
+       if(selected_policy == temp_item->text())
+         ui->policySettingsList->setCurrentRow(i);
+     }
+
+     populateBehaviorSettings();       // Refresh settings in "Behavior Settings"
+     refreshProfileSettings();         // Refresh comboboxes in "Default Profiles"
+     refreshPolicySettings();
+
+     setEditableItems(isCustom);
+}
+
 
 // Function to load the installed policies in system.
 void SySettingsModule::loadPolicy()

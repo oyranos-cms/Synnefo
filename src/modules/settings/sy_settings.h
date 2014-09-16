@@ -29,6 +29,7 @@ private slots:
 
     // Refreshes which policy is currently highlighted/selected.
     void selectPolicy(QListWidgetItem*);
+    void selectPolicy(int);
 
     // Function used when user clicks on "Add Custom Policy".
     void addNewPolicy();
@@ -73,6 +74,9 @@ private:
 
     // Load policies
     void loadPolicy();
+
+    // check current policy
+    void checkPolicy(int set_policy);
 
     // Set up all available widgets that are editable into lists.
     void loadEditableItems();
