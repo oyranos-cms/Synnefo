@@ -1,0 +1,11 @@
+synnefo (0.9.5-1) unstable; urgency=low
+
+  * Oyranos API changes
+
+ -- Kai-Uwe Behrmann (oy) <oy@oyranos.org>  Tue, 15 Jan 2013 12:00:00 +0100
+
+synnefo (0.9.4-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Kai-Uwe Behrmann (oy) <oy@oyranos.org>  Tue, 15 Jan 2013 12:00:00 +0100

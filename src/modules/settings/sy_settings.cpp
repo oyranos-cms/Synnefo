@@ -161,10 +161,10 @@ SySettingsModule::SySettingsModule(QWidget * parent)
 
     // QT-related SIGNAL/SLOT functions, such as button presses and clicking
     // on a particular item.
-    connect(ui->policySettingsList, SIGNAL(itemClicked(QListWidgetItem*)), 
-         this, SLOT(selectPolicy(QListWidgetItem*)));   
-    connect(ui->currentPolicyCombo, SIGNAL(activated(int)), 
-         this, SLOT(selectPolicy(int)));   
+    connect(ui->policySettingsList, SIGNAL(itemClicked(QListWidgetItem*)),
+         this, SLOT(selectPolicy(QListWidgetItem*)));
+    connect(ui->currentPolicyCombo, SIGNAL(activated(int)),
+         this, SLOT(selectPolicy(int)));
     connect(ui->addNewPolicyButton, SIGNAL(clicked()), this, SLOT(addNewPolicy()));
     connect(ui->removePolicyButton, SIGNAL(clicked()), this, SLOT(removeCustomPolicy()));
 
