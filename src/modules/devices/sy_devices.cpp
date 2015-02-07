@@ -536,7 +536,12 @@ int SyDevicesModule::installTaxiProfile(oyConfig_s * device)
       // Install the profile.
       error = oyDeviceSetProfile(device, pn);
       error = oyDeviceUnset(device);
-      error = oyDeviceSetup(device);
+      oyOptions_s * options = NULL;
+      oyOptions_SetFromInt( &options,
+                            "//" OY_TYPE_STD "/icc_profile_flags",
+                            icc_profile_flags, 0, OY_CREATE_NEW );
+      error = oyDeviceSetup(device, options);
+      oyOptions_Release( &options );
     }
     else
       error = 1;
@@ -736,7 +741,7 @@ void SyDevicesModule::populateDeviceListing()
     char ** texts = 0;
 
     // get all configuration filters
-    oyConfigDomainList( "//"OY_TYPE_STD"/config.device.icc_profile",
+    oyConfigDomainList( "//"OY_TYPE_STD"/device/config.icc_profile",
                         &texts, &count, &rank_list ,0 );
 
     for (i = 0; i < count; i++)
@@ -904,7 +909,12 @@ void SyDevicesModule::assignProfile( QString profile_name )
            /* reopen the device to forget about the "profile_name" key */
            device = getCurrentDevice();
          }
-         oyDeviceSetup( device ); /* reinitialise */
+         oyOptions_s * options = NULL;
+         oyOptions_SetFromInt( &options,
+                               "//" OY_TYPE_STD "/icc_profile_flags",
+                               icc_profile_flags, 0, OY_CREATE_NEW );
+         oyDeviceSetup( device, options ); /* reinitialise */
+         oyOptions_Release( &options );
          /* compiz needs some time to exchange the profiles,
             immediately we would get the old colour server profile */
          SySleep::sleep(0.3);
