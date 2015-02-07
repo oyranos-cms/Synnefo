@@ -190,7 +190,7 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
     oyConfDomain_s * d = 0;
 
     // get all configuration filters
-    oyConfigDomainList( "//"OY_TYPE_STD"/config.device.icc_profile",
+    oyConfigDomainList( "//"OY_TYPE_STD"/device/config.icc_profile",
                         &texts, &count, &rank_list ,0 );
 
     for(i = count - 1; i >= 0; --i)
