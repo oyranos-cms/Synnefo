@@ -1,4 +1,3 @@
- 
 #ifndef SY_DEVICES_H
 #define SY_DEVICES_H
 
@@ -7,6 +6,8 @@
 #include <QWidget>
 #include <QComboBox>
 #include <QThread>            // sleep
+
+#include <oyranos.h>          // oySCOPE_e
 
 #include "symodule.h"
 #include "sy_devices_item.h"
@@ -55,7 +56,7 @@ private slots:
 private:
     
     // Set new profile and update UI
-    void setProfile( QString baseFileName );
+    void setProfile( QString baseFileName, oySCOPE_e scope );
 
     // get the actual device from currentDevice
     oyConfig_s * getCurrentDevice( void );
@@ -64,7 +65,7 @@ private:
     int detectDevices( const char * device_type );
     
     // set the new profile to a Oyranos device
-    void assignProfile( QString profile_name );
+    void assignProfile( QString profile_name, oySCOPE_e scope );
     
     // Populate device-specified profile combo box listing.
     void populateDeviceComboBox( QComboBox & itemComboBox, unsigned int deviceSignature, bool new_device );

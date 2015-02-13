@@ -524,7 +524,9 @@ void SySettingsModule::fillProfileComboBoxes(unsigned int type, QComboBox * prof
 void SySettingsModule::saveCustomXmlFile()
 { 
     saveSettings();
-    oyPolicySaveActual(oyGROUP_ALL, selected_policy.toLocal8Bit()); 
+    oySCOPE_e scope = ui->systemWideCheckBox->isChecked()
+                      ? oySCOPE_SYSTEM : oySCOPE_USER;
+    oyPolicySaveActual(oyGROUP_ALL, scope, selected_policy.toLocal8Bit()); 
 }
 
 
@@ -548,82 +550,84 @@ void SySettingsModule::saveSettings()
 { 
     QString stringToXml;    
     int behaviorSetting;    
-   
+    oySCOPE_e scope = ui->systemWideCheckBox->isChecked()
+                      ? oySCOPE_SYSTEM : oySCOPE_USER;
+
     stringToXml = ui->combo_EDITING_RGB->currentText();
-    oySetDefaultProfile(oyEDITING_RGB, stringToXml.toLocal8Bit()); 
+    oySetDefaultProfile(oyEDITING_RGB, scope, stringToXml.toLocal8Bit()); 
  
     stringToXml = ui->combo_EDITING_CMYK->currentText();
-    oySetDefaultProfile(oyEDITING_CMYK, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyEDITING_CMYK, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_EDITING_XYZ->currentText();
-    oySetDefaultProfile(oyEDITING_XYZ, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyEDITING_XYZ, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_EDITING_LAB->currentText();
-    oySetDefaultProfile(oyEDITING_LAB, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyEDITING_LAB, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_EDITING_GRAY->currentText();
-    oySetDefaultProfile(oyEDITING_GRAY, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyEDITING_GRAY, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_ASSUMED_RGB->currentText();
-    oySetDefaultProfile(oyASSUMED_RGB, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyASSUMED_RGB, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_ASSUMED_CMYK->currentText();
-    oySetDefaultProfile(oyASSUMED_CMYK, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyASSUMED_CMYK, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_ASSUMED_LAB->currentText();
-    oySetDefaultProfile(oyASSUMED_LAB, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyASSUMED_LAB, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_ASSUMED_XYZ->currentText();
-    oySetDefaultProfile(oyASSUMED_XYZ, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyASSUMED_XYZ, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_ASSUMED_GRAY->currentText();
-    oySetDefaultProfile(oyASSUMED_GRAY, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyASSUMED_GRAY, scope, stringToXml.toLocal8Bit());
 
     stringToXml = ui->combo_PROFILE_PROOF->currentText();
-    oySetDefaultProfile(oyPROFILE_PROOF, stringToXml.toLocal8Bit());
+    oySetDefaultProfile(oyPROFILE_PROOF, scope, stringToXml.toLocal8Bit());
 
     //----------------------------------------------------------------
 
     behaviorSetting = ui->combo_RENDERING_INTENT->currentIndex();
-    oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT, behaviorSetting );
+    oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT, scope, behaviorSetting );
 
     behaviorSetting = ui->combo_ACTION_UNTAGGED_ASSIGN->currentIndex();
-    oySetBehaviour ( oyBEHAVIOUR_ACTION_UNTAGGED_ASSIGN, behaviorSetting );
+    oySetBehaviour ( oyBEHAVIOUR_ACTION_UNTAGGED_ASSIGN, scope, behaviorSetting );
 
     behaviorSetting = ui->combo_ACTION_OPEN_MISMATCH_RGB->currentIndex();
-    oySetBehaviour ( oyBEHAVIOUR_ACTION_OPEN_MISMATCH_RGB , behaviorSetting );
+    oySetBehaviour ( oyBEHAVIOUR_ACTION_OPEN_MISMATCH_RGB, scope , behaviorSetting );
   
     behaviorSetting = ui->combo_ACTION_OPEN_MISMATCH_CMYK->currentIndex();
-    oySetBehaviour ( oyBEHAVIOUR_ACTION_OPEN_MISMATCH_CMYK , behaviorSetting );
+    oySetBehaviour ( oyBEHAVIOUR_ACTION_OPEN_MISMATCH_CMYK, scope , behaviorSetting );
 
     behaviorSetting = ui->combo_RENDERING_INTENT_PROOF->currentIndex();
-    oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT_PROOF , behaviorSetting );
+    oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT_PROOF, scope , behaviorSetting );
 
     behaviorSetting = ui->combo_MIXED_MOD_DOCUMENTS_SCREEN->currentIndex();
-    oySetBehaviour ( oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_SCREEN , behaviorSetting );
+    oySetBehaviour ( oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_SCREEN, scope , behaviorSetting );
 
     behaviorSetting = ui->combo_MIXED_MOD_DOCUMENTS_PRINT->currentIndex();
-    oySetBehaviour ( oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_PRINT , behaviorSetting );
+    oySetBehaviour ( oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_PRINT, scope , behaviorSetting );
 
     if (ui->check_RENDERING_BPC->isChecked())
-        oySetBehaviour ( oyBEHAVIOUR_RENDERING_BPC , 1 );
+        oySetBehaviour ( oyBEHAVIOUR_RENDERING_BPC, scope , 1 );
     else
-        oySetBehaviour ( oyBEHAVIOUR_RENDERING_BPC , 0 );
+        oySetBehaviour ( oyBEHAVIOUR_RENDERING_BPC, scope , 0 );
 
     if (ui->check_RENDERING_GAMUT_WARNING->isChecked())
-        oySetBehaviour ( oyBEHAVIOUR_RENDERING_GAMUT_WARNING , 1 );
+        oySetBehaviour ( oyBEHAVIOUR_RENDERING_GAMUT_WARNING, scope , 1 );
     else
-        oySetBehaviour ( oyBEHAVIOUR_RENDERING_GAMUT_WARNING , 0 );
+        oySetBehaviour ( oyBEHAVIOUR_RENDERING_GAMUT_WARNING, scope , 0 );
 
     if (ui->check_PROOF_SOFT->isChecked())
-        oySetBehaviour ( oyBEHAVIOUR_PROOF_SOFT , 1 );
+        oySetBehaviour ( oyBEHAVIOUR_PROOF_SOFT, scope , 1 );
     else
-        oySetBehaviour ( oyBEHAVIOUR_PROOF_SOFT , 0 );
+        oySetBehaviour ( oyBEHAVIOUR_PROOF_SOFT, scope , 0 );
 
     if (ui->check_PROOF_HARD->isChecked())
-        oySetBehaviour( oyBEHAVIOUR_PROOF_HARD , 1 );
+        oySetBehaviour( oyBEHAVIOUR_PROOF_HARD, scope , 1 );
     else 
-        oySetBehaviour(oyBEHAVIOUR_PROOF_HARD  , 0 );
+        oySetBehaviour(oyBEHAVIOUR_PROOF_HARD , scope , 0 );
 }
 // Create a new file that's currently stored in the customProfileDirectory QString.
 

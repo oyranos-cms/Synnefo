@@ -254,7 +254,10 @@ void SyDevicesModule::changeDeviceItem(int pos)
               profile_name);
 
     // set profile
-    assignProfile(QString(profile_name));
+    oySCOPE_e scope = oySCOPE_USER;
+    if(ui->systemWideCheckBox->isChecked())
+      scope = oySCOPE_SYSTEM;
+    assignProfile(QString(profile_name), scope);
   }
 } 
 
@@ -319,6 +322,8 @@ void SyDevicesModule::installTaxiProfile()
     // msgWidget->setMessageType(QMessageBox::Information);
     ui->msgWidget->setText(i18n("Downloading Profile from Taxi DB ..."));
 
+    //oySCOPE_e scope = oySCOPE_USER;
+
     QTimer::singleShot(100, this, SLOT(downloadFromTaxiDB()));
 }
 
@@ -327,6 +332,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
     oyProfile_s * ip = 0;
     oyOptions_s * options = 0;
     char * id = (char*)calloc(sizeof(char), 1024);
+    oySCOPE_e scope = oySCOPE_USER;
 
     snprintf(id, 1024, "%s/0", ui->deviceProfileTaxiDBComboBox->itemData(ui->deviceProfileTaxiDBComboBox->currentIndex()).toString().toStdString().c_str());
 
@@ -342,6 +348,16 @@ void SyDevicesModule::downloadFromTaxiDB( )
 			  "////device", "1",
 			  OY_CREATE_NEW);
 
+    if(ui->systemWideCheckBox->isChecked())
+    {
+      char * path = oyGetInstallPath( oyPATH_ICC, oySCOPE_SYSTEM, malloc );
+      oyOptions_SetFromText(&options,
+			  "////path", path,
+			  OY_CREATE_NEW);
+      free(path);
+      scope = oySCOPE_SYSTEM;
+    }
+
     int error = oyProfile_Install(ip, options);
 
     if(!ip) {
@@ -354,7 +370,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
 	// msgWidget->setMessageType(QMessageBox::Information);
 	ui->msgWidget->setText(i18n("Profile already installed"));
         oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("Profile already installed").toLocal8Bit().data());
-        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )) );
+        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
         updateProfileList( currentDevice, false );
     } else if(error == oyERROR_DATA_WRITE) {
 	// msgWidget->setMessageType(QMessageBox::Error);
@@ -372,7 +388,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
     } else {
 	// msgWidget->setMessageType(QMessageBox::Positive);
 	ui->msgWidget->setText(i18n("Profile has been installed"));
-        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )) );
+        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
         updateProfileList( currentDevice, false );
     }
 
@@ -440,12 +456,12 @@ void SyDevicesModule::getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices
 }
 
 // Set a new Profile and update UI.
-void SyDevicesModule::setProfile( QString baseFileName )
+void SyDevicesModule::setProfile( QString baseFileName, oySCOPE_e scope )
 {
     //emit changed(true);
     listModified = true;
 
-    assignProfile( baseFileName );
+    assignProfile( baseFileName, scope );
 
     // Convert QString to proper C string.
     QByteArray raw_string;
@@ -534,7 +550,10 @@ int SyDevicesModule::installTaxiProfile(oyConfig_s * device)
       char * pn = strdup(profile_name);
 
       // Install the profile.
-      error = oyDeviceSetProfile(device, pn);
+      oySCOPE_e scope = oySCOPE_USER;
+      if(ui->systemWideCheckBox->isChecked())
+        scope = oySCOPE_SYSTEM;
+      error = oyDeviceSetProfile(device, scope, pn);
       error = oyDeviceUnset(device);
       oyOptions_s * options = NULL;
       oyOptions_SetFromInt( &options,
@@ -885,7 +904,7 @@ class SySleep : public QThread
      { QThread::msleep((long unsigned int)(seconds*1000)); }
 };
 
-void SyDevicesModule::assignProfile( QString profile_name )
+void SyDevicesModule::assignProfile( QString profile_name, oySCOPE_e scope )
 {        
      oyProfile_s * profile = 0;
      QString description;
@@ -899,12 +918,12 @@ void SyDevicesModule::assignProfile( QString profile_name )
 
          /* store a existing profile in DB */
          if(strlen(pn) && QString::localeAwareCompare( QString(pn), i18n("automatic")))
-           oyDeviceSetProfile ( device, pn );
+           oyDeviceSetProfile ( device, scope, pn );
          oyDeviceUnset( device ); /* unset the device */
          /* completly unset the actual profile from DB */
          if(!strlen(pn) || !QString::localeAwareCompare(QString(pn), i18n("automatic")))
          {
-           oyConfig_EraseFromDB( device );
+           oyConfig_EraseFromDB( device, scope );
            oyConfig_Release( &device );
            /* reopen the device to forget about the "profile_name" key */
            device = getCurrentDevice();
