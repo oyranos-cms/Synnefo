@@ -249,8 +249,9 @@ void SyDevicesModule::changeDeviceItem(int pos)
     // set internal context
     setCurrentDeviceClass(device_class);
     setCurrentDeviceName(device_name);
+    raw_string = device_item->getText(DEVICE_NAME).toLocal8Bit();
     qWarning( "%d deviceItem: %d %s %s: %s", __LINE__,pos, device_class,
-              device_item->getText(DEVICE_NAME).toLocal8Bit().data(),
+              raw_string.data(),
               profile_name);
 
     // set profile
@@ -363,26 +364,31 @@ void SyDevicesModule::downloadFromTaxiDB( )
     if(!ip) {
         // msgWidget->setMessageType(QMessageBox::Information);
 	ui->msgWidget->setText(i18n("No valid profile obtained"));
-        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("No valid profile obtained").toLocal8Bit().data());
+        QByteArray raw_string( i18n("No valid profile obtained").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
     }
 
     if(error == oyERROR_DATA_AMBIGUITY) {
 	// msgWidget->setMessageType(QMessageBox::Information);
 	ui->msgWidget->setText(i18n("Profile already installed"));
-        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("Profile already installed").toLocal8Bit().data());
+        QByteArray raw_string( i18n("Profile already installed").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
         updateProfileList( currentDevice, false );
     } else if(error == oyERROR_DATA_WRITE) {
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(i18n("User Path can not be written"));
-        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("User Path can not be written").toLocal8Bit().data());
+        QByteArray raw_string( i18n("User Path can not be written").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
     } else if(error == oyCORRUPTED) {
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(i18n("Profile not useable"));
-        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", i18n("Profile not useable").toLocal8Bit().data());
+        QByteArray raw_string( i18n("Profile not useable").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
     } else if(error > 0) {
 	QString text = i18n("Internal error") + " - " + QString::number(error);
-        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", text.toLocal8Bit().data());
+        QByteArray raw_string( text.toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(text);
     } else {
@@ -546,7 +552,8 @@ int SyDevicesModule::installTaxiProfile(oyConfig_s * device)
    
     if (!taxiProfileName.isEmpty())
     {
-      const char * profile_name = taxiProfileName.toLocal8Bit();
+      QByteArray raw_string( taxiProfileName.toLocal8Bit() );
+      const char * profile_name = raw_string.data();
       char * pn = strdup(profile_name);
 
       // Install the profile.
@@ -913,7 +920,8 @@ void SyDevicesModule::assignProfile( QString profile_name, oySCOPE_e scope )
 
      {
          oyConfig_s * device = getCurrentDevice();
-         const char * profilename = profile_name.toLocal8Bit();
+         QByteArray raw_string( profile_name.toLocal8Bit() );
+         const char * profilename = raw_string.data();
          char * pn = strdup(profilename);
 
          /* store a existing profile in DB */
@@ -971,9 +979,10 @@ int isRecentProfile(oyConfig_s * device, oyConfig_s * taxi_device)
     oyDeviceProfileFromDB(device, &current_profile, malloc);
     QString taxiIdString = QString(oyConfig_FindString(taxi_device, "TAXI_id",0)) + "/0";
 
+    QByteArray raw_string( taxiIdString.toLocal8Bit() );
     error = oyOptions_SetFromText(&options,
                                  "//" OY_TYPE_STD "/argv/TAXI_id",
-                                 taxiIdString.toLocal8Bit(),
+                                 raw_string.data(),
                                  OY_CREATE_NEW);
     if(!error)
     {
@@ -1088,9 +1097,10 @@ QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
     
     QString taxiIdString = QString( getTaxiString(device, "TAXI_id") + "/0" );
     
+    QByteArray raw_string( taxiIdString.toLocal8Bit() );
     error = oyOptions_SetFromText(&options,
                                  "//" OY_TYPE_STD "/argv/TAXI_id",
-                                 taxiIdString.toLocal8Bit(),
+                                 raw_string.data(),
                                  OY_CREATE_NEW);
 
     // Download the taxi profile.
@@ -1111,7 +1121,8 @@ QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
       
         QDataStream out(&file);      
         out.writeRawData(data, size);
-        qWarning("installed -> %s", fileName.toLocal8Bit().data());
+        QByteArray raw_string( fileName.toLocal8Bit() );
+        qWarning("installed -> %s", raw_string.data());
 
         file.close();
       
@@ -1137,7 +1148,8 @@ QString SyDevicesModule::convertFilenameToDescription(QString profileFilename)
     QString profileDescriptionName;
     oyProfile_s * profile;
     
-    profile = oyProfile_FromFile( profileFilename.toLocal8Bit(), 0, 0);
+    QByteArray raw_string( profileFilename.toLocal8Bit() );
+    profile = oyProfile_FromFile( raw_string.data(), 0, 0);
     profileDescriptionName = QString::fromLocal8Bit( oyProfile_GetText( profile, oyNAME_DESCRIPTION ) );
     oyProfile_Release( &profile );
 
