@@ -12,8 +12,12 @@ SET( ${PROJECT_NAME}_MINOR_VERSION 1)
 SET( ${PROJECT_NAME}_MICRO_VERSION 0)
 SET( ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_MICRO_VERSION} )
 
-find_package(Qt4 REQUIRED)
-find_package(Oyranos REQUIRED)
+FIND_PACKAGE(Qt5Widgets)
+IF(NOT Qt5Widgets_FOUND)
+  MESSAGE( "Fallback: Qt5 not found - trying Qt4" )
+  FIND_PACKAGE(Qt4 REQUIRED)
+ENDIF()
+FIND_PACKAGE(Oyranos REQUIRED)
 
 include_directories(${OYRANOS_INCLUDE_DIR})
 
@@ -44,6 +48,9 @@ endforeach()
 include_directories(
   "${PROJECT_SOURCE_DIR}"   # to find foo/foo.h
   "${PROJECT_BINARY_DIR}")  # to find foo/config.h
+
+# if our static code lands inside a shared lib, we need -fPIC
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
 add_subdirectory(cmake)
 add_subdirectory(src)

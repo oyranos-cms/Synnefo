@@ -1,6 +1,8 @@
 project (synnefo)
 
-INCLUDE(   ${QT_USE_FILE}   )
+IF(QT4_FOUND)
+    INCLUDE(   ${QT_USE_FILE}   )
+ENDIF()
 
 set( synnefo-common_SRCS
     classes/syconfig.cpp
@@ -91,14 +93,20 @@ set(synnefo-common_RCCS
       modules/devices/icons.qrc            
       )
 
-QT4_ADD_RESOURCES(synnefo-common_RCC_SRCS ${synnefo-common_RCCS})
+IF(QT4_FOUND)
+  QT4_ADD_RESOURCES(synnefo-common_RCC_SRCS ${synnefo-common_RCCS})
+  QT4_WRAP_UI (synnefo-common_SRCS ${synnefo-common_UIs})
+  QT4_WRAP_CPP(synnefo-common_SRCS ${synnefo-common_MOC_HEADERS})
+ENDIF()
+IF(Qt5Widgets_FOUND)
+  QT5_ADD_RESOURCES(synnefo-common_RCC_SRCS ${synnefo-common_RCCS})
+  SET(CMAKE_AUTOMOC ON)
+  QT5_WRAP_UI(synnefo-common_SRCS ${synnefo-common_UIs})
+  INCLUDE_DIRECTORIES( ${Qt5Widgets_INCLUDE_DIRS} )
+ENDIF()
 
-QT4_WRAP_UI (synnefo-common_SRCS ${synnefo-common_UIs})
-
-QT4_WRAP_CPP(synnefo-common_SRCS ${synnefo-common_MOC_HEADERS})
-
-add_library(synnefo-common SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
-add_library(synnefo-common-static STATIC ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
+ADD_LIBRARY(synnefo-common SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
+ADD_LIBRARY(synnefo-common-static STATIC ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
 
 # versions for libraries
 SET_TARGET_PROPERTIES(   synnefo-common synnefo-common-static
@@ -107,11 +115,16 @@ SET_TARGET_PROPERTIES(   synnefo-common synnefo-common-static
                      )
 
 IF(WIN32)
-  target_link_libraries(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
-  target_link_libraries(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
+  TARGET_LINK_LIBRARIES(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
+  TARGET_LINK_LIBRARIES(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
 ELSE()
-  target_link_libraries(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
-  target_link_libraries(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+  TARGET_LINK_LIBRARIES(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+  TARGET_LINK_LIBRARIES(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+ENDIF()
+
+IF(Qt5Widgets_FOUND)
+  TARGET_LINK_LIBRARIES(synnefo-common-static ${OYRANOS_LIBRARIES} Qt5::Widgets)
+  TARGET_LINK_LIBRARIES(synnefo-common ${OYRANOS_LIBRARIES} Qt5::Widgets)
 ENDIF()
 
 

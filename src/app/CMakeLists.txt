@@ -2,8 +2,11 @@ PROJECT(synnefo-app)
 
 cmake_minimum_required(VERSION 2.4)
 
-find_package(Qt4 REQUIRED)
-INCLUDE(   ${QT_USE_FILE}   )
+# Qt5Widgets_FOUND comes from libsynnefo
+IF(NOT Qt5Widgets_FOUND)
+  find_package(Qt4 REQUIRED)
+  INCLUDE(   ${QT_USE_FILE}   )
+ENDIF()
 
 # test standalone
 IF (NOT OYRANOS_FOUND)
@@ -56,11 +59,16 @@ set(synnefo_RCCS
       ui/resources.qrc
       )
 
-QT4_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
-
-QT4_WRAP_UI (synnefo_SRCS ${synnefo_UIs})
-
-QT4_WRAP_CPP(synnefo_SRCS ${synnefo_MOC_HEADERS})
+IF(QT4_FOUND)
+  QT4_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
+  QT4_WRAP_UI (synnefo_SRCS ${synnefo_UIs})
+  QT4_WRAP_CPP(synnefo_SRCS ${synnefo_MOC_HEADERS})
+ENDIF()
+IF(Qt5Widgets_FOUND)
+  QT5_ADD_RESOURCES(synnefo_RCC_SRCS ${synnefo_RCCS})
+  SET(CMAKE_AUTOMOC ON)
+  QT5_WRAP_UI(synnefo_SRCS ${synnefo_UIs})
+ENDIF()
 
 
 
