@@ -566,6 +566,9 @@ int SyDevicesModule::installTaxiProfile(oyConfig_s * device)
       oyOptions_SetFromInt( &options,
                             "//" OY_TYPE_STD "/icc_profile_flags",
                             icc_profile_flags, 0, OY_CREATE_NEW );
+      oyOptions_SetFromText( &options,
++                            "//"OY_TYPE_STD"/config/skip_ask_for_profile",
+                             "yes", OY_CREATE_NEW );
       error = oyDeviceSetup(device, options);
       oyOptions_Release( &options );
     }
@@ -940,6 +943,9 @@ void SyDevicesModule::assignProfile( QString profile_name, oySCOPE_e scope )
          oyOptions_SetFromInt( &options,
                                "//" OY_TYPE_STD "/icc_profile_flags",
                                icc_profile_flags, 0, OY_CREATE_NEW );
+         oyOptions_SetFromText( &options,
++                               "//"OY_TYPE_STD"/config/skip_ask_for_profile",
+                                "yes", OY_CREATE_NEW );
          oyDeviceSetup( device, options ); /* reinitialise */
          oyOptions_Release( &options );
          /* compiz needs some time to exchange the profiles,
