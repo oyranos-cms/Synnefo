@@ -851,7 +851,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
             rank_list[i] > 0 ||
             current_tmp != -1)
          {
-           getProfileDescription.append("\t(");
+           getProfileDescription.append("  (");
            getProfileDescription.append(QString::fromLocal8Bit(temp_profile_file_name));
            getProfileDescription.append(")");
            itemComboBox.addItem(getProfileDescription, QString::fromLocal8Bit(temp_profile_file_name));
