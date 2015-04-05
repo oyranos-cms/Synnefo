@@ -46,6 +46,7 @@ class SyInfoDialog : public QDialog
     
     // Determines if iccExamin is installed on the machine.
     bool iccExaminIsInstalled(QString &iccExaminPath);
+    bool iccExaminIsInstalled_(QString iccExamin, QChar pathSep, QString &iccExaminPath);
     
     QString iccExaminCommand;
 

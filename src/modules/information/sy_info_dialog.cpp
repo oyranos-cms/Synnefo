@@ -135,20 +135,8 @@ void SyInfoDialog::showDialog()
 
 
 // Detect iccexamin for integrated 3D Profile support.
-bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
+bool SyInfoDialog::iccExaminIsInstalled_(QString iccExamin, QChar pathSep, QString &iccExaminPath)
 {
-
-# ifdef __WIN32__
-     QChar pathSep(';');
-     const QString iccExamin = QString::fromLocal8Bit("iccexamin.exe");
-#elif defined (__APPLE__)
-     QChar pathSep(':'); 
-     const QString iccExamin = QString::fromLocal8Bit("iccexamin.app/Contents/MacOS/ICC Examin");
-# else
-     QChar pathSep(':');  
-     const QString iccExamin = QString::fromLocal8Bit("iccexamin");
-# endif /* __WIN32__ */
-
      QString Path = QString::fromLocal8Bit(getenv("PATH"));
      QFileInfo fileinfo;
 
@@ -181,6 +169,31 @@ bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
            }
      }
 
+     return found;
+}
+
+bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
+{
+
+# ifdef __WIN32__
+     QChar pathSep(';');
+     QString iccExamin = QString::fromLocal8Bit("iccexamin.exe");
+#elif defined (__APPLE__)
+     QChar pathSep(':'); 
+     QString iccExamin = QString::fromLocal8Bit("iccexamin.app/Contents/MacOS/ICC Examin");
+# else
+     QChar pathSep(':');  
+     QString iccExamin = QString::fromLocal8Bit("iccexamin");
+# endif /* __WIN32__ */
+
+     bool found;
+     found = iccExaminIsInstalled_( iccExamin, pathSep, iccExaminPath );
+     if(!found)
+     {
+       pathSep = ':';  
+       iccExamin = QString::fromLocal8Bit("iccexamin");
+       found = iccExaminIsInstalled_( iccExamin, pathSep, iccExaminPath );
+     }
      return found;
 }
 
