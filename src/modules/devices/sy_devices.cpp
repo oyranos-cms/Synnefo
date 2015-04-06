@@ -17,9 +17,6 @@
 
 #define i18n(t) QString(t)
 
-// Use the users personal ICC path for installation.
-#define TAXI_DOWNLOAD_PATH OY_USERCOLORDATA OY_SLASH OY_ICCDIRNAME
-
 const char * sy_devices_module_name = "Devices";
 
 // a bag to provide a otherwise hard to obtain link to the parent widget
@@ -350,16 +347,9 @@ void SyDevicesModule::downloadFromTaxiDB( )
 			  OY_CREATE_NEW);
 
     if(ui->systemWideCheckBox->isChecked())
-    {
-      char * path = oyGetInstallPath( oyPATH_ICC, oySCOPE_SYSTEM, malloc );
-      oyOptions_SetFromText(&options,
-			  "////path", path,
-			  OY_CREATE_NEW);
-      free(path);
       scope = oySCOPE_SYSTEM;
-    }
 
-    int error = oyProfile_Install(ip, options);
+    int error = oyProfile_Install(ip, scope, options);
 
     if(!ip) {
         // msgWidget->setMessageType(QMessageBox::Information);
@@ -1095,12 +1085,11 @@ QString SyDevicesModule::checkRecentTaxiProfile(oyConfig_s * device)
 QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
 {  
     QString fileName = "";
-    int error;
     oyProfile_s * ip = 0;    
     oyOptions_s * options = NULL;
-    size_t size = 0;
-    char * data = 0;
-    
+    oySCOPE_e scope = oySCOPE_USER;
+    int error = 0;
+
     QString taxiIdString = QString( getTaxiString(device, "TAXI_id") + "/0" );
     
     QByteArray raw_string( taxiIdString.toLocal8Bit() );
@@ -1114,29 +1103,52 @@ QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
     {
       ip = oyProfile_FromTaxiDB(options, NULL);  
       
-      const char * taxi_profile_name = oyProfile_GetText( ip, oyNAME_DESCRIPTION );
-      fileName = QString(TAXI_DOWNLOAD_PATH) + OY_SLASH + QString::fromLocal8Bit( taxi_profile_name )
-                 + ".icc";
-      
-      data = (char*)oyProfile_GetMem(ip, &size, 0, malloc);
-            
-      if(data)
-      {
-        QFile file(fileName);
-        file.open(QIODevice::WriteOnly);
-      
-        QDataStream out(&file);      
-        out.writeRawData(data, size);
-        QByteArray raw_string( fileName.toLocal8Bit() );
-        qWarning("installed -> %s", raw_string.data());
+      oyOptions_SetFromText(&options,
+			  "////device", "1",
+			  OY_CREATE_NEW);
 
-        file.close();
-      
-        oyProfile_Release(&ip);
-        free(data);
-      }
-    }    
-    
+      if(ui->systemWideCheckBox->isChecked())
+        scope = oySCOPE_SYSTEM;
+      error = oyProfile_Install(ip, scope, options);
+    }
+
+    if(!ip) {
+        // msgWidget->setMessageType(QMessageBox::Information);
+	ui->msgWidget->setText(i18n("No valid profile obtained"));
+        QByteArray raw_string( i18n("No valid profile obtained").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
+    }
+
+    if(error == oyERROR_DATA_AMBIGUITY) {
+	// msgWidget->setMessageType(QMessageBox::Information);
+	ui->msgWidget->setText(i18n("Profile already installed"));
+        QByteArray raw_string( i18n("Profile already installed").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
+        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
+        updateProfileList( currentDevice, false );
+    } else if(error == oyERROR_DATA_WRITE) {
+	// msgWidget->setMessageType(QMessageBox::Error);
+	ui->msgWidget->setText(i18n("User Path can not be written"));
+        QByteArray raw_string( i18n("User Path can not be written").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
+    } else if(error == oyCORRUPTED) {
+	// msgWidget->setMessageType(QMessageBox::Error);
+	ui->msgWidget->setText(i18n("Profile not useable"));
+        QByteArray raw_string( i18n("Profile not useable").toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
+    } else if(error > 0) {
+	QString text = i18n("Internal error") + " - " + QString::number(error);
+        QByteArray raw_string( text.toLocal8Bit() );
+        oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
+	// msgWidget->setMessageType(QMessageBox::Error);
+	ui->msgWidget->setText(text);
+    } else {
+	// msgWidget->setMessageType(QMessageBox::Positive);
+	ui->msgWidget->setText(i18n("Profile has been installed"));
+        setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
+        updateProfileList( currentDevice, false );
+    }
+
     oyOptions_Release(&options);
     
     return fileName;
