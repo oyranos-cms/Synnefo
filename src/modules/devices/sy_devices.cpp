@@ -106,6 +106,11 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
              this, SLOT(changeDeviceItem(QTreeWidgetItem*,int)) );
     connect( ui->installProfileButton, SIGNAL(clicked()),
 	     this, SLOT(installTaxiProfile()));
+
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT( updateDeviceItems() ));
+    timer->start(1500);
+
     init = false;
 }
 
@@ -205,7 +210,7 @@ void SyDevicesModule::updateDeviceItems(int state)
       {
         QTreeWidgetItem * deviceItem = device_class_item->child(j);
         updateProfileList( deviceItem, false );
-        qWarning( "deviceList: [%d][%d]", i,j );
+        //qWarning( "deviceList: [%d][%d]", i,j );
       }
     }
     init = false;
@@ -770,7 +775,18 @@ void SyDevicesModule::populateDeviceListing()
 
 }
 
-
+void setItem( QComboBox & itemComboBox, int index, int count, QString text, QString data )
+{
+  if(index < count)
+  {
+    if(itemComboBox.itemText( index ) != text)
+    {
+      itemComboBox.setItemText( index, text );
+      itemComboBox.setItemData( index, data );
+    }
+  } else
+    itemComboBox.addItem( text, data );
+}
 
 // Populate "Assign Profile" combobox.  Depending on the device selected, the profile list will vary.
 void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned int sig, bool new_device )
@@ -798,7 +814,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
 
     size = oyProfiles_Count(iccs);
 
-    itemComboBox.clear();
+    //itemComboBox.clear();
 
     syDeviceGetProfile( device, icc_profile_flags, &profile ); /* reget profile */
     profile_file_name = oyProfile_GetFileName( profile, 0 );
@@ -829,7 +845,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
          if(empty_added == -1 &&
             rank_list[i] < 1)
          {
-           itemComboBox.addItem(i18n("automatic"));
+           setItem( itemComboBox, pos, itemComboBox.count(), i18n("automatic"), QString("") );
            empty_added = pos;
            if(current != -1 &&
               current == pos)
@@ -844,7 +860,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
            getProfileDescription.append("  (");
            getProfileDescription.append(QString::fromLocal8Bit(temp_profile_file_name));
            getProfileDescription.append(")");
-           itemComboBox.addItem(getProfileDescription, QString::fromLocal8Bit(temp_profile_file_name));
+           setItem( itemComboBox, pos, itemComboBox.count(), getProfileDescription, QString::fromLocal8Bit(temp_profile_file_name) );
            ++pos;
          }
       oyProfile_Release( &temp_profile );
@@ -852,7 +868,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
     
     if(empty_added == -1)
     {
-      itemComboBox.addItem(i18n("automatic"));
+      setItem( itemComboBox, pos, itemComboBox.count(), i18n("automatic"), QString("") );
       ++pos;
       if(current == -1 && current_tmp != -1)
         current = pos;
@@ -864,9 +880,12 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
       getProfileDescription.append("\t(");
       getProfileDescription.append(profile_file_name);
       getProfileDescription.append(")");
-      itemComboBox.addItem(getProfileDescription);
+      setItem( itemComboBox, pos, itemComboBox.count(), getProfileDescription, QString::fromLocal8Bit("") );
       current = pos;
     }
+
+    for(int i = itemComboBox.count()-1; pos < itemComboBox.count(); --i)
+      itemComboBox.removeItem( i ); 
 
     itemComboBox.setCurrentIndex( current );
 
