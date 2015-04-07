@@ -26,7 +26,7 @@ set( synnefo-common_SRCS
     modules/settings/sy_settings_config.cpp
 )
  
-set( synnefo-common_PUBLIC
+SET( synnefo-common_PUBLIC
     # config
     classes/syconfig.h
 
@@ -38,6 +38,13 @@ set( synnefo-common_PUBLIC
     modules/devices/sy_devices.h
     modules/information/sy_info.h
     modules/settings/sy_settings.h    
+)
+SET( synnefo-common_PUBLIC_NON_MOC
+    modules/symodule.h
+    modules/devices/sy_devices_config.h
+    modules/devices/sy_devices_item.h
+    modules/information/sy_info_dialog.h
+    modules/settings/sy_settings_config.h
 )
 
 set( synnefo-common_MOC_HEADERS
@@ -105,8 +112,21 @@ IF(Qt5Widgets_FOUND)
   INCLUDE_DIRECTORIES( ${Qt5Widgets_INCLUDE_DIRS} )
 ENDIF()
 
-ADD_LIBRARY(synnefo-common SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
-ADD_LIBRARY(synnefo-common-static STATIC ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS})
+ADD_LIBRARY(synnefo-common SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS}
+                                  ${synnefo-common_PUBLIC} ${synnefo-common_PUBLIC_NON_MOC} )
+ADD_LIBRARY(synnefo-common-static STATIC ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS}
+                                  ${synnefo-common_PUBLIC} ${synnefo-common_PUBLIC_NON_MOC} )
+
+# OS X Framework
+SET_TARGET_PROPERTIES(synnefo-common PROPERTIES
+  FRAMEWORK TRUE
+  FRAMEWORK_VERSION ${${PROJECT_NAME}_VERSION}
+  PRIVATE_HEADER ""
+  PUBLIC_HEADER "${synnefo-common_PUBLIC};${synnefo-common_PUBLIC_NON_MOC}"
+  RESOURCE ""
+  INSTALL_NAME_DIR "@executable_path/../../../../Library/Frameworks"
+  DEBUG_POSTFIX -d
+)
 
 # versions for libraries
 SET_TARGET_PROPERTIES(   synnefo-common synnefo-common-static
@@ -128,14 +148,12 @@ IF(Qt5Widgets_FOUND)
 ENDIF()
 
 
-INSTALL (TARGETS synnefo-common synnefo-common-static DESTINATION lib${LIB_SUFFIX})
-INSTALL (FILES ${synnefo-common_PUBLIC}
-               modules/symodule.h
-               modules/devices/sy_devices_config.h
-               modules/devices/sy_devices_item.h
-               modules/information/sy_info_dialog.h
-               modules/settings/sy_settings_config.h
-         DESTINATION include/${PROJECT_NAME})
+INSTALL (TARGETS synnefo-common synnefo-common-static
+         FRAMEWORK DESTINATION Library/Frameworks
+         LIBRARY DESTINATION lib${LIB_SUFFIX}
+         ARCHIVE DESTINATION lib${LIB_SUFFIX}
+         PUBLIC_HEADER DESTINATION include/${PROJECT_NAME}
+        )
 
-add_subdirectory(app)
+ADD_SUBDIRECTORY( app )
 
