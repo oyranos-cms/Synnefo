@@ -49,6 +49,6 @@ CONFIGURE_FILE (
 
 INSTALL ( FILES
                 "${CMAKE_CURRENT_BINARY_DIR}/SynnefoConfig.cmake"
-                DESTINATION lib${LIB_SUFFIX}/synnefo/cmake COMPONENT dev
+                DESTINATION lib${LIB_SUFFIX}/cmake/synnefo COMPONENT dev
         )
 
