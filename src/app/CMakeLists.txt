@@ -111,8 +111,7 @@ IF(APPLE)
 # Note that the image plugins depend on QtSvg and QtXml, and it got those copied
 # over.
   SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/Synnefo.app")  # paths to executables
-  SET(DIRS "\${CMAKE_INSTALL_PREFIX}/lib \${CMAKE_CURRENT_BINARY_DIR}")   # directories to search for prerequisites
-  SET(DIRS "\${CMAKE_INSTALL_PREFIX}/lib")   # directories to search for prerequisites
+  SET(DIRS "\${CMAKE_INSTALL_PREFIX}/lib;\${CMAKE_CURRENT_BINARY_DIR};\${CMAKE_INSTALL_PREFIX}/Library/Frameworks")   # directories to search for prerequisites
   INSTALL(CODE "
    include(BundleUtilities)
    fixup_bundle(\"${APPS}\"   \"\"   \"${DIRS}\")
