@@ -1,7 +1,6 @@
 
 #include <QFileInfo>
 #include <oyranos.h>
-#include <oyranos_config.h>
 #include <oyranos_devices.h>
 #include <oyranos_profile.h>
 

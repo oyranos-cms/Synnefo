@@ -27,7 +27,6 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "sy_database_config.h"
 #include <oyranos.h>
-//#include <oyranos_config.h>
 #include <oyranos_devices.h>
 
 #include "ui_sy_database_config.h"
