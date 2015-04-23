@@ -78,23 +78,29 @@ ENDIF()
 IF(APPLE)
   # icon files to copy in the bundle
   set( OSX_ICON_FILES ${PROJECT_SOURCE_DIR}/extras/osx/synnefo.icns  )
-  set( OSX_SCRIPT_FILES "${PROJECT_SOURCE_DIR}/extras/osx/Synnefo.sh" )
+  CONFIGURE_FILE (
+                "${CMAKE_CURRENT_SOURCE_DIR}/extras/osx/Synnefo.sh.in"
+                "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh"
+                @ONLY
+                 )
+  set( OSX_SCRIPT_FILES "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh" )
   set( OSX_PKG_FILES ${PROJECT_SOURCE_DIR}/extras/osx/PkgInfo )
 
   add_executable( Synnefo MACOSX_BUNDLE ${synnefo_SRCS} ${synnefo_RCC_SRCS} ${OSX_ICON_FILES} )
 
   INSTALL( TARGETS Synnefo
-  EXPORT SynnefoLibraryDepends
-  RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
-  BUNDLE DESTINATION  "${INSTALL_BIN_DIR}" COMPONENT bin)
+           EXPORT SynnefoLibraryDepends
+           RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
+           BUNDLE DESTINATION  "${INSTALL_BIN_DIR}" COMPONENT bin
+           RENAME Synnefo.bin
+         )
 
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME Synnefo )
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_INFO_STRING "Synnefo front end to Oyranos Color Management System, www.oyranos.org" )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_EXECUTABLE_NAME Synnefo.sh )
+  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_EXECUTABLE_NAME Synnefo )
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_ICON_FILE synnefo.icns )
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER org.oyranos.synnefo )
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_LONG_VERSION_STRING "Synnefo ${synnefo_VERSION}" )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME Synnefo )
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING ${synnefo_VERSION} )
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION 1.0 )
   set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_COPYRIGHT "2011-2013 Joseph Simon, 2012-2015 Kai-Uwe Behrmann" )
@@ -117,15 +123,22 @@ IF(APPLE)
    fixup_bundle(\"${APPS}\"   \"\"   \"${DIRS}\")
    " COMPONENT Runtime)
 
-  INSTALL( FILES "${OSX_SCRIPT_FILES}" DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT bin )
+  # this is the script to setup the environment and call the real binary
+  INSTALL( PROGRAMS "${OSX_SCRIPT_FILES}" DESTINATION "bin/Synnefo.app/Contents/MacOS"
+           RENAME Synnefo )
   INSTALL( FILES "${OSX_PKG_FILES}" DESTINATION "bin/Synnefo.app/Contents" COMPONENT bin )
 
-  #INSTALL( TARGETS Synnefo
-  #EXPORT SynnefoLibraryDepends
-  #RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
-  #BUNDLE DESTINATION  "${INSTALL_BIN_DIR}" COMPONENT bin )
+  # place the binary
+  INSTALL( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/Synnefo.app/Contents/MacOS/Synnefo
+           DESTINATION "bin/Synnefo.app/Contents/MacOS"
+           RENAME Synnefo.bin )
 
-  #add_executable(Synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
+  # install Oyranos modules
+  FILE( GLOB OYRANOS_ALL_CMMS ${OYRANOS_CMM_DIR}/liboyranos_*_cmm* )
+  INSTALL( FILES ${OYRANOS_ALL_CMMS} DESTINATION "bin/Synnefo.app/Contents/Resources/${OYRANOS_CMM_SUBDIR}" COMPONENT lib )
+  FILE( GLOB OYRANOS_ALL_META ${OYRANOS_META_DIR}/liboyranos_*_cmm* )
+  INSTALL( FILES ${OYRANOS_ALL_META} DESTINATION "bin/Synnefo.app/Contents/Resources/${OYRANOS_META_SUBDIR}" COMPONENT lib )
+
 ELSEIF(UNIX)
   add_executable(Synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF (WIN32)
@@ -138,7 +151,7 @@ export(TARGETS Synnefo
 export(PACKAGE Synnefo)
 
 
-target_link_libraries(Synnefo ${SYNNEFO_LIBRARY} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(Synnefo ${SYNNEFO_LIBRARY} ${QT_LIBRARIES})
 
 IF( NOT APPLE )
   INSTALL( TARGETS Synnefo
