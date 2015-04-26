@@ -125,7 +125,7 @@ SET_TARGET_PROPERTIES(synnefo-common PROPERTIES
   PUBLIC_HEADER "${synnefo-common_PUBLIC};${synnefo-common_PUBLIC_NON_MOC}"
   RESOURCE ""
   INSTALL_NAME_DIR "@executable_path/../../../../Library/Frameworks"
-  DEBUG_POSTFIX -d
+  #DEBUG_POSTFIX -d
 )
 
 # versions for libraries
