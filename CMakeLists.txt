@@ -58,15 +58,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 add_subdirectory(cmake)
 add_subdirectory(src)
 
-configure_file(SynnefoBuildTreeSettings.cmake.in
-  "${PROJECT_BINARY_DIR}/SynnefoTreeSettings.cmake" @ONLY)
-
 file(RELATIVE_PATH CONF_REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
    "${INSTALL_INCLUDE_DIR}")
-configure_file(SynnefoConfig.cmake.in
-   "${PROJECT_BINARY_DIR}/SynnefoConfig.cmake" @ONLY)
-configure_file(SynnefoConfigVersion.cmake.in
-   "${PROJECT_BINARY_DIR}/SynnefoConfigVersion.cmake" @ONLY)
 
 #install(EXPORT SynnefoLibraryDepends DESTINATION
 #   "${INSTALL_DATA_DIR}/Synnefo/CMake"
