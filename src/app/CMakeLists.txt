@@ -143,7 +143,7 @@ IF(APPLE)
     INSTALL( FILES ${OYRANOS_MODULE_DEP_LIBRARIES} DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT lib )
   ENDFOREACH( oy_dep_lib )
 
-  INSTALL( FILES ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT bin )
+  INSTALL( PROGRAMS ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT bin )
 
   FIND_PACKAGE(PkgConfig)
   PKG_CHECK_MODULES(ELEKTRA elektra)
