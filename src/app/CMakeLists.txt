@@ -143,6 +143,8 @@ IF(APPLE)
     INSTALL( FILES ${OYRANOS_MODULE_DEP_LIBRARIES} DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT lib )
   ENDFOREACH( oy_dep_lib )
 
+  INSTALL( FILES ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT bin )
+
 ELSEIF(UNIX)
   add_executable(Synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF (WIN32)

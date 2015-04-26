@@ -8,7 +8,7 @@ path="${0%/*}"
 export top_path="${path%/*}"
 export RESOURCESPATH="$top_path/Resources$prefix"
 export dyld_path="$top_path/MacOS"
-binpath="$RESOURCESPATH"
+binpath="$path"
 
 test -z $DYLD_FALLBACK_LIBRARY_PATH && \
 export DYLD_FALLBACK_LIBRARY_PATH="$dyld_path:$RESOURCESPATH/lib:$RESOURCESPATH/lib/elektra" ||
