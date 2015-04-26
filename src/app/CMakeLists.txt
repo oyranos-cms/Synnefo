@@ -145,6 +145,11 @@ IF(APPLE)
 
   INSTALL( FILES ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT bin )
 
+  FIND_PACKAGE(PkgConfig)
+  PKG_CHECK_MODULES(ELEKTRA elektra)
+  INSTALL( DIRECTORY ${ELEKTRA_LIBDIR}/elektra DESTINATION "bin/Synnefo.app/Contents/Resources" COMPONENT lib )
+
+
 ELSEIF(UNIX)
   add_executable(Synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF (WIN32)
