@@ -40,5 +40,5 @@ If you wish to uninstall Synnefo, simply type:
 * LIB_SUFFIX - allows to append a architecture specific suffix like 
   LIB_SUFFIX=64 for 64bit non debian style Linux systems.
 * CMAKE_BUILD_TYPE - debug or release or what you like
-
+* USE_Qt4 - use Qt4 even if Qt5 is installed, default is to detect Qt5
 
