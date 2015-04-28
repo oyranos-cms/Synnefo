@@ -212,8 +212,8 @@ void SyDevicesModule::updateDeviceItems(int state)
       for(int j = 0; j < device_class_item->childCount(); ++j)
       {
         QTreeWidgetItem * deviceItem = device_class_item->child(j);
-        updateProfileList( deviceItem, (state == -1) ? true : false );
-        //qWarning( "deviceList: [%d][%d]", i,j );
+        updateProfileList( deviceItem, (state == -1) ? false : true );
+        //qWarning( "deviceList: [%d][%d] %d", i,j,state );
       }
     }
     init = false;
