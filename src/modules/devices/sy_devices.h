@@ -39,7 +39,6 @@ private slots:
     // Hitting the "Show only device related ICC profiles" button.
     void updateDeviceItems( int state );
     void updateDeviceItems() {updateDeviceItems(-1);};
-    void updateDeviceItemsNew( int state ) {updateDeviceItems(-1);};
     
     // Hitting the device profile selection combo box.
     void changeDeviceItem( int state );
