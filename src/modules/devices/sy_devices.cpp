@@ -745,7 +745,8 @@ int SyDevicesModule::detectDevices(const char * device_type)
 
             updateProfileList( deviceItem, true );
 
-            oyConfig_Release(&device);
+            oyConfig_Release( &device );
+            oyProfile_Release( &profile );
         }
      }
      else
@@ -774,8 +775,9 @@ void SyDevicesModule::populateDeviceListing()
     for (i = 0; i < count; i++)
     {
       detectDevices( texts[i] );
+      free( texts[i] );
     }
-
+    free( texts );
 }
 
 void setItem( QComboBox & itemComboBox, int index, int count, QString text, QString data )
@@ -813,6 +815,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
     {
       printf("nix - desc: %s\n", desc);
       oyProfile_Release( &profile );
+      oyConfig_Release( &device );
       return;
     }
 
@@ -909,6 +912,7 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
     oyConfig_Release( &device );
     oyProfile_Release( &profile );
     oyProfiles_Release( &iccs );
+    free( rank_list );
 }
 
 oyConfig_s * SyDevicesModule::getCurrentDevice( void )

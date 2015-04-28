@@ -82,6 +82,8 @@ void  SyDevicesItem::refreshText()
 
 void SyDevicesItem::setDevice( oyConfig_s * d )
 {
+  if(device)
+    oyConfig_Release( &device );
   device = oyConfig_Copy(d, 0);
 }
 
