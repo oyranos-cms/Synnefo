@@ -224,11 +224,15 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
       {
         oyConfig_s * device = oyConfigs_Get( devices, j );
         char * device_info = 0;
+        oyOptions_s * options = 0;
+        oyOptions_SetFromText( &options, "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
+                                         "yes", OY_CREATE_NEW );
+        oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
 
         // get expensive informations to see the "model" option
-        oyDeviceGetInfo( device, oyNAME_DESCRIPTION, 0,
+        oyDeviceGetInfo( device, oyNAME_DESCRIPTION, options,
                                  &device_info, malloc );
-        oyDeviceGetInfo( device, oyNAME_NAME, 0,
+        oyDeviceGetInfo( device, oyNAME_NAME, options,
                                  &device_info, malloc );
 
         QTreeWidgetItem * device_child = new QTreeWidgetItem;
@@ -272,13 +276,7 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
         device_list_sub_tree->addChild(device_child);   
 
         oyProfile_s * p = 0;
-        oyOptions_s * options = 0;
-        oyOptions_SetFromText( &options,
-                                       "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
-                                       "yes", OY_CREATE_NEW );
-        oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
         oyDeviceGetProfile( device, options, &p );
-        oyOptions_Release( &options );
 
         if(p)
         {
@@ -299,8 +297,9 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
           device_child->setIcon(ITEM_ICON, examineIcon);
         }
 
-        //oyProfile_Release( &p );
+        oyProfile_Release( &p );
         oyConfig_Release( &device );
+        oyOptions_Release( &options );
       }
       oyConfigs_Release( &devices );
       oyConfDomain_Release( &d );
