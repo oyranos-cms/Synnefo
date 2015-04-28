@@ -206,6 +206,7 @@ void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool
 void SyDevicesModule::updateDeviceItems(int state)
 {
     init = true;  // skip signals in changeDeviceItem
+    if(ui->deviceList->isVisible())
     for(int i = 0; i < ui->deviceList->topLevelItemCount(); ++i)
     {
       QTreeWidgetItem* device_class_item = ui->deviceList->topLevelItem(i);
