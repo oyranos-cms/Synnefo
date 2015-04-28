@@ -119,6 +119,9 @@ int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfi
 {
     oyOptions_s * options = 0;
     oyOptions_SetFromText( &options,
+                     "//"OY_TYPE_STD"/config/command",
+                           "list", OY_CREATE_NEW );
+    oyOptions_SetFromText( &options,
                      "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
                            "yes", OY_CREATE_NEW );
     oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
@@ -209,7 +212,7 @@ void SyDevicesModule::updateDeviceItems(int state)
       for(int j = 0; j < device_class_item->childCount(); ++j)
       {
         QTreeWidgetItem * deviceItem = device_class_item->child(j);
-        updateProfileList( deviceItem, false );
+        updateProfileList( deviceItem, (state == -1) ? true : false );
         //qWarning( "deviceList: [%d][%d]", i,j );
       }
     }
@@ -369,7 +372,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
         QByteArray raw_string( i18n("Profile already installed").toLocal8Bit() );
         oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
-        updateProfileList( currentDevice, false );
+        updateProfileList( currentDevice, true );
     } else if(error == oyERROR_DATA_WRITE) {
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(i18n("User Path can not be written"));
@@ -390,7 +393,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
 	// msgWidget->setMessageType(QMessageBox::Positive);
 	ui->msgWidget->setText(i18n("Profile has been installed"));
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
-        updateProfileList( currentDevice, false );
+        updateProfileList( currentDevice, true );
     }
 
     oyOptions_Release(&options);
@@ -740,7 +743,7 @@ int SyDevicesModule::detectDevices(const char * device_type)
             device_class_item->addChild( deviceItem );
             ui->deviceList->setItemWidget( deviceItem, ITEM_COMBOBOX, w);
 
-            updateProfileList( deviceItem, false );
+            updateProfileList( deviceItem, true );
 
             oyConfig_Release(&device);
         }
@@ -799,11 +802,28 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
     const char * profile_file_name = 0;
     icProfileClassSignature deviceSignature = (icProfileClassSignature) sig;
 
-    profile = oyProfile_FromSignature( deviceSignature, oySIGNATURE_CLASS, 0 );
-    oyProfiles_MoveIn( patterns, &profile, -1 );
+    syDeviceGetProfile( device, icc_profile_flags, &profile ); /* reget profile */
+    QString current_text = itemComboBox.currentText();
+    const char * desc = oyProfile_GetText( profile, oyNAME_DESCRIPTION );
+    if(new_device == false &&
+       (current_text.contains(QString::fromLocal8Bit(desc)) ||
+        itemComboBox.currentIndex() == -1
+       )
+      )
+    {
+      printf("nix - desc: %s\n", desc);
+      oyProfile_Release( &profile );
+      return;
+    }
+
+    profile_file_name = oyProfile_GetFileName( profile, 0 );
+
+    oyProfile_s * pattern_profile = oyProfile_FromSignature( deviceSignature, oySIGNATURE_CLASS, 0 );
+    oyProfiles_MoveIn( patterns, &pattern_profile, -1 );
 
     iccs = oyProfiles_Create( patterns, icc_profile_flags, 0 );
     oyProfiles_Release( &patterns );
+    oyProfile_Release( &pattern_profile );
  
     QString getProfileDescription;
 
@@ -815,9 +835,6 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
     size = oyProfiles_Count(iccs);
 
     //itemComboBox.clear();
-
-    syDeviceGetProfile( device, icc_profile_flags, &profile ); /* reget profile */
-    profile_file_name = oyProfile_GetFileName( profile, 0 );
 
     Qt::CheckState show_only_device_related = 
                                           ui->relatedDeviceCheckBox->checkState();
@@ -885,14 +902,14 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
     }
 
     for(int i = itemComboBox.count()-1; pos < itemComboBox.count(); --i)
-      itemComboBox.removeItem( i ); 
+      itemComboBox.removeItem( i );
 
     itemComboBox.setCurrentIndex( current );
 
     oyConfig_Release( &device );
     oyProfile_Release( &profile );
     oyProfiles_Release( &iccs );
-} 
+}
 
 oyConfig_s * SyDevicesModule::getCurrentDevice( void )
 {
@@ -1144,7 +1161,7 @@ QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
         QByteArray raw_string( i18n("Profile already installed").toLocal8Bit() );
         oyMessageFunc_p( oyMSG_ERROR, NULL, "%s", raw_string.data());
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
-        updateProfileList( currentDevice, false );
+        updateProfileList( currentDevice, true );
     } else if(error == oyERROR_DATA_WRITE) {
 	// msgWidget->setMessageType(QMessageBox::Error);
 	ui->msgWidget->setText(i18n("User Path can not be written"));
@@ -1165,7 +1182,7 @@ QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
 	// msgWidget->setMessageType(QMessageBox::Positive);
 	ui->msgWidget->setText(i18n("Profile has been installed"));
         setProfile( QString::fromLocal8Bit(oyProfile_GetFileName( ip, 0 )), scope );
-        updateProfileList( currentDevice, false );
+        updateProfileList( currentDevice, true );
     }
 
     oyOptions_Release(&options);
