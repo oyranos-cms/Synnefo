@@ -814,7 +814,6 @@ void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned
        )
       )
     {
-      printf("nix - desc: %s\n", desc);
       oyProfile_Release( &profile );
       oyConfig_Release( &device );
       return;
