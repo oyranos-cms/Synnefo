@@ -6,6 +6,7 @@
 #include <oyProfiles_s.h>
 
 #include <QProcess>
+#include <QTimer>
  
 #include "sy_info.h"
 #include "sy_info_config.h"
@@ -53,14 +54,16 @@ SyInfoModule::SyInfoModule(QWidget * parent)
     examineIcon.addFile(QString::fromLocal8Bit(":/resources/examine_select.png"),
                                   QSize(10, 10), QIcon::Active, QIcon::On);
 
-    // Display oyEDITING_XYZ info for now.
-    populateInstalledProfileList();
+    populateInstalledProfileList(true);
 
     ui->installedProfilesTree->expandAll();
 
     connect( ui->installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
              this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
 
+    QTimer *timer = new QTimer(this);
+    connect(timer, SIGNAL(timeout()), this, SLOT( populateInstalledProfileList() ));
+    timer->start(2500);
 }
 
 
@@ -89,8 +92,13 @@ void SyInfoModule::profileExamineButtonClicked(QTreeWidgetItem * currentProfileI
 // ************** Private Functions ********************
 
 // Populate the tree with detected profile items.
-void SyInfoModule::populateInstalledProfileList()
+void SyInfoModule::populateInstalledProfileList(bool init)
 {
+    if(init == false &&
+       ui->installedProfilesTree->isVisible() == false)
+      return;
+
+    ui->installedProfilesTree->clear();
 
     QTreeWidgetItem * devicesTree = new QTreeWidgetItem;
     ui->installedProfilesTree->addTopLevelItem( devicesTree );
@@ -148,6 +156,8 @@ void SyInfoModule::populateInstalledProfileList()
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_GRAY, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
        addProfileTreeItem( oyASSUMED_GRAY, QString::fromLocal8Bit(g_name), assumedCsTree );
+
+    ui->installedProfilesTree->expandAll();
 }
 
 

@@ -31,13 +31,14 @@ private slots:
     
     void profileExamineButtonClicked(QTreeWidgetItem *, int);
     void loadProfileGraph();
+    // Build profile listing tree.
+    void populateInstalledProfileList() { populateInstalledProfileList(false); };
+    
 private:
   
   /*** PRIVATE FUNCTIONS ***/  
+    void populateInstalledProfileList(bool init);
   
-    // Build profile listing tree.
-    void populateInstalledProfileList();
-    
     // Add an item to the tree.
     void addProfileTreeItem( unsigned int profile_type, QString description, QTreeWidgetItem * parent_item );
     
