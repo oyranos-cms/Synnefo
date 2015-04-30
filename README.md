@@ -14,7 +14,7 @@ Synnefo is a Qt color management front-end.  It uses the Oyranos CMS to provide 
 This build is currently using the latest Oyranos build through "git". It is required that Oyranos be up-to-date using this.
 
 * [Oyranos](http://www.oyranos.org) - for the Color Management System
-* [Qt](http://www.qt.io) - for a nice observer utility Qt4 or Qt5
+* [Qt](http://www.qt.io) - for Qt4 or Qt5 GUI
 
 
 ###Building
