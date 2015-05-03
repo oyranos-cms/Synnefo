@@ -6,6 +6,7 @@
 #include <oyProfiles_s.h>
 
 #include <QProcess>
+#include <QTime>
 #include <QTimer>
  
 #include "sy_info.h"
@@ -61,7 +62,7 @@ SyInfoModule::SyInfoModule(QWidget * parent)
     connect( ui->installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
              this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
 
-    QTimer *timer = new QTimer(this);
+    timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT( populateInstalledProfileList() ));
     timer->start(2500);
 }
@@ -90,6 +91,16 @@ void SyInfoModule::profileExamineButtonClicked(QTreeWidgetItem * currentProfileI
 
 
 // ************** Private Functions ********************
+void SyInfoModule::populateInstalledProfileList()
+{
+  QTime check;
+  check.start();
+  populateInstalledProfileList(false);
+  int elapsed = check.elapsed();
+  // do not exceed CPU resources
+  if(timer->interval() < 4 * elapsed)
+    timer->setInterval( 8 * elapsed );
+}
 
 // Populate the tree with detected profile items.
 void SyInfoModule::populateInstalledProfileList(bool init)

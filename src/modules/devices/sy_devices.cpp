@@ -1,6 +1,7 @@
 #include <QMessageBox>
 #include <QProgressDialog>
 #include <QFile>
+#include <QTime>
 #include <QTimer>
 
 #include "sy_devices.h"
@@ -107,7 +108,7 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
     connect( ui->installProfileButton, SIGNAL(clicked()),
 	     this, SLOT(installTaxiProfile()));
 
-    QTimer *timer = new QTimer(this);
+    timer = new QTimer(this);
     connect(timer, SIGNAL(timeout()), this, SLOT( updateDeviceItems() ));
     timer->start(1500);
 
@@ -202,6 +203,17 @@ void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool
 }
 
 //  ******** SIGNAL/SLOT Functions *****************
+
+void SyDevicesModule::updateDeviceItems()
+{
+  QTime check;
+  check.start();
+  updateDeviceItems(-1);
+  int elapsed = check.elapsed();
+  // do not exceed CPU resources
+  if(timer->interval() < 4 * elapsed)
+    timer->setInterval( 8 * elapsed );
+}
 
 void SyDevicesModule::updateDeviceItems(int state)
 {

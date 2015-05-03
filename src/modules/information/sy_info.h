@@ -32,7 +32,7 @@ private slots:
     void profileExamineButtonClicked(QTreeWidgetItem *, int);
     void loadProfileGraph();
     // Build profile listing tree.
-    void populateInstalledProfileList() { populateInstalledProfileList(false); };
+    void populateInstalledProfileList();
     
 private:
   
@@ -84,6 +84,8 @@ private:
     int icc_profile_flags;              ///< profile selection flags from oyProfile_s.h
 
     Ui::syInfoWidget * ui;
+
+    QTimer * timer;
 };
 
 #endif
