@@ -1,10 +1,10 @@
-project (synnefo)
+PROJECT( synnefo )
 
 IF(QT4_FOUND)
     INCLUDE(   ${QT_USE_FILE}   )
 ENDIF()
 
-set( synnefo-common_SRCS
+SET( synnefo-common_SRCS
     classes/syconfig.cpp
 
     # synnefo class
@@ -47,7 +47,7 @@ SET( synnefo-common_PUBLIC_NON_MOC
     modules/settings/sy_settings_config.h
 )
 
-set( synnefo-common_MOC_HEADERS
+SET( synnefo-common_MOC_HEADERS
     # config
     ${synnefo-common_PUBLIC}
 
@@ -60,7 +60,7 @@ set( synnefo-common_MOC_HEADERS
     modules/database/sy_database_config.h
 )
 
-set( synnefo-common_UIs
+SET( synnefo-common_UIs
     # config ui file
     ui/synnefo-config.ui
 
@@ -95,7 +95,7 @@ INCLUDE_DIRECTORIES(
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
-set(synnefo-common_RCCS
+SET(synnefo-common_RCCS
       modules/information/icons.qrc      
       modules/devices/icons.qrc            
       )
@@ -110,15 +110,19 @@ IF(Qt5Widgets_FOUND)
   SET(CMAKE_AUTOMOC ON)
   QT5_WRAP_UI(synnefo-common_SRCS ${synnefo-common_UIs})
   INCLUDE_DIRECTORIES( ${Qt5Widgets_INCLUDE_DIRS} )
+  SET( SY_QT5_SUFFIX -qt5 )
 ENDIF()
 
-ADD_LIBRARY(synnefo-common SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS}
+SET( SY_LIB_BASE OyranosSynnefo${SY_QT5_SUFFIX} )
+SET( SY_LIB_BASE ${SY_LIB_BASE} PARENT_SCOPE )
+
+ADD_LIBRARY( ${SY_LIB_BASE} SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS}
                                   ${synnefo-common_PUBLIC} ${synnefo-common_PUBLIC_NON_MOC} )
-ADD_LIBRARY(synnefo-common-static STATIC ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS}
+ADD_LIBRARY( ${SY_LIB_BASE}-static STATIC ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS}
                                   ${synnefo-common_PUBLIC} ${synnefo-common_PUBLIC_NON_MOC} )
 
 # OS X Framework
-SET_TARGET_PROPERTIES(synnefo-common PROPERTIES
+SET_TARGET_PROPERTIES( ${SY_LIB_BASE} PROPERTIES
   FRAMEWORK TRUE
   FRAMEWORK_VERSION ${${PROJECT_NAME}_VERSION}
   PRIVATE_HEADER ""
@@ -129,26 +133,26 @@ SET_TARGET_PROPERTIES(synnefo-common PROPERTIES
 )
 
 # versions for libraries
-SET_TARGET_PROPERTIES(   synnefo-common synnefo-common-static
+SET_TARGET_PROPERTIES(   ${SY_LIB_BASE} ${SY_LIB_BASE}-static
     PROPERTIES VERSION   ${${PROJECT_NAME}_MAJOR_VERSION}.${${PROJECT_NAME}_MINOR_VERSION}.${${PROJECT_NAME}_MICRO_VERSION}
                SOVERSION ${${PROJECT_NAME}_MAJOR_VERSION}
                      )
 
 IF(WIN32)
-  TARGET_LINK_LIBRARIES(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
-  TARGET_LINK_LIBRARIES(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
+  TARGET_LINK_LIBRARIES(${SY_LIB_BASE}-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
+  TARGET_LINK_LIBRARIES(${SY_LIB_BASE} ${OYRANOS_LIBRARIES} ${QT_LIBRARIES} ${QT_GIF_PLUGIN} ${QT_JPEG_PLUGIN})
 ELSE()
-  TARGET_LINK_LIBRARIES(synnefo-common-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
-  TARGET_LINK_LIBRARIES(synnefo-common ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+  TARGET_LINK_LIBRARIES(${SY_LIB_BASE}-static ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
+  TARGET_LINK_LIBRARIES(${SY_LIB_BASE} ${OYRANOS_LIBRARIES} ${QT_LIBRARIES})
 ENDIF()
 
 IF(Qt5Widgets_FOUND)
-  TARGET_LINK_LIBRARIES(synnefo-common-static ${OYRANOS_LIBRARIES} Qt5::Widgets)
-  TARGET_LINK_LIBRARIES(synnefo-common ${OYRANOS_LIBRARIES} Qt5::Widgets)
+  TARGET_LINK_LIBRARIES(${SY_LIB_BASE}-static ${OYRANOS_LIBRARIES} Qt5::Widgets)
+  TARGET_LINK_LIBRARIES(${SY_LIB_BASE} ${OYRANOS_LIBRARIES} Qt5::Widgets)
 ENDIF()
 
 
-INSTALL (TARGETS synnefo-common synnefo-common-static
+INSTALL (TARGETS ${SY_LIB_BASE} ${SY_LIB_BASE}-static
          FRAMEWORK DESTINATION Library/Frameworks
          LIBRARY DESTINATION lib${LIB_SUFFIX}
          ARCHIVE DESTINATION lib${LIB_SUFFIX}
