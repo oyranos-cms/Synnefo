@@ -1,27 +1,27 @@
 PROJECT(Synnefo-Oyranos)
 SET( Synnefo-Oyranos_VERSION ${synnefo_VERSION} )
 
-cmake_minimum_required(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake )
 
 # Qt5Widgets_FOUND comes from libsynnefo
 IF(NOT Qt5Widgets_FOUND)
-  find_package(Qt4 REQUIRED)
+  FIND_PACKAGE(Qt4 REQUIRED)
   INCLUDE(   ${QT_USE_FILE}   )
 ENDIF()
 
 # test standalone
 IF (NOT OYRANOS_FOUND)
-  find_package(Synnefo REQUIRED)
-  include_directories(${SYNNEFO_INCLUDE_DIR})
+  FIND_PACKAGE(Synnefo REQUIRED)
+  INCLUDE_DIRECTORIES(${SYNNEFO_INCLUDE_DIR})
 ENDIF (NOT OYRANOS_FOUND)
 
 # rely on library in tar ball
 IF    (NOT SYNNEFO_FOUND)
-  SET( SYNNEFO_LIBRARY synnefo-common )
+  SET( SYNNEFO_LIBRARY ${SY_LIB_BASE} )
 # set up include-directories
-  set( synnefo_modules_path
+  SET( synnefo_modules_path
        ../modules )
   include_directories(
   "${PROJECT_SOURCE_DIR}"   # to find foo/foo.h
@@ -36,29 +36,29 @@ IF    (NOT SYNNEFO_FOUND)
   LINK_DIRECTORIES( "${CMAKE_CURRENT_SOURCE_DIR}/../../build/src/" )
 ENDIF (NOT SYNNEFO_FOUND)
 
-set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+SET(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
 
-include_directories(
+INCLUDE_DIRECTORIES(
   "${PROJECT_SOURCE_DIR}"   # to find foo/foo.h
   "${PROJECT_BINARY_DIR}")  # to find foo/config.h
 
-set( synnefo_SRCS
+SET( synnefo_SRCS
     # core sources
     main.cpp
     synnefo.cpp
 )
  
-set( synnefo_MOC_HEADERS
+SET( synnefo_MOC_HEADERS
     # main window
     synnefo.h
 )
 
-set( synnefo_UIs
+SET( synnefo_UIs
     # main ui file
     ui/synnefo.ui
 )
 
-set(synnefo_RCCS
+SET(synnefo_RCCS
       ui/resources.qrc
       )
 
@@ -77,46 +77,47 @@ ENDIF()
 
 IF(APPLE)
   # icon files to copy in the bundle
-  set( OSX_ICON_FILES ${PROJECT_SOURCE_DIR}/extras/osx/synnefo.icns  )
+  SET( OSX_ICON_FILES ${PROJECT_SOURCE_DIR}/extras/osx/synnefo.icns  )
   CONFIGURE_FILE (
                 "${CMAKE_CURRENT_SOURCE_DIR}/extras/osx/Synnefo.sh.in"
                 "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh"
                 @ONLY
                  )
-  set( OSX_SCRIPT_FILES "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh" )
-  set( OSX_PKG_FILES ${PROJECT_SOURCE_DIR}/extras/osx/PkgInfo )
+  SET( OSX_SCRIPT_FILES "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh" )
+  SET( OSX_PKG_FILES ${PROJECT_SOURCE_DIR}/extras/osx/PkgInfo )
 
-  add_executable( Synnefo MACOSX_BUNDLE ${synnefo_SRCS} ${synnefo_RCC_SRCS} ${OSX_ICON_FILES} )
+  SET( SyAPP Synnefo )
+  ADD_EXECUTABLE( ${SyAPP} MACOSX_BUNDLE ${synnefo_SRCS} ${synnefo_RCC_SRCS} ${OSX_ICON_FILES} )
 
-  INSTALL( TARGETS Synnefo
+  INSTALL( TARGETS ${SyAPP}
            EXPORT SynnefoLibraryDepends
            RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin
            BUNDLE DESTINATION  "${INSTALL_BIN_DIR}" COMPONENT bin
-           RENAME Synnefo.bin
+           RENAME ${SyAPP}.bin
          )
 
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME Synnefo )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_INFO_STRING "Synnefo front end to Oyranos Color Management System, www.oyranos.org" )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_EXECUTABLE_NAME Synnefo )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_ICON_FILE synnefo.icns )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER org.oyranos.synnefo )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_LONG_VERSION_STRING "Synnefo ${synnefo_VERSION}" )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING ${synnefo_VERSION} )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION 1.0 )
-  set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_COPYRIGHT "2011-2013 Joseph Simon, 2012-2015 Kai-Uwe Behrmann" )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_BUNDLE_NAME Synnefo )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_INFO_STRING "Synnefo front end to Oyranos Color Management System, www.oyranos.org" )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_EXECUTABLE_NAME Synnefo )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_ICON_FILE synnefo.icns )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_GUI_IDENTIFIER org.oyranos.synnefo )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_LONG_VERSION_STRING "Synnefo ${synnefo_VERSION}" )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING ${synnefo_VERSION} )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION 1.0 )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_COPYRIGHT "2011-2013 Joseph Simon, 2012-2015 Kai-Uwe Behrmann" )
 
   # configure CMake to use a custom Info.plist
-  #set_target_properties( Synnefo PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/extras/osx/Info.plist )
+  #SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/extras/osx/Info.plist )
 
   # set where in the bundle to put the icns files
-  set_source_files_properties( ${OSX_ICON_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+  SET_SOURCE_FILES_PROPERTIES( ${OSX_ICON_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
 # Now the work of copying dependencies into the bundle/package
 # The quotes are escaped and variables to use at install time have their $ escaped
 # An alternative is the do a configure_file() on a script and use install(SCRIPT  ...).
 # Note that the image plugins depend on QtSvg and QtXml, and it got those copied
 # over.
-  SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/Synnefo.app")  # paths to executables
+  SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/${SyAPP}.app")  # paths to executables
   SET(DIRS "\${CMAKE_INSTALL_PREFIX}/lib;\${CMAKE_CURRENT_BINARY_DIR};\${CMAKE_INSTALL_PREFIX}/Library/Frameworks")   # directories to search for prerequisites
   INSTALL(CODE "
    include(BundleUtilities)
@@ -124,48 +125,50 @@ IF(APPLE)
    " COMPONENT Runtime)
 
   # this is the script to setup the environment and call the real binary
-  INSTALL( PROGRAMS "${OSX_SCRIPT_FILES}" DESTINATION "bin/Synnefo.app/Contents/MacOS"
-           RENAME Synnefo )
-  INSTALL( FILES "${OSX_PKG_FILES}" DESTINATION "bin/Synnefo.app/Contents" COMPONENT bin )
+  INSTALL( PROGRAMS "${OSX_SCRIPT_FILES}" DESTINATION "bin/${SyAPP}.app/Contents/MacOS"
+           RENAME ${SyAPP} )
+  INSTALL( FILES "${OSX_PKG_FILES}" DESTINATION "bin/${SyAPP}.app/Contents" COMPONENT bin )
 
   # place the binary
-  INSTALL( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/Synnefo.app/Contents/MacOS/Synnefo
-           DESTINATION "bin/Synnefo.app/Contents/MacOS"
-           RENAME Synnefo.bin )
+  INSTALL( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${SyAPP}.app/Contents/MacOS/Synnefo
+           DESTINATION "bin/${SyAPP}.app/Contents/MacOS"
+           RENAME ${SyAPP}.bin )
 
   # install Oyranos modules
   FILE( GLOB OYRANOS_ALL_CMMS ${OYRANOS_CMM_DIR}/liboyranos_*_cmm* )
-  INSTALL( FILES ${OYRANOS_ALL_CMMS} DESTINATION "bin/Synnefo.app/Contents/Resources/${OYRANOS_CMM_SUBDIR}" COMPONENT lib )
+  INSTALL( FILES ${OYRANOS_ALL_CMMS} DESTINATION "bin/${SyAPP}.app/Contents/Resources/${OYRANOS_CMM_SUBDIR}" COMPONENT lib )
   FILE( GLOB OYRANOS_ALL_META ${OYRANOS_META_DIR}/liboyranos_*_cmm* )
-  INSTALL( FILES ${OYRANOS_ALL_META} DESTINATION "bin/Synnefo.app/Contents/Resources/${OYRANOS_META_SUBDIR}" COMPONENT lib )
+  INSTALL( FILES ${OYRANOS_ALL_META} DESTINATION "bin/${SyAPP}.app/Contents/Resources/${OYRANOS_META_SUBDIR}" COMPONENT lib )
   FOREACH( oy_dep_lib ${OYRANOS_MODULE_LIBRARIES} )
     FILE( GLOB OYRANOS_MODULE_DEP_LIBRARIES ${OYRANOS_META_DIR}/../lib${oy_dep_lib}*.dylib )
-    INSTALL( FILES ${OYRANOS_MODULE_DEP_LIBRARIES} DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT lib )
+    INSTALL( FILES ${OYRANOS_MODULE_DEP_LIBRARIES} DESTINATION "bin/${SyAPP}.app/Contents/MacOS" COMPONENT lib )
   ENDFOREACH( oy_dep_lib )
 
-  INSTALL( PROGRAMS ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/Synnefo.app/Contents/MacOS" COMPONENT bin )
+  INSTALL( PROGRAMS ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/${SyAPP}.app/Contents/MacOS" COMPONENT bin )
 
   FIND_PACKAGE(PkgConfig)
   PKG_CHECK_MODULES(ELEKTRA elektra)
-  INSTALL( DIRECTORY ${ELEKTRA_LIBDIR}/elektra DESTINATION "bin/Synnefo.app/Contents/Resources" COMPONENT lib )
+  INSTALL( DIRECTORY ${ELEKTRA_LIBDIR}/elektra DESTINATION "bin/${SyAPP}.app/Contents/Resources" COMPONENT lib )
 
 
 ELSEIF(UNIX)
-  add_executable(Synnefo ${synnefo_SRCS} ${synnefo_RCC_SRCS})
+  SET( SyAPP oyranos-config-synnefo${SY_QT5_SUFFIX} )
+  ADD_EXECUTABLE(${SyAPP} ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF (WIN32)
-  add_executable(Synnefo WIN32 ${synnefo_SRCS} ${synnefo_RCC_SRCS})
+  SET( SyAPP oyranos-config-synnefo${SY_QT5_SUFFIX} )
+  ADD_EXECUTABLE(${SyAPP} WIN32 ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ENDIF ()
 
-export(TARGETS Synnefo
+EXPORT(TARGETS ${SyAPP}
   FILE "${PROJECT_BINARY_DIR}/SynnefoLibraryDepends.cmake")
 
-export(PACKAGE Synnefo)
+EXPORT(PACKAGE ${SyAPP})
 
 
-TARGET_LINK_LIBRARIES(Synnefo ${SYNNEFO_LIBRARY} ${QT_LIBRARIES})
+TARGET_LINK_LIBRARIES(${SyAPP} ${SYNNEFO_LIBRARY} ${QT_LIBRARIES})
 
 IF( NOT APPLE )
-  INSTALL( TARGETS Synnefo
+  INSTALL( TARGETS ${SyAPP}
   EXPORT SynnefoLibraryDepends
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
 ENDIF()
