@@ -159,6 +159,8 @@ ELSEIF (WIN32)
   ADD_EXECUTABLE(${SyAPP} WIN32 ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ENDIF ()
 
+SET( SyAPP ${SyAPP} PARENT_SCOPE )
+
 EXPORT(TARGETS ${SyAPP}
   FILE "${PROJECT_BINARY_DIR}/SynnefoLibraryDepends.cmake")
 
