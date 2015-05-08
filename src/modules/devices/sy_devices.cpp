@@ -20,6 +20,14 @@
 
 const char * sy_devices_module_name = "Devices";
 
+class SySleep : public QThread
+{
+  public:
+     static void sleep(double seconds)
+     { QThread::msleep((long unsigned int)(seconds*1000)); }
+};
+
+
 // a bag to provide a otherwise hard to obtain link to the parent widget
 class SyDeviceItem : public QComboBox
 {
@@ -217,6 +225,8 @@ void SyDevicesModule::updateDeviceItems()
 
 void SyDevicesModule::updateDeviceItems(int state)
 {
+    if(init) return;
+
     init = true;  // skip signals in changeDeviceItem
     if(ui->deviceList->isVisible())
     for(int i = 0; i < ui->deviceList->topLevelItemCount(); ++i)
@@ -326,6 +336,9 @@ void SyDevicesModule::changeDeviceItem(QTreeWidgetItem * selected_device, int po
       // msgWidget->setMessageType(QMessageBox::Information);
       ui->msgWidget->setText(i18n("Looking for Device Profiles in Taxi DB ..."));
 
+      while(init)
+         SySleep::sleep(0.3);
+      init = true;
       TaxiLoad * loader = new TaxiLoad( oyConfig_Copy( device, oyObject_New() ) );
       connect(loader, SIGNAL(finishedSignal( char *, oyConfigs_s * )), this, SLOT( getTaxiSlot( char*, oyConfigs_s* )));
       loader->start();
@@ -470,6 +483,7 @@ void SyDevicesModule::getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices
     oyConfigs_Release(&taxi_devices);
     oyConfig_Release(&device);
     if( for_device ) free( for_device );
+    init = false;
 }
 
 // Set a new Profile and update UI.
@@ -948,13 +962,6 @@ oyConfig_s * SyDevicesModule::getCurrentDevice( void )
 
     return device;
 }
-
-class SySleep : public QThread
-{
-  public:
-     static void sleep(double seconds)
-     { QThread::msleep((long unsigned int)(seconds*1000)); }
-};
 
 void SyDevicesModule::assignProfile( QString profile_name, oySCOPE_e scope )
 {        
