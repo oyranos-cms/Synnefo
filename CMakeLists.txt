@@ -2,9 +2,9 @@
  
 PROJECT(synnefo)
 
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
 
-cmake_minimum_required(VERSION 2.4)
+CMAKE_MINIMUM_REQUIRED(VERSION 2.4)
 
 # project version
 SET( ${PROJECT_NAME}_MAJOR_VERSION 1)
@@ -27,38 +27,38 @@ LINK_DIRECTORIES( ${LINK_DIRECTORIES} ${OYRANOS_LIBRARY_DIRS} )
 SET( ${CMAKE_BUILD_TYPE} Debug)
 
 # Offer the user the choice of overriding the installation directories
-set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
-set(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
-set(INSTALL_INCLUDE_DIR include CACHE PATH
+SET(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
+SET(INSTALL_BIN_DIR bin CACHE PATH "Installation directory for executables")
+SET(INSTALL_INCLUDE_DIR include CACHE PATH
   "Installation directory for header files")
-if(WIN32 AND NOT CYGWIN)
-  set(DEF_INSTALL_CMAKE_DIR CMake)
-else()
-  set(DEF_INSTALL_CMAKE_DIR lib/CMake/synnefo)
-endif()
-set(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
+IF(WIN32 AND NOT CYGWIN)
+  SET(DEF_INSTALL_CMAKE_DIR CMake)
+ELSE()
+  SET(DEF_INSTALL_CMAKE_DIR lib/CMake/synnefo)
+ENDIF()
+SET(INSTALL_CMAKE_DIR ${DEF_INSTALL_CMAKE_DIR} CACHE PATH
   "Installation directory for CMake files")
 
 # Make relative paths absolute (needed later on)
-foreach(p LIB BIN INCLUDE CMAKE)
-  set(var INSTALL_${p}_DIR)
-  if(NOT IS_ABSOLUTE "${${var}}")
-    set(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
-  endif()
-endforeach()
+FOREACH(p LIB BIN INCLUDE CMAKE)
+  SET(var INSTALL_${p}_DIR)
+  IF(NOT IS_ABSOLUTE "${${var}}")
+    SET(${var} "${CMAKE_INSTALL_PREFIX}/${${var}}")
+  ENDIF()
+ENDFOREACH()
 
 # set up include-directories
-include_directories(
+INCLUDE_DIRECTORIES(
   "${PROJECT_SOURCE_DIR}"   # to find foo/foo.h
   "${PROJECT_BINARY_DIR}")  # to find foo/config.h
 
 # if our static code lands inside a shared lib, we need -fPIC
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${Qt5Widgets_EXECUTABLE_COMPILE_FLAGS}")
 
-add_subdirectory(cmake)
-add_subdirectory(src)
+ADD_SUBDIRECTORY(src)
+ADD_SUBDIRECTORY(cmake)
 
-file(RELATIVE_PATH CONF_REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
+FILE(RELATIVE_PATH CONF_REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
    "${INSTALL_INCLUDE_DIR}")
 
 #install(EXPORT SynnefoLibraryDepends DESTINATION
