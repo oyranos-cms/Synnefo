@@ -152,10 +152,10 @@ IF(APPLE)
 
 
 ELSEIF(UNIX)
-  SET( SyAPP oyranos-config-synnefo${SY_QT5_SUFFIX} )
+  SET( SyAPP oyranos-config-synnefo${SY_QT_SUFFIX} )
   ADD_EXECUTABLE(${SyAPP} ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ELSEIF (WIN32)
-  SET( SyAPP oyranos-config-synnefo${SY_QT5_SUFFIX} )
+  SET( SyAPP oyranos-config-synnefo${SY_QT_SUFFIX} )
   ADD_EXECUTABLE(${SyAPP} WIN32 ${synnefo_SRCS} ${synnefo_RCC_SRCS})
 ENDIF ()
 

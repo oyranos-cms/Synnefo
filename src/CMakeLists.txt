@@ -104,16 +104,16 @@ IF(QT4_FOUND)
   QT4_ADD_RESOURCES(synnefo-common_RCC_SRCS ${synnefo-common_RCCS})
   QT4_WRAP_UI (synnefo-common_SRCS ${synnefo-common_UIs})
   QT4_WRAP_CPP(synnefo-common_SRCS ${synnefo-common_MOC_HEADERS})
+  SET( SY_QT_SUFFIX -qt4 )
 ENDIF()
 IF(Qt5Widgets_FOUND)
   QT5_ADD_RESOURCES(synnefo-common_RCC_SRCS ${synnefo-common_RCCS})
   SET(CMAKE_AUTOMOC ON)
   QT5_WRAP_UI(synnefo-common_SRCS ${synnefo-common_UIs})
   INCLUDE_DIRECTORIES( ${Qt5Widgets_INCLUDE_DIRS} )
-  SET( SY_QT5_SUFFIX -qt5 )
 ENDIF()
 
-SET( SY_LIB_BASE OyranosSynnefo${SY_QT5_SUFFIX} )
+SET( SY_LIB_BASE OyranosSynnefo${SY_QT_SUFFIX} )
 SET( SY_LIB_BASE ${SY_LIB_BASE} PARENT_SCOPE )
 
 ADD_LIBRARY( ${SY_LIB_BASE} SHARED ${synnefo-common_SRCS} ${synnefo-common_RCC_SRCS}
