@@ -24,7 +24,7 @@ MARK_AS_ADVANCED(SYNNEFO_INCLUDE_DIR)
 
 # Set path to the library.
 FIND_LIBRARY(SYNNEFO_LIBRARY
-	NAMES synnefo-common  synnefo-common-static
+	NAMES @SY_LIB_BASE@  @SY_LIB_BASE@-static
 	PATHS @CMAKE_INSTALL_PREFIX@/lib@LIB_SUFFIX@
 	NO_DEFAULT_PATH
 )
