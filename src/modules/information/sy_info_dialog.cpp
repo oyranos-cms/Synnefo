@@ -144,7 +144,7 @@ bool SyInfoDialog::iccExaminIsInstalled_(QString iccExamin, QChar pathSep, QStri
 
      while (!done)
      {
-          if (!Path.length() > 0) // still more paths to look at
+          if (!(Path.length() > 0)) // still more paths to look at
                  done=true;
           else
           {
