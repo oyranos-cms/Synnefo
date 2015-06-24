@@ -823,7 +823,7 @@ void setItem( QComboBox & itemComboBox, int index, int count, QString text, QStr
 // Populate "Assign Profile" combobox.  Depending on the device selected, the profile list will vary.
 void SyDevicesModule::populateDeviceComboBox( QComboBox & itemComboBox, unsigned int sig, bool new_device )
 {
-    int size, i, current = -1, current_tmp, pos = 0;
+    int size, i, current = -1, current_tmp = -1, pos = 0;
     oyProfile_s * profile = 0, * temp_profile = 0;
     oyProfiles_s * patterns = oyProfiles_New(0),
                  * iccs = 0;
