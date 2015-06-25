@@ -173,4 +173,8 @@ IF( NOT APPLE )
   INSTALL( TARGETS ${SyAPP}
   EXPORT SynnefoLibraryDepends
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT bin)
+  INSTALL( FILES extras/${SyAPP}.desktop DESTINATION share/applications)
+  INSTALL( FILES extras/${SyAPP}.svg DESTINATION share/pixmaps )
+  INSTALL( FILES extras/${SyAPP}.png DESTINATION share/pixmaps )
+  INSTALL( FILES extras/${SyAPP}.1 DESTINATION share/man/man1)
 ENDIF()

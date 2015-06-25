@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Categories=System;SystemSetup;
+Comment=ICC Color Management
+Comment[de]=ICC Farbmanagement
+GenericName=Color Management
+GenericName[de]=Farbverwaltung
+Name=Synnefo
+Name[de]=Synnefo
+StartupNotify=true
+Terminal=false
+Icon=oyranos-config-synnefo-qt4
+Exec=oyranos-config-synnefo-qt4
+TryExec=oyranos-config-synnefo-qt4
