@@ -17,8 +17,8 @@ Build-Depends: debhelper (>= 8.0.0),
 Standards-Version: 3.9.3
 Section: graphics
 Homepage: http://www.oyranos.org/synnefo
-Vcs-Git: git://gitorious.org/~beku/synnefo/bekus-synnefo.git
-Vcs-Browser: http://gitorious.org/synnefo/bekus-synnefo
+Vcs-Git: git://github.com/oyranos-cms/synnefo
+Vcs-Browser: http://github.com/oyranos-cms/synnefo
 
 Package: synnefo
 Section: graphics
@@ -28,7 +28,7 @@ Description: Color Management front-end
  Synnefo uses the Oyranos CMS to provide the ability to set and examine 
  device profiles, as well as to change system-wide color settings.
 
-Package: libsynnefo1
+Package: liboyranos-synnefo1
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
@@ -36,7 +36,7 @@ Description: Color Management System front-end library
  Synnefo library uses the Oyranos CMS to provide the ability to set and 
  examine device profiles, as well as to change system-wide color settings.
 
-Package: libsynnefo-dev
+Package: liboyranos-synnefo-dev
 Section: libdevel
 Architecture: any
 Depends: synnefo (= ${binary:Version}), ${misc:Depends}
