@@ -1,6 +1,6 @@
 [Desktop Entry]
 Type=Application
-Categories=System;SystemSetup;
+Categories=Settings;System;HardwareSettings;Utility;
 Comment=ICC Color Management
 Comment[de]=ICC Farbmanagement
 GenericName=Color Management
