@@ -9,6 +9,6 @@ Name=Synnefo
 Name[de]=Synnefo
 StartupNotify=true
 Terminal=false
-Icon=oyranos-config-synnefo-qt4
+Icon=oyranos-config-synnefo
 Exec=oyranos-config-synnefo-qt4
 TryExec=oyranos-config-synnefo-qt4
