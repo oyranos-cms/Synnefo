@@ -672,6 +672,16 @@ void SySettingsModule::emitChanged()
 
      saveSettings();
      refreshPolicySettings();
+
+    // e.g. send native (e.g. X11) reload event
+    oyOptions_s * opts = oyOptions_New(NULL), * results = 0;
+    int error = oyOptions_Handle( "//"OY_TYPE_STD"/send_native_update_event",
+                      opts,"send_native_update_event",
+                      &results );
+    oyOptions_Release( &opts );
+
+    if(error)
+      fprintf(stderr, "send_native_update_event failed\n");
 }
 
 
