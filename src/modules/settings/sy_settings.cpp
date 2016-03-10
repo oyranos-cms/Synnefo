@@ -79,6 +79,10 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     qs = QString::fromLocal8Bit(name);
     ui->kmsettingsTab->setTabText(2,qs);
 
+    oyWidgetTitleGet( oyWIDGET_GROUP_BEHAVIOUR_EFFECT, NULL, &name, &tooltip, &flags );
+    qs = QString::fromLocal8Bit(name);
+    ui->kmsettingsTab->setTabText(3,qs);
+
 #define SET_OY_PROFILE_WIDGET( widget ) \
     oyWidgetTitleGet( oyWIDGET_##widget, NULL, &name, &tooltip, &flags ); \
     qs = QString::fromLocal8Bit(name); \
@@ -132,10 +136,12 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     SET_OY_PROFILE_WIDGET( ASSUMED_GRAY );
     SET_OY_PROFILE_WIDGET( ASSUMED_WEB );
     SET_OY_PROFILE_WIDGET( PROFILE_PROOF );
+    SET_OY_PROFILE_WIDGET( PROFILE_EFFECT );
     SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_RENDERING );
     SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_MIXED_MODE_DOCUMENTS );
     SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_MISSMATCH );
     SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_PROOF );
+    SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_EFFECT );
     SET_OY_COMBO_WIDGET( ACTION_UNTAGGED_ASSIGN );
     SET_OY_LABEL_WIDGET( ACTION_UNTAGGED_ASSIGN );
     SET_OY_COMBO_WIDGET( ACTION_OPEN_MISMATCH_RGB );
@@ -153,6 +159,7 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     SET_OY_CHECK_WIDGET( PROOF_SOFT );
     SET_OY_CHECK_WIDGET( PROOF_HARD );
     SET_OY_CHECK_WIDGET( RENDERING_GAMUT_WARNING );
+    SET_OY_CHECK_WIDGET( EFFECT );
 
     // Load behavior settings and display current default policy.
     populateBehaviorSettings();
@@ -295,6 +302,7 @@ void SySettingsModule::populateProfiles()
     fillProfileComboBoxes(oyASSUMED_GRAY, ui->combo_ASSUMED_GRAY);  
 
     fillProfileComboBoxes(oyPROFILE_PROOF, ui->combo_PROFILE_PROOF);
+    fillProfileComboBoxes(oyPROFILE_EFFECT, ui->combo_PROFILE_EFFECT);
 }
 
 
@@ -354,6 +362,14 @@ void SySettingsModule::populateBehaviorSettings()
 
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_MIXED_MOD_DOCUMENTS_PRINT);
     ui->combo_MIXED_MOD_DOCUMENTS_PRINT->setCurrentIndex(behavior_setting);     
+
+// Effect Settings
+
+    behavior_setting = oyGetBehaviour(oyBEHAVIOUR_EFFECT);
+    if(behavior_setting == 1)
+         ui->check_EFFECT->setChecked(true);
+    else 
+         ui->check_EFFECT->setChecked(false);
 }
 
 
@@ -411,6 +427,10 @@ void SySettingsModule::refreshProfileSettings()
     xmlToString = oyGetDefaultProfileName (oyPROFILE_PROOF, 0);
     profileSearchIndex = ui->combo_PROFILE_PROOF->findText( xmlToString, Qt::MatchExactly);
     ui->combo_PROFILE_PROOF->setCurrentIndex(profileSearchIndex);    
+
+    xmlToString = oyGetDefaultProfileName (oyPROFILE_EFFECT, 0);
+    profileSearchIndex = ui->combo_PROFILE_EFFECT->findText( xmlToString, Qt::MatchExactly);
+    ui->combo_PROFILE_EFFECT->setCurrentIndex(profileSearchIndex);    
 }
 
 
@@ -480,12 +500,14 @@ void SySettingsModule::loadEditableItems()
     editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_SCREEN);
     editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_PRINT);     
     editableComboItems.push_front(ui->combo_PROFILE_PROOF);
+    editableComboItems.push_front(ui->combo_PROFILE_EFFECT);
 
     editableCheckBoxItems.push_front(ui->check_PROOF_SOFT);
     editableCheckBoxItems.push_front(ui->check_PROOF_HARD);
     editableCheckBoxItems.push_front(ui->check_RENDERING_BPC);
     editableCheckBoxItems.push_front(ui->check_RENDERING_GAMUT_WARNING);
      
+    editableCheckBoxItems.push_front(ui->check_EFFECT);
 }
 
 
@@ -586,6 +608,9 @@ void SySettingsModule::saveSettings()
     stringToXml = ui->combo_PROFILE_PROOF->currentText();
     oySetDefaultProfile(oyPROFILE_PROOF, scope, stringToXml.toLocal8Bit());
 
+    stringToXml = ui->combo_PROFILE_EFFECT->currentText();
+    oySetDefaultProfile(oyPROFILE_EFFECT, scope, stringToXml.toLocal8Bit());
+
     //----------------------------------------------------------------
 
     behaviorSetting = ui->combo_RENDERING_INTENT->currentIndex();
@@ -627,7 +652,12 @@ void SySettingsModule::saveSettings()
     if (ui->check_PROOF_HARD->isChecked())
         oySetBehaviour( oyBEHAVIOUR_PROOF_HARD, scope , 1 );
     else 
-        oySetBehaviour(oyBEHAVIOUR_PROOF_HARD , scope , 0 );
+        oySetBehaviour( oyBEHAVIOUR_PROOF_HARD, scope , 0 );
+
+    if (ui->check_EFFECT->isChecked())
+        oySetBehaviour( oyBEHAVIOUR_EFFECT, scope , 1 );
+    else 
+        oySetBehaviour( oyBEHAVIOUR_EFFECT, scope , 0 );
 }
 // Create a new file that's currently stored in the customProfileDirectory QString.
 
