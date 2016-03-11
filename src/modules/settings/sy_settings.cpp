@@ -186,6 +186,20 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     connect(editableCheckBoxItems.value(k), SIGNAL(clicked()), this, SLOT(emitChanged()));
 }
 
+void SySendNativeUpdate(const char * func)
+{
+    // e.g. send native (e.g. X11) reload event
+    oyOptions_s * opts = oyOptions_New(NULL), * results = 0;
+    int error = oyOptions_Handle( "//"OY_TYPE_STD"/send_native_update_event",
+                      opts,"send_native_update_event",
+                      &results );
+    oyOptions_Release( &opts );
+
+    fprintf(stderr, "send_native_update_event %s()\n", func);
+    if(error)
+      fprintf(stderr, "send_native_update_event failed\n");
+}
+
 
 // ******* SIGNAL/SLOT Functions *******
 
@@ -222,6 +236,7 @@ void SySettingsModule::selectPolicy(int current)
        return;
 
      oyPolicySet( selected_policy.toLocal8Bit(), 0 );
+     SySendNativeUpdate(__func__);
 
      checkPolicy(0);
 }
@@ -463,7 +478,6 @@ void SySettingsModule::setEditableItems(bool itemStatus)
     {
         combobox = editableComboItems.value(i);
         combobox->setEnabled(itemStatus);
-        connect(combobox, SIGNAL(activated(int)), this, SLOT(emitChanged()));
     }
 
     QCheckBox * checkbox;
@@ -471,7 +485,6 @@ void SySettingsModule::setEditableItems(bool itemStatus)
     {
         checkbox = editableCheckBoxItems.value(i);
         checkbox->setEnabled(itemStatus);
-        connect(checkbox, SIGNAL(clicked()), this, SLOT(emitChanged()));
     }
 }
 
@@ -661,8 +674,6 @@ void SySettingsModule::saveSettings()
 }
 // Create a new file that's currently stored in the customProfileDirectory QString.
 
-
-
 // Used to enable the "Apply" button.
 void SySettingsModule::emitChanged()
 {
@@ -673,15 +684,7 @@ void SySettingsModule::emitChanged()
      saveSettings();
      refreshPolicySettings();
 
-    // e.g. send native (e.g. X11) reload event
-    oyOptions_s * opts = oyOptions_New(NULL), * results = 0;
-    int error = oyOptions_Handle( "//"OY_TYPE_STD"/send_native_update_event",
-                      opts,"send_native_update_event",
-                      &results );
-    oyOptions_Release( &opts );
-
-    if(error)
-      fprintf(stderr, "send_native_update_event failed\n");
+     SySendNativeUpdate(__func__);
 }
 
 
@@ -724,11 +727,13 @@ void SySettingsModule::checkPolicy(int set)
          ui->removePolicyButton->setEnabled(true);
 
          if(set)
+         {
            oyPolicySet( selected_policy.toLocal8Bit(), 0 );
+           SySendNativeUpdate(__func__);
+         }
      }
      if(full_name) free( full_name );
 
-   
      // Make sure the user doesn't delete the current policy settings!
      if(default_policy == selected_policy)
          ui->removePolicyButton->setEnabled(false);
