@@ -195,7 +195,8 @@ void SySendNativeUpdate(const char * func)
                       &results );
     oyOptions_Release( &opts );
 
-    fprintf(stderr, "send_native_update_event %s()\n", func);
+    if(oy_debug)
+      fprintf(stderr, "send_native_update_event %s()\n", func);
     if(error)
       fprintf(stderr, "send_native_update_event failed\n");
 }
