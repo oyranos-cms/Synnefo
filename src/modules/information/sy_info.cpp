@@ -188,7 +188,8 @@ void SyInfoModule::addProfileTreeItem( unsigned int type, QString description,
     new_child->setText( ITEM_NAME, description );
 
     // attach the profile to the widget
-    QVariant v((qulonglong) oyProfile_Copy(profile,0));
+    oyProfile_Copy(profile,0);
+    QVariant v((qulonglong) profile);
     new_child->setData( ITEM_NAME, Qt::UserRole, v );
     
     ui->installedProfilesTree->setUniformRowHeights(false);
@@ -312,7 +313,8 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
           device_child->setText( ITEM_DESCRIPTION, profile_name );
 
           // attach the profile to the widget
-          QVariant v((qulonglong) oyProfile_Copy(p,0));
+          oyProfile_Copy(p,0);
+          QVariant v((qulonglong) p);
           device_child->setData( 0, Qt::UserRole, v );
 
           device_child->setIcon(ITEM_ICON, examineIcon);
