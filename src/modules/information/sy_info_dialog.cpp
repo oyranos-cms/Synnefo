@@ -179,7 +179,7 @@ bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
      QString iccExamin = QString::fromLocal8Bit("iccexamin.exe");
 #elif defined (__APPLE__)
      QChar pathSep(':'); 
-     QString iccExamin = QString::fromLocal8Bit("iccexamin.app/Contents/MacOS/ICC Examin");
+     QString iccExamin = QString::fromLocal8Bit("ICCExamin.app/Contents/MacOS/ICCExamin");
 # else
      QChar pathSep(':');  
      QString iccExamin = QString::fromLocal8Bit("iccexamin");
