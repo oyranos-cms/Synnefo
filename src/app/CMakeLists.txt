@@ -76,17 +76,18 @@ ENDIF()
 
 
 IF(APPLE)
+  SET( SyAPP Synnefo )
+
+  SET( OSX_SCRIPT_FILES "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh" )
+  SET( OSX_PKG_FILES ${PROJECT_SOURCE_DIR}/extras/osx/PkgInfo )
+
   # icon files to copy in the bundle
   SET( OSX_ICON_FILES ${PROJECT_SOURCE_DIR}/extras/osx/synnefo.icns  )
   CONFIGURE_FILE (
                 "${CMAKE_CURRENT_SOURCE_DIR}/extras/osx/Synnefo.sh.in"
-                "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh"
+                "${OSX_SCRIPT_FILES}"
                 @ONLY
                  )
-  SET( OSX_SCRIPT_FILES "${CMAKE_CURRENT_BINARY_DIR}/extras/osx/Synnefo.sh" )
-  SET( OSX_PKG_FILES ${PROJECT_SOURCE_DIR}/extras/osx/PkgInfo )
-
-  SET( SyAPP Synnefo )
   ADD_EXECUTABLE( ${SyAPP} MACOSX_BUNDLE ${synnefo_SRCS} ${synnefo_RCC_SRCS} ${OSX_ICON_FILES} )
 
   INSTALL( TARGETS ${SyAPP}
@@ -104,10 +105,10 @@ IF(APPLE)
   SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_LONG_VERSION_STRING "Synnefo ${synnefo_VERSION}" )
   SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_SHORT_VERSION_STRING ${synnefo_VERSION} )
   SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_BUNDLE_VERSION 1.0 )
-  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_COPYRIGHT "2011-2013 Joseph Simon, 2012-2015 Kai-Uwe Behrmann" )
+  SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_COPYRIGHT "2011-2013 Joseph Simon, 2012-2016 Kai-Uwe Behrmann" )
 
   # configure CMake to use a custom Info.plist
-  #SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/extras/osx/Info.plist )
+  #SET_TARGET_PROPERTIES( ${SyAPP} PROPERTIES MACOSX_BUNDLE_INFO_PLIST ${PROJECT_SOURCE_DIR}/extras/osx/Info.plist.in )
 
   # set where in the bundle to put the icns files
   SET_SOURCE_FILES_PROPERTIES( ${OSX_ICON_FILES} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
@@ -117,7 +118,7 @@ IF(APPLE)
 # An alternative is the do a configure_file() on a script and use install(SCRIPT  ...).
 # Note that the image plugins depend on QtSvg and QtXml, and it got those copied
 # over.
-  SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/${SyAPP}.app")  # paths to executables
+  SET(APPS "\${CMAKE_INSTALL_PREFIX}/bin/${SyAPP}.app/")  # paths to executables
   SET(DIRS "\${CMAKE_INSTALL_PREFIX}/lib;\${CMAKE_CURRENT_BINARY_DIR};\${CMAKE_INSTALL_PREFIX}/Library/Frameworks")   # directories to search for prerequisites
   INSTALL(CODE "
    include(BundleUtilities)
@@ -136,15 +137,26 @@ IF(APPLE)
 
   # install Oyranos modules
   FILE( GLOB OYRANOS_ALL_CMMS ${OYRANOS_CMM_DIR}/liboyranos_*_cmm* )
-  INSTALL( FILES ${OYRANOS_ALL_CMMS} DESTINATION "bin/${SyAPP}.app/Contents/Resources/${OYRANOS_CMM_SUBDIR}" COMPONENT lib )
+  INSTALL( FILES ${OYRANOS_ALL_CMMS}
+           DESTINATION "bin/${SyAPP}.app/Contents/Resources/${OYRANOS_CMM_SUBDIR}"
+           COMPONENT lib )
   FILE( GLOB OYRANOS_ALL_META ${OYRANOS_META_DIR}/liboyranos_*_cmm* )
-  INSTALL( FILES ${OYRANOS_ALL_META} DESTINATION "bin/${SyAPP}.app/Contents/Resources/${OYRANOS_META_SUBDIR}" COMPONENT lib )
+  INSTALL( FILES ${OYRANOS_ALL_META}
+           DESTINATION "bin/${SyAPP}.app/Contents/Resources/${OYRANOS_META_SUBDIR}"
+           COMPONENT lib )
   FOREACH( oy_dep_lib ${OYRANOS_MODULE_LIBRARIES} )
     FILE( GLOB OYRANOS_MODULE_DEP_LIBRARIES ${OYRANOS_META_DIR}/../lib${oy_dep_lib}*.dylib )
-    INSTALL( FILES ${OYRANOS_MODULE_DEP_LIBRARIES} DESTINATION "bin/${SyAPP}.app/Contents/MacOS" COMPONENT lib )
+    INSTALL( FILES ${OYRANOS_MODULE_DEP_LIBRARIES}
+             DESTINATION "bin/${SyAPP}.app/Contents/MacOS"
+             COMPONENT lib )
   ENDFOREACH( oy_dep_lib )
 
-  INSTALL( PROGRAMS ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/${SyAPP}.app/Contents/MacOS" COMPONENT bin )
+  #INSTALL( PROGRAMS ${OYRANOS_META_DIR}/../../bin/oyranos-profile-graph DESTINATION "bin/${SyAPP}.app/Contents/MacOS" COMPONENT bin )
+  INSTALL( DIRECTORY ${OYRANOS_META_DIR}/../../Library/Frameworks/
+           DESTINATION "bin/${ICCE_APP}.app/Contents/Frameworks"
+           COMPONENT lib
+           USE_SOURCE_PERMISSIONS )
+
 
   FIND_PACKAGE(PkgConfig)
   PKG_CHECK_MODULES(ELEKTRA elektra)
