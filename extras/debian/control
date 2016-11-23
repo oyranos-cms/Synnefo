@@ -13,7 +13,7 @@ Build-Depends: debhelper (>= 8.0.0),
  libxinerama-dev,
  libxmu-dev,
  libxfixes-dev,
- libqt4-dev
+ qtbase5-dev
 Standards-Version: 3.9.3
 Section: graphics
 Homepage: http://www.oyranos.org/synnefo
