@@ -138,10 +138,16 @@ void SyInfoModule::populateInstalledProfileList(bool init)
     oyWidgetTitleGet( oyWIDGET_GROUP_DEFAULT_PROFILES_ASSUMED, NULL, &g_name,
                       NULL, NULL );
     assumedCsTree->setText( ITEM_NAME, QString::fromLocal8Bit(g_name));
+    QTreeWidgetItem * effectCsTree = new QTreeWidgetItem;
+    ui->installedProfilesTree->addTopLevelItem( effectCsTree );
+    oyWidgetTitleGet( oyWIDGET_GROUP_BEHAVIOUR_EFFECT, NULL, &g_name,
+                      NULL, NULL );
+    effectCsTree->setText( ITEM_NAME, QString::fromLocal8Bit(g_name));
 
     // For convenience, we expand colorspace trees.
     ui->installedProfilesTree->expandItem(editingCsTree);
     ui->installedProfilesTree->expandItem(assumedCsTree);
+    ui->installedProfilesTree->expandItem(effectCsTree);
 
     // Populate colorspace items.
     oyWidgetTitleGet( (oyWIDGET_e)oyEDITING_RGB, NULL, &g_name, NULL, NULL );
@@ -174,6 +180,12 @@ void SyInfoModule::populateInstalledProfileList(bool init)
     oyWidgetTitleGet( (oyWIDGET_e)oyASSUMED_GRAY, NULL, &g_name, NULL, NULL );
     if (strlen(g_name) > 0)
        addProfileTreeItem( oyASSUMED_GRAY, QString::fromLocal8Bit(g_name), assumedCsTree );
+    oyWidgetTitleGet( (oyWIDGET_e)oyWIDGET_PROFILE_PROOF, NULL, &g_name, NULL, NULL );
+    if (strlen(g_name) > 0)
+       addProfileTreeItem( oyPROFILE_PROOF, QString::fromLocal8Bit(g_name), effectCsTree );
+    oyWidgetTitleGet( (oyWIDGET_e)oyWIDGET_PROFILE_EFFECT, NULL, &g_name, NULL, NULL );
+    if (strlen(g_name) > 0)
+       addProfileTreeItem( oyPROFILE_EFFECT, QString::fromLocal8Bit(g_name), effectCsTree );
 
     ui->installedProfilesTree->expandAll();
 }
