@@ -18,6 +18,7 @@ SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent)
 /*
     connect( hideModuleCheckBox, SIGNAL (clicked (bool)),
               this, SLOT (changeModuleStatus( bool )));*/
+
 }
 
 // Helper function to 

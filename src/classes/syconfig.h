@@ -32,7 +32,7 @@ class SyConfig : public QDialog
     
     // QCheckBox
     void changeModuleStatus( bool );
-    
+
   private:
     Ui::syConfigDialog * ui;
     

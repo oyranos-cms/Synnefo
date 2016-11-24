@@ -54,6 +54,10 @@ private slots:
     // get the ICC profile
     void downloadFromTaxiDB( );
 
+    // Watch DBus
+    void configChanged( QString msg );
+    void update();
+
 private:
     
     // Set new profile and update UI
@@ -134,7 +138,7 @@ private:
 
     Ui::syDevicesWidget * ui;
 
-    QTimer * timer;
+    bool acceptDBusUpdate;             // allow to repaint the UI again
 };
 
 

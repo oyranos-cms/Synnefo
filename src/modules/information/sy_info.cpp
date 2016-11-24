@@ -6,8 +6,8 @@
 #include <oyProfiles_s.h>
 
 #include <QProcess>
-#include <QTime>
 #include <QTimer>
+#include <QtDBus/QtDBus>
  
 #include "sy_info.h"
 #include "sy_info_config.h"
@@ -62,13 +62,22 @@ SyInfoModule::SyInfoModule(QWidget * parent)
     connect( ui->installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
              this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
 
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT( populateInstalledProfileList() ));
-    timer->start(2500);
+    if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                               this, SLOT( configChanged( QString ) )) )
+        fprintf(stderr, "=================== connect info to libelektra\n" );
+    acceptDBusUpdate = true;
 }
 
 
 //  ******** SIGNAL/SLOT Functions *****************
+
+void SyInfoModule::configChanged( QString msg )
+{
+  if(acceptDBusUpdate == false) return;
+  acceptDBusUpdate = false;
+
+  QTimer::singleShot(250, this, SLOT(populateInstalledProfileList()));
+};
 
 void SyInfoModule::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, int column)
 {
@@ -93,13 +102,11 @@ void SyInfoModule::profileExamineButtonClicked(QTreeWidgetItem * currentProfileI
 // ************** Private Functions ********************
 void SyInfoModule::populateInstalledProfileList()
 {
-  QTime check;
-  check.start();
-  populateInstalledProfileList(false);
-  int elapsed = check.elapsed();
-  // do not exceed CPU resources
-  if(timer->interval() < 4 * elapsed)
-    timer->setInterval( 8 * elapsed );
+  // clear the Oyranos settings cache
+  oyGetPersistentStrings( NULL );
+
+  populateInstalledProfileList(true);
+  acceptDBusUpdate = true;
 }
 
 // Populate the tree with detected profile items.

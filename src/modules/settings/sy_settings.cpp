@@ -1,6 +1,8 @@
 #include <QDir>
 #include <QFile>
 #include <QInputDialog>
+#include <QTimer>
+#include <QtDBus/QtDBus>
  
 #include "sy_settings.h"
 
@@ -162,9 +164,7 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     SET_OY_CHECK_WIDGET( EFFECT );
 
     // Load behavior settings and display current default policy.
-    populateBehaviorSettings();
-    refreshProfileSettings();         // Refresh comboboxes in "Default Profiles"
-    refreshPolicySettings();
+    reload();
 
     // QT-related SIGNAL/SLOT functions, such as button presses and clicking
     // on a particular item.
@@ -184,6 +184,28 @@ SySettingsModule::SySettingsModule(QWidget * parent)
    // When a user clicks on a radio box, the "Apply" button will be enabled.
    for(k = 0; k < n; ++k)
     connect(editableCheckBoxItems.value(k), SIGNAL(clicked()), this, SLOT(emitChanged()));
+
+    if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                               this, SLOT( configChanged( QString ) )) )
+        fprintf(stderr, "=================== connect settings to libelektra\n" );
+    acceptDBusUpdate = true;
+}
+
+void SySettingsModule::configChanged( QString msg )
+{ 
+  if(acceptDBusUpdate == false) return;
+  acceptDBusUpdate = false;
+
+  QTimer::singleShot(250, this, SLOT( update() ));
+};
+
+void SySettingsModule::update()
+{
+  // clear the Oyranos settings cache
+  oyGetPersistentStrings( NULL );
+
+  checkPolicy(0);
+  acceptDBusUpdate = true;
 }
 
 void SySendNativeUpdate(const char * func)
@@ -747,13 +769,17 @@ void SySettingsModule::checkPolicy(int set)
          ui->policySettingsList->setCurrentRow(i);
      }
 
-     populateBehaviorSettings();       // Refresh settings in "Behavior Settings"
-     refreshProfileSettings();         // Refresh comboboxes in "Default Profiles"
-     refreshPolicySettings();
+     reload();
 
      setEditableItems(isCustom);
 }
 
+void SySettingsModule::reload()
+{
+     populateBehaviorSettings();       // Refresh settings in "Behavior Settings"
+     refreshProfileSettings();         // Refresh comboboxes in "Default Profiles"
+     refreshPolicySettings();
+}
 
 // Function to load the installed policies in system.
 void SySettingsModule::loadPolicy()

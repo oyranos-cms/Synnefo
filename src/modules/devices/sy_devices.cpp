@@ -3,6 +3,7 @@
 #include <QFile>
 #include <QTime>
 #include <QTimer>
+#include <QtDBus/QtDBus>
 
 #include "sy_devices.h"
 #include "sy_devices_config.h"
@@ -116,12 +117,31 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
     connect( ui->installProfileButton, SIGNAL(clicked()),
 	     this, SLOT(installTaxiProfile()));
 
-    timer = new QTimer(this);
-    connect(timer, SIGNAL(timeout()), this, SLOT( updateDeviceItems() ));
-    timer->start(1500);
-
     init = false;
+
+    if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                               this, SLOT( configChanged( QString ) )) )
+        fprintf(stderr, "=================== connect settings to libelektra\n" );
+    acceptDBusUpdate = true;
 }
+
+void SyDevicesModule::configChanged( QString msg )
+{ 
+  if(acceptDBusUpdate == false) return;
+  acceptDBusUpdate = false;
+
+  QTimer::singleShot(250, this, SLOT( update() ));
+};
+
+void SyDevicesModule::update()
+{
+  // clear the Oyranos settings cache
+  oyGetPersistentStrings( NULL );
+
+  updateDeviceItems();
+  acceptDBusUpdate = true;
+}
+
 
 // small helper to obtain a profile from a device
 int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfile_s ** profile )
@@ -214,13 +234,7 @@ void SyDevicesModule::updateProfileList( QTreeWidgetItem * selected_device, bool
 
 void SyDevicesModule::updateDeviceItems()
 {
-  QTime check;
-  check.start();
   updateDeviceItems(-1);
-  int elapsed = check.elapsed();
-  // do not exceed CPU resources
-  if(timer->interval() < 4 * elapsed)
-    timer->setInterval( 8 * elapsed );
 }
 
 void SyDevicesModule::updateDeviceItems(int state)

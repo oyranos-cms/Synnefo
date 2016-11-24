@@ -57,9 +57,8 @@ SynnefoApp::SynnefoApp(QWidget * parent)
             SIGNAL( clicked() ), 
             this, 
             SLOT( openApplicationSettings() ));
+
 }
-
-
 
 //   ********************************
 //   *    PRIVATE SLOT FUNCTIONS    *

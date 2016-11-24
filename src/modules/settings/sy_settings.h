@@ -46,6 +46,10 @@ private slots:
     // Button is called to save custom default profile into XML file.
     void saveSettingsToXml();
 
+    // Watch DBus
+    void configChanged( QString msg );
+    void update();
+
 private:
 
     // Used to fill in "Default Profiles" tab.
@@ -84,6 +88,7 @@ private:
     // Store the settings in the Oyranos database
     void saveSettings();
 
+    void reload();
  
   // *** PRIVATE DATA MEMBERS ***
 
@@ -113,6 +118,8 @@ private:
     int icc_profile_flags;              ///< profile selection flags from oyProfile_s.h
 
     Ui::sySettingsWidget * ui;
+
+    bool acceptDBusUpdate;             // allow to repaint the UI again
 };
 
 #endif

@@ -33,6 +33,7 @@ private slots:
     void loadProfileGraph();
     // Build profile listing tree.
     void populateInstalledProfileList();
+    void configChanged( QString msg );
     
 private:
   
@@ -85,7 +86,7 @@ private:
 
     Ui::syInfoWidget * ui;
 
-    QTimer * timer;
+    bool acceptDBusUpdate;             // allow to repaint the UI again
 };
 
 #endif
