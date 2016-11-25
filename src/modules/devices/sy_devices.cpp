@@ -121,7 +121,7 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
 
     if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                                this, SLOT( configChanged( QString ) )) )
-        fprintf(stderr, "=================== connect settings to libelektra\n" );
+        fprintf(stderr, "=================== connect devices to libelektra\n" );
     acceptDBusUpdate = true;
 }
 
