@@ -107,8 +107,6 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
     // Load directories and device listing.
     populateDeviceListing();
     
-    // Expand list for user.
-    ui->deviceList->expandAll();
     
     connect( ui->relatedDeviceCheckBox, SIGNAL(stateChanged( int )),
              this, SLOT( updateDeviceItems( int )) );
@@ -138,7 +136,7 @@ void SyDevicesModule::update()
   // clear the Oyranos settings cache
   oyGetPersistentStrings( NULL );
 
-  updateDeviceItems();
+  populateDeviceListing();
   acceptDBusUpdate = true;
 }
 
@@ -258,6 +256,8 @@ void SyDevicesModule::updateDeviceItems(int state)
 
 void SyDevicesModule::changeDeviceItem(int pos)
 {
+  if(acceptDBusUpdate == false) return;
+
   SyDeviceItem * combo = dynamic_cast<SyDeviceItem*>(sender());
   if(combo && !init && pos >= 0)
   {
@@ -770,6 +770,7 @@ int SyDevicesModule::detectDevices(const char * device_type)
             deviceItem->setDevice(device);
 
             deviceItem->refreshText();
+            fprintf( stderr, "###### %s|%s with %s|%s\n", device_designation, deviceItemString.toLocal8Bit().data(), deviceProfileDescription.toLocal8Bit().data(), profile_filename);
     
             // add association combo box in tree widget.
             SyDeviceItem * profileAssociationCB = new SyDeviceItem();
@@ -804,6 +805,9 @@ int SyDevicesModule::detectDevices(const char * device_type)
 // Populate devices and profiles.
 void SyDevicesModule::populateDeviceListing()
 {
+  ui->deviceList->clear();
+
+
     // TODO Work out a solution to use raw/camera stuff.
 
     uint32_t count = 0, i = 1,
@@ -820,6 +824,9 @@ void SyDevicesModule::populateDeviceListing()
       free( texts[i] );
     }
     free( texts );
+
+    // Expand list for user.
+  ui->deviceList->expandAll();
 }
 
 void setItem( QComboBox & itemComboBox, int index, int count, QString text, QString data )
