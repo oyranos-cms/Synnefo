@@ -503,5 +503,8 @@ void SyInfoModule::setDateTag(oyProfile_s * profile)
 
 SyInfoModule::~SyInfoModule()
 {
+    if( QDBusConnection::sessionBus().disconnect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                              this, SLOT( configChanged( QString ) )) )
+        fprintf(stderr, "=================== disconnect info from libelektra\n" );
     delete infoDialog;
 }

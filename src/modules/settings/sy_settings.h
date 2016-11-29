@@ -115,11 +115,11 @@ private:
     // Variable to specify if current policy is a custom one.
     bool isCustom, settingsChanged;
    
+    bool acceptDBusUpdate;             // allow to repaint the UI again
+
     int icc_profile_flags;              ///< profile selection flags from oyProfile_s.h
 
     Ui::sySettingsWidget * ui;
-
-    bool acceptDBusUpdate;             // allow to repaint the UI again
 };
 
 #endif

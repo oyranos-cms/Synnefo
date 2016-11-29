@@ -185,10 +185,11 @@ SySettingsModule::SySettingsModule(QWidget * parent)
    for(k = 0; k < n; ++k)
     connect(editableCheckBoxItems.value(k), SIGNAL(clicked()), this, SLOT(emitChanged()));
 
-    if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+  if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                                this, SLOT( configChanged( QString ) )) )
-        fprintf(stderr, "=================== connect settings to libelektra\n" );
-    acceptDBusUpdate = true;
+      fprintf(stderr, "=================== connect settings to libelektra\n" );
+
+  acceptDBusUpdate = true;
 }
 
 void SySettingsModule::configChanged( QString msg )
@@ -796,5 +797,7 @@ void SySettingsModule::loadPolicy()
 
 SySettingsModule::~SySettingsModule()
 {
-  
+    if( QDBusConnection::sessionBus().disconnect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                              this, SLOT( configChanged( QString ) )) )
+        fprintf(stderr, "=================== disconnect settings from libelektra\n" );
 }

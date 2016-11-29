@@ -1258,6 +1258,9 @@ QString SyDevicesModule::convertFilenameToDescription(QString profileFilename)
 
 SyDevicesModule::~SyDevicesModule()
 {
+    if( QDBusConnection::sessionBus().disconnect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
+                                              this, SLOT( configChanged( QString ) )) )
+        fprintf(stderr, "=================== disconnect devices from libelektra\n" );
   delete ui; 
 }
 
