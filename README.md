@@ -1,4 +1,4 @@
-# Synnefo (gr. cloud)
+# Synnefo (gr. cloud) README
 ![](http://www.oyranos.org/images/oyranos-config-synnefo.png)
 
 Synnefo is a Qt color management front-end.  It uses the Oyranos CMS to provide the ability to set and examine device profiles, as well as to change system-wide color settings.
