@@ -152,7 +152,7 @@ int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfi
                      "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
                            "yes", OY_CREATE_NEW );
     oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
-    int error = oyDeviceGetProfile( device, options, profile );
+    int error = oyDeviceAskProfile2( device, options, profile );
     oyOptions_Release( &options );
     return error;
 }
@@ -439,18 +439,6 @@ void SyDevicesModule::downloadFromTaxiDB( )
 
     oyOptions_Release(&options);
     oyProfile_Release(&ip);
-}
-
-// small helper to obtain a profile from a device
-int SyDeviceGetProfile( oyConfig_s * device, oyProfile_s ** profile )
-{
-  oyOptions_s * options = 0;
-  oyOptions_SetFromText( &options,
-                   "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
-                         "yes", OY_CREATE_NEW );
-  int error = oyDeviceGetProfile( device, options, profile );
-  oyOptions_Release( &options );
-  return error;
 }
 
 // obtain the Taxi DB query result

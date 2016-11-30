@@ -317,7 +317,7 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
         device_list_sub_tree->addChild(device_child);   
 
         oyProfile_s * p = 0;
-        oyDeviceGetProfile( device, options, &p );
+        oyDeviceAskProfile2( device, options, &p );
 
         if(p)
         {
