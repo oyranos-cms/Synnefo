@@ -1,3 +1,11 @@
+synnefo (1.1.0-1) unstable; urgency=low
+
+  * Oyranos API changes
+  * build with Qt5
+  * libelektra DBus support
+
+ -- Kai-Uwe Behrmann (oy) <oy@oyranos.org>  Tue, 29 Nov 2016 12:00:00 +0100
+
 synnefo (0.9.5-1) unstable; urgency=low
 
   * Oyranos API changes
