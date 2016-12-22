@@ -146,10 +146,10 @@ int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfi
 {
     oyOptions_s * options = 0;
     oyOptions_SetFromText( &options,
-                     "//"OY_TYPE_STD"/config/command",
+                     "//" OY_TYPE_STD "/config/command",
                            "list", OY_CREATE_NEW );
     oyOptions_SetFromText( &options,
-                     "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
+                     "//" OY_TYPE_STD "/config/icc_profile.x_color_region_target",
                            "yes", OY_CREATE_NEW );
     oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
     int error = oyDeviceAskProfile2( device, options, profile );
@@ -595,7 +595,7 @@ int SyDevicesModule::installTaxiProfile(oyConfig_s * device)
                             "//" OY_TYPE_STD "/icc_profile_flags",
                             icc_profile_flags, 0, OY_CREATE_NEW );
       oyOptions_SetFromText( &options,
-+                            "//"OY_TYPE_STD"/config/skip_ask_for_profile",
++                            "//" OY_TYPE_STD "/config/skip_ask_for_profile",
                              "yes", OY_CREATE_NEW );
       error = oyDeviceSetup(device, options);
       oyOptions_Release( &options );
@@ -803,7 +803,7 @@ void SyDevicesModule::populateDeviceListing()
     char ** texts = 0;
 
     // get all configuration filters
-    oyConfigDomainList( "//"OY_TYPE_STD"/device/config.icc_profile",
+    oyConfigDomainList( "//" OY_TYPE_STD "/device/config.icc_profile",
                         &texts, &count, &rank_list ,0 );
 
     for (i = 0; i < count; i++)
@@ -960,7 +960,7 @@ oyConfig_s * SyDevicesModule::getCurrentDevice( void )
     oyOptions_SetFromText( &options, "//" OY_TYPE_STD "/config/command", 
                            "properties", OY_CREATE_NEW );
     oyOptions_SetFromText( &options,
-                     "//"OY_TYPE_STD"/config/icc_profile.x_color_region_target",
+                     "//" OY_TYPE_STD "/config/icc_profile.x_color_region_target",
                            "yes", OY_CREATE_NEW );
     if(current_device_class && current_device_name)
       error = oyDeviceGet( OY_TYPE_STD, current_device_class, current_device_name,
@@ -1003,7 +1003,7 @@ void SyDevicesModule::assignProfile( QString profile_name, oySCOPE_e scope )
                                "//" OY_TYPE_STD "/icc_profile_flags",
                                icc_profile_flags, 0, OY_CREATE_NEW );
          oyOptions_SetFromText( &options,
-+                               "//"OY_TYPE_STD"/config/skip_ask_for_profile",
++                               "//" OY_TYPE_STD "/config/skip_ask_for_profile",
                                 "yes", OY_CREATE_NEW );
          oyDeviceSetup( device, options ); /* reinitialise */
          oyOptions_Release( &options );
