@@ -461,7 +461,7 @@ void SyDevicesModule::getTaxiSlot( char * for_device, oyConfigs_s * taxi_devices
     for (int i = 0; i < count; i++) {
 	taxi_device = oyConfigs_Get( taxi_devices, i );
 
-	oyConfig_Compare(device, taxi_device, &rank);
+	oyDeviceCompare(device, taxi_device, &rank);
 
 	if (rank > 0) {
 	    QString text = "[" + QString::number(rank) + "]";
@@ -1014,7 +1014,7 @@ void SyDevicesModule::assignProfile( QString profile_name, oySCOPE_e scope )
 
          /* clear */
          oyConfig_Release( &device );
-         if(pn) free(pn); pn = 0;
+         if(pn) { free(pn); pn = 0; }
      }
 
      // Convert profile into description name...
@@ -1099,7 +1099,7 @@ oyConfig_s * getTaxiBestFit(oyConfig_s * device)
       {
         taxi_dev = oyConfigs_Get(devices, i);
         ranks[2*i+0] = i;
-        oyConfig_Compare(device, taxi_dev, &ranks[2*i+1]);
+        oyDeviceCompare(device, taxi_dev, &ranks[2*i+1]);
 
         oyConfig_Release(&taxi_dev);
       }

@@ -312,7 +312,7 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
 #endif
         if(model)
           device_child->setText( ITEM_NAME, QString(model) );
-        if(model) free(model); model = 0;
+        if(model) { free(model); model = 0; }
         device_child->setIcon(ITEM_NAME, device_icon);
         device_list_sub_tree->addChild(device_child);   
 
