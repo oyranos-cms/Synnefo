@@ -3,14 +3,14 @@
 
 Synnefo is a Qt color management front-end.  It uses the Oyranos CMS to provide the ability to set and examine device profiles, as well as to change system-wide color settings.
 
-###Links
+### Links
 * [About](http://www.oyranos.org/synnefo)
 * [Support](http://www.oyranos.org/support)
 * [Copyright](COPYING.md) - BSD
 * [Authors](AUTHORS.md)
 
 
-###Dependencies
+### Dependencies
 
 This build is currently using the latest Oyranos build through "git". It is required that Oyranos be up-to-date using this.
 
@@ -18,7 +18,7 @@ This build is currently using the latest Oyranos build through "git". It is requ
 * [Qt](http://www.qt.io) - for Qt4 or Qt5 GUI
 
 
-###Building
+### Building
 
 Type the following in Synnefo's root directory:
 
@@ -33,7 +33,7 @@ If you wish to uninstall Synnefo, simply type:
 
     $ make uninstall
 
-####Build Flags
+#### Build Flags
 ... are typical cmake flags like CMAKE_C_FLAGS to tune compilation.
 
 * CMAKE_INSTALL_PREFIX to install into paths and so on. Use on the command 
