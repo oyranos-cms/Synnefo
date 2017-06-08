@@ -7,7 +7,9 @@
 
 #include <QProcess>
 #include <QTimer>
+#ifdef HAVE_QT_DBUS
 #include <QtDBus/QtDBus>
+#endif
  
 #include "sy_info.h"
 #include "sy_info_config.h"
@@ -62,9 +64,11 @@ SyInfoModule::SyInfoModule(QWidget * parent)
     connect( ui->installedProfilesTree, SIGNAL(itemClicked(QTreeWidgetItem*,int)),
              this, SLOT(profileExamineButtonClicked(QTreeWidgetItem *, int)));
 
+#ifdef HAVE_QT_DBUS
     if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                                this, SLOT( configChanged( QString ) )) )
         fprintf(stderr, "=================== connect info to libelektra\n" );
+#endif
     acceptDBusUpdate = true;
 }
 
@@ -503,8 +507,10 @@ void SyInfoModule::setDateTag(oyProfile_s * profile)
 
 SyInfoModule::~SyInfoModule()
 {
+#ifdef HAVE_QT_DBUS
     if( QDBusConnection::sessionBus().disconnect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                               this, SLOT( configChanged( QString ) )) )
         fprintf(stderr, "=================== disconnect info from libelektra\n" );
+#endif
     delete infoDialog;
 }

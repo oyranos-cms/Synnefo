@@ -3,7 +3,9 @@
 #include <QFile>
 #include <QTime>
 #include <QTimer>
+#ifdef HAVE_QT_DBUS
 #include <QtDBus/QtDBus>
+#endif
 
 #include "sy_devices.h"
 #include "sy_devices_config.h"
@@ -117,9 +119,11 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
 
     init = false;
 
+#ifdef HAVE_QT_DBUS
     if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                                this, SLOT( configChanged( QString ) )) )
         fprintf(stderr, "=================== connect devices to libelektra\n" );
+#endif
     acceptDBusUpdate = true;
 }
 
@@ -1246,9 +1250,11 @@ QString SyDevicesModule::convertFilenameToDescription(QString profileFilename)
 
 SyDevicesModule::~SyDevicesModule()
 {
+#ifdef HAVE_QT_DBUS
     if( QDBusConnection::sessionBus().disconnect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                               this, SLOT( configChanged( QString ) )) )
         fprintf(stderr, "=================== disconnect devices from libelektra\n" );
+#endif
   delete ui; 
 }
 

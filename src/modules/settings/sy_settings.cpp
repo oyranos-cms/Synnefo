@@ -2,7 +2,9 @@
 #include <QFile>
 #include <QInputDialog>
 #include <QTimer>
+#ifdef HAVE_QT_DBUS
 #include <QtDBus/QtDBus>
+#endif
  
 #include "sy_settings.h"
 
@@ -185,9 +187,11 @@ SySettingsModule::SySettingsModule(QWidget * parent)
    for(k = 0; k < n; ++k)
     connect(editableCheckBoxItems.value(k), SIGNAL(clicked()), this, SLOT(emitChanged()));
 
+#ifdef HAVE_QT_DBUS
   if( QDBusConnection::sessionBus().connect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                                this, SLOT( configChanged( QString ) )) )
       fprintf(stderr, "=================== connect settings to libelektra\n" );
+#endif
 
   acceptDBusUpdate = true;
 }
@@ -797,7 +801,9 @@ void SySettingsModule::loadPolicy()
 
 SySettingsModule::~SySettingsModule()
 {
+#ifdef HAVE_QT_DBUS
     if( QDBusConnection::sessionBus().disconnect( QString(), "/org/libelektra/configuration", "org.libelektra", QString(),
                                               this, SLOT( configChanged( QString ) )) )
         fprintf(stderr, "=================== disconnect settings from libelektra\n" );
+#endif
 }

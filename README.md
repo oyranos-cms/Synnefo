@@ -34,12 +34,15 @@ If you wish to uninstall Synnefo, simply type:
     $ make uninstall
 
 #### Build Flags
-... are typical cmake flags like CMAKE_C_FLAGS to tune compilation.
+... are typical cmake flags like CMAKE\_C\_FLAGS to tune compilation.
 
-* CMAKE_INSTALL_PREFIX to install into paths and so on. Use on the command 
-  line through -DCMAKE_INSTALL_PREFIX=/my/path .
-* LIB_SUFFIX - allows to append a architecture specific suffix like 
-  LIB_SUFFIX=64 for 64bit non debian style Linux systems.
-* CMAKE_BUILD_TYPE - debug or release or what you like
-* USE_Qt4 - use Qt4 even if Qt5 is installed, default is to detect Qt5
-
+* CMAKE\_INSTALL\_PREFIX to install into paths and so on. Use on the command 
+  line through -DCMAKE\_INSTALL\_PREFIX=/my/path .
+* LIB\_SUFFIX - allows to append a architecture specific suffix like 
+  LIB\_SUFFIX=64 for 64bit non debian style Linux systems.
+* CMAKE\_BUILD\_TYPE - debug or release or what you like
+* USE\_Qt4 - use Qt4 even if Qt5 is installed, default is to detect Qt5
+* ENABLE\_SHARED\_LIBS - default is ON
+* ENABLE\_STATIC\_LIBS - default is ON
+* ENABLE\_QT\_DBUS - default is ON
+* ENABLE\_APP - default is ON
