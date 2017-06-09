@@ -1,16 +1,16 @@
 #include "ui_synnefo-config.h"
 #include "syconfig.h"
 
-SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent) 
+SyConfig::SyConfig( QList <SyModule*> modules, QWidget * parent)
      : QDialog(parent, 0)
 {
     ui = new Ui::syConfigDialog();
-    ui->setupUi(this);     
-    
+    ui->setupUi(this);
+
     module_list = QList <SyModule*> (modules);
-       
+
     loadState();
-    
+
     connect(ui->okButton, SIGNAL(clicked()), this, SLOT(closeAndSaveDialog()));
     connect(ui->cancelButton, SIGNAL(clicked()), this, SLOT(closeDialog()));
     connect(ui->availableModuleList, SIGNAL (currentRowChanged (int)),
