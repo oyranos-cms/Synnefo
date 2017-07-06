@@ -146,6 +146,7 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_MISSMATCH );
     SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_PROOF );
     SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_EFFECT );
+    SET_OY_BOX_WIDGET( GROUP_BEHAVIOUR_DISPLAY );
     SET_OY_COMBO_WIDGET( ACTION_UNTAGGED_ASSIGN );
     SET_OY_LABEL_WIDGET( ACTION_UNTAGGED_ASSIGN );
     SET_OY_COMBO_WIDGET( ACTION_OPEN_MISMATCH_RGB );
@@ -156,6 +157,8 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     SET_OY_LABEL_WIDGET( MIXED_MOD_DOCUMENTS_PRINT );
     SET_OY_COMBO_WIDGET( MIXED_MOD_DOCUMENTS_SCREEN );
     SET_OY_LABEL_WIDGET( MIXED_MOD_DOCUMENTS_SCREEN );
+    SET_OY_COMBO_WIDGET( DISPLAY_WHITE_POINT );
+    SET_OY_LABEL_WIDGET( DISPLAY_WHITE_POINT );
     SET_OY_COMBO_WIDGET( RENDERING_INTENT );
     SET_OY_COMBO_WIDGET( RENDERING_INTENT_PROOF );
     SET_OY_LABEL_WIDGET( RENDERING_INTENT_PROOF );
@@ -370,6 +373,9 @@ void SySettingsModule::populateBehaviorSettings()
 
 //  Set up Proofing Settings  
   
+    behavior_setting = oyGetBehaviour(oyBEHAVIOUR_DISPLAY_WHITE_POINT);
+    ui->combo_DISPLAY_WHITE_POINT->setCurrentIndex(behavior_setting);
+
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_RENDERING_INTENT_PROOF);
     ui->combo_RENDERING_INTENT_PROOF->setCurrentIndex(behavior_setting);
 
@@ -537,7 +543,8 @@ void SySettingsModule::loadEditableItems()
     editableComboItems.push_front(ui->combo_ACTION_UNTAGGED_ASSIGN);    
     editableComboItems.push_front(ui->combo_ACTION_OPEN_MISMATCH_RGB);
     editableComboItems.push_front(ui->combo_ACTION_OPEN_MISMATCH_CMYK);
-    editableComboItems.push_front(ui->combo_RENDERING_INTENT_PROOF);    
+    editableComboItems.push_front(ui->combo_DISPLAY_WHITE_POINT);
+    editableComboItems.push_front(ui->combo_RENDERING_INTENT_PROOF);
     editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_SCREEN);
     editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_PRINT);     
     editableComboItems.push_front(ui->combo_PROFILE_PROOF);
@@ -665,6 +672,9 @@ void SySettingsModule::saveSettings()
   
     behaviorSetting = ui->combo_ACTION_OPEN_MISMATCH_CMYK->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_ACTION_OPEN_MISMATCH_CMYK, scope , behaviorSetting );
+
+    behaviorSetting = ui->combo_DISPLAY_WHITE_POINT->currentIndex();
+    oySetBehaviour ( oyBEHAVIOUR_DISPLAY_WHITE_POINT, scope , behaviorSetting );
 
     behaviorSetting = ui->combo_RENDERING_INTENT_PROOF->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT_PROOF, scope , behaviorSetting );
