@@ -1,8 +1,8 @@
-####Main Author:
+#### Main Author:
 * Joseph Simon
 
 
-####Contributors:
+#### Contributors:
 * Albert Astals Cid
 * Boudewijn Rempt
 * Christoph Feck
