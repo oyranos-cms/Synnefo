@@ -753,7 +753,11 @@ void SySettingsModule::savePolicy()
 void SySettingsModule::checkPolicy(int set)
 {
      if(!selected_policy.count())
+     {
+       // in case of just observing
+       reload();
        return;
+     }
 
      char * full_name = 0;
      oyPolicyFileNameGet( selected_policy.toLocal8Bit(), &full_name, malloc );
