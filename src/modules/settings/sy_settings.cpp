@@ -159,6 +159,8 @@ SySettingsModule::SySettingsModule(QWidget * parent)
     SET_OY_LABEL_WIDGET( MIXED_MOD_DOCUMENTS_SCREEN );
     SET_OY_COMBO_WIDGET( DISPLAY_WHITE_POINT );
     SET_OY_LABEL_WIDGET( DISPLAY_WHITE_POINT );
+    SET_OY_COMBO_WIDGET( DISPLAY_WHITE_POINT_DAEMON );
+    SET_OY_LABEL_WIDGET( DISPLAY_WHITE_POINT_DAEMON );
     SET_OY_COMBO_WIDGET( RENDERING_INTENT );
     SET_OY_COMBO_WIDGET( RENDERING_INTENT_PROOF );
     SET_OY_LABEL_WIDGET( RENDERING_INTENT_PROOF );
@@ -376,6 +378,10 @@ void SySettingsModule::populateBehaviorSettings()
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_DISPLAY_WHITE_POINT);
     ui->combo_DISPLAY_WHITE_POINT->setCurrentIndex(behavior_setting);
 
+    behavior_setting = oyGetBehaviour(oyBEHAVIOUR_DISPLAY_WHITE_POINT_DAEMON);
+    ui->combo_DISPLAY_WHITE_POINT_DAEMON->setCurrentIndex(behavior_setting);
+    ui->combo_DISPLAY_WHITE_POINT->setEnabled( behavior_setting == false );
+
     behavior_setting = oyGetBehaviour(oyBEHAVIOUR_RENDERING_INTENT_PROOF);
     ui->combo_RENDERING_INTENT_PROOF->setCurrentIndex(behavior_setting);
 
@@ -544,6 +550,7 @@ void SySettingsModule::loadEditableItems()
     editableComboItems.push_front(ui->combo_ACTION_OPEN_MISMATCH_RGB);
     editableComboItems.push_front(ui->combo_ACTION_OPEN_MISMATCH_CMYK);
     editableComboItems.push_front(ui->combo_DISPLAY_WHITE_POINT);
+    editableComboItems.push_front(ui->combo_DISPLAY_WHITE_POINT_DAEMON);
     editableComboItems.push_front(ui->combo_RENDERING_INTENT_PROOF);
     editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_SCREEN);
     editableComboItems.push_front(ui->combo_MIXED_MOD_DOCUMENTS_PRINT);     
@@ -675,6 +682,9 @@ void SySettingsModule::saveSettings()
 
     behaviorSetting = ui->combo_DISPLAY_WHITE_POINT->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_DISPLAY_WHITE_POINT, scope , behaviorSetting );
+
+    behaviorSetting = ui->combo_DISPLAY_WHITE_POINT_DAEMON->currentIndex();
+    oySetBehaviour ( oyBEHAVIOUR_DISPLAY_WHITE_POINT_DAEMON, scope , behaviorSetting );
 
     behaviorSetting = ui->combo_RENDERING_INTENT_PROOF->currentIndex();
     oySetBehaviour ( oyBEHAVIOUR_RENDERING_INTENT_PROOF, scope , behaviorSetting );
