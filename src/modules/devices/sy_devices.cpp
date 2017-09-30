@@ -130,9 +130,12 @@ SyDevicesModule::SyDevicesModule(QWidget * parent)
 void SyDevicesModule::configChanged( QString msg )
 { 
   if(acceptDBusUpdate == false) return;
-  acceptDBusUpdate = false;
 
-  QTimer::singleShot(250, this, SLOT( update() ));
+  if(strstr(msg.toLocal8Bit().data(), OY_DEVICE_STD))
+  {
+    acceptDBusUpdate = false;
+    QTimer::singleShot(250, this, SLOT( update() ));
+  }
 };
 
 void SyDevicesModule::update()

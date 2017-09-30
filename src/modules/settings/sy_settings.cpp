@@ -204,9 +204,14 @@ SySettingsModule::SySettingsModule(QWidget * parent)
 void SySettingsModule::configChanged( QString msg )
 { 
   if(acceptDBusUpdate == false) return;
-  acceptDBusUpdate = false;
 
-  QTimer::singleShot(250, this, SLOT( update() ));
+  if(strstr(msg.toLocal8Bit().data(), OY_DISPLAY_STD) ||
+     strstr(msg.toLocal8Bit().data(), OY_BEHAVIOUR_STD) ||
+     strstr(msg.toLocal8Bit().data(), OY_PROFILE_STD))
+  {
+    acceptDBusUpdate = false;
+    QTimer::singleShot(250, this, SLOT( update() ));
+  }
 };
 
 void SySettingsModule::update()
