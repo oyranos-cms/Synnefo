@@ -78,9 +78,13 @@ SyInfoModule::SyInfoModule(QWidget * parent)
 void SyInfoModule::configChanged( QString msg )
 {
   if(acceptDBusUpdate == false) return;
-  acceptDBusUpdate = false;
 
-  QTimer::singleShot(250, this, SLOT(populateInstalledProfileList()));
+  if(strstr(msg.toLocal8Bit().data(), OY_DEVICE_STD) ||
+     strstr(msg.toLocal8Bit().data(), OY_PROFILE_STD))
+  {
+    acceptDBusUpdate = false;
+    QTimer::singleShot(250, this, SLOT(populateInstalledProfileList()));
+  }
 };
 
 void SyInfoModule::profileExamineButtonClicked(QTreeWidgetItem * currentProfileItem, int column)
