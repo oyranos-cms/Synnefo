@@ -313,7 +313,8 @@ void SyDevicesModule::changeDeviceItem(int pos)
 
 // NOTE Dynamic item information (for each item click) update might be removed.
 // When the user clicks on an item in the devices tree list.
-void SyDevicesModule::changeDeviceItem(QTreeWidgetItem * selected_device, int pos)
+void SyDevicesModule::changeDeviceItem(QTreeWidgetItem * selected_device, int pos OY_UNUSED)
+
 {
     ui->deviceProfileTaxiDBComboBox->clear();
     ui->installProfileButton->setEnabled(false);
@@ -521,7 +522,7 @@ void SyDevicesModule::setProfile( QString baseFileName, oySCOPE_e scope )
 }
 
 void SyDevicesModule::updateLocalProfileList(QTreeWidgetItem * selected_device,
-                                 bool new_device)
+                                 bool new_device OY_UNUSED)
 {
     if(!selected_device)
     {

@@ -266,7 +266,7 @@ void SySettingsModule::selectPolicy(QListWidgetItem* selectedPolicyItem)
 }
 
 // Selected policy from combo box by the user.
-void SySettingsModule::selectPolicy(int current)
+void SySettingsModule::selectPolicy(int current OY_UNUSED)
 {
      selected_policy = ui->currentPolicyCombo->currentText();
 
