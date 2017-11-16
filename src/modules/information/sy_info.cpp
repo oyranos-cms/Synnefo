@@ -274,7 +274,7 @@ void SyInfoModule::populateDeviceProfiles( QTreeWidgetItem * deviceListTree )
         oyConfig_s * device = oyConfigs_Get( devices, j );
         char * device_info = 0;
         oyOptions_s * options = 0;
-        oyOptions_SetFromText( &options, "//" OY_TYPE_STD "/config/icc_profile.x_color_region_target",
+        oyOptions_SetFromString( &options, "//" OY_TYPE_STD "/config/icc_profile.x_color_region_target",
                                          "yes", OY_CREATE_NEW );
         oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
 

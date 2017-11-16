@@ -152,10 +152,10 @@ void SyDevicesModule::update()
 int syDeviceGetProfile( oyConfig_s * device, uint32_t icc_profile_flags, oyProfile_s ** profile )
 {
     oyOptions_s * options = 0;
-    oyOptions_SetFromText( &options,
+    oyOptions_SetFromString( &options,
                      "//" OY_TYPE_STD "/config/command",
                            "list", OY_CREATE_NEW );
-    oyOptions_SetFromText( &options,
+    oyOptions_SetFromString( &options,
                      "//" OY_TYPE_STD "/config/icc_profile.x_color_region_target",
                            "yes", OY_CREATE_NEW );
     oyOptions_SetFromInt( &options, "///icc_profile_flags", icc_profile_flags, 0, OY_CREATE_NEW );
@@ -391,7 +391,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
 
     snprintf(id, 1024, "%s/0", ui->deviceProfileTaxiDBComboBox->itemData(ui->deviceProfileTaxiDBComboBox->currentIndex()).toString().toStdString().c_str());
 
-    oyOptions_SetFromText(&options, "//" OY_TYPE_STD "/db/TAXI_id",
+    oyOptions_SetFromString(&options, "//" OY_TYPE_STD "/db/TAXI_id",
                           id,
                           OY_CREATE_NEW);
 
@@ -399,7 +399,7 @@ void SyDevicesModule::downloadFromTaxiDB( )
 
     oyOptions_Release(&options);
 
-    oyOptions_SetFromText(&options,
+    oyOptions_SetFromString(&options,
 			  "////device", "1",
 			  OY_CREATE_NEW);
 
@@ -602,7 +602,7 @@ int SyDevicesModule::installTaxiProfile(oyConfig_s * device)
       oyOptions_SetFromInt( &options,
                             "//" OY_TYPE_STD "/icc_profile_flags",
                             icc_profile_flags, 0, OY_CREATE_NEW );
-      oyOptions_SetFromText( &options,
+      oyOptions_SetFromString( &options,
 +                            "//" OY_TYPE_STD "/config/skip_ask_for_profile",
                              "yes", OY_CREATE_NEW );
       error = oyDeviceSetup(device, options);
@@ -674,7 +674,7 @@ int SyDevicesModule::detectDevices(const char * device_type)
     const char * device_class_ui = oyConfDomain_GetText( d, "device_class",
                                                       oyNAME_NAME );
 
-    oyOptions_SetFromText(&options, "//" OY_TYPE_STD "/config/command", 
+    oyOptions_SetFromString(&options, "//" OY_TYPE_STD "/config/command", 
                           "properties", OY_CREATE_NEW);
 
     oyDevicesGet( OY_TYPE_STD, reg_app, 0, &device_list); 
@@ -965,9 +965,9 @@ oyConfig_s * SyDevicesModule::getCurrentDevice( void )
     int error= 0;
 
     oyOptions_s * options = 0;
-    oyOptions_SetFromText( &options, "//" OY_TYPE_STD "/config/command", 
+    oyOptions_SetFromString( &options, "//" OY_TYPE_STD "/config/command", 
                            "properties", OY_CREATE_NEW );
-    oyOptions_SetFromText( &options,
+    oyOptions_SetFromString( &options,
                      "//" OY_TYPE_STD "/config/icc_profile.x_color_region_target",
                            "yes", OY_CREATE_NEW );
     if(current_device_class && current_device_name)
@@ -1010,7 +1010,7 @@ void SyDevicesModule::assignProfile( QString profile_name, oySCOPE_e scope )
          oyOptions_SetFromInt( &options,
                                "//" OY_TYPE_STD "/icc_profile_flags",
                                icc_profile_flags, 0, OY_CREATE_NEW );
-         oyOptions_SetFromText( &options,
+         oyOptions_SetFromString( &options,
 +                               "//" OY_TYPE_STD "/config/skip_ask_for_profile",
                                 "yes", OY_CREATE_NEW );
          oyDeviceSetup( device, options ); /* reinitialise */
@@ -1053,7 +1053,7 @@ int isRecentProfile(oyConfig_s * device, oyConfig_s * taxi_device)
     QString taxiIdString = QString(oyConfig_FindString(taxi_device, "TAXI_id",0)) + "/0";
 
     QByteArray raw_string( taxiIdString.toLocal8Bit() );
-    error = oyOptions_SetFromText(&options,
+    error = oyOptions_SetFromString(&options,
                                  "//" OY_TYPE_STD "/argv/TAXI_id",
                                  raw_string.data(),
                                  OY_CREATE_NEW);
@@ -1092,7 +1092,7 @@ oyConfig_s * getTaxiBestFit(oyConfig_s * device)
     oyConfigs_s * devices = 0;
     oyOptions_s * options = NULL;
     
-    oyOptions_SetFromText(&options,
+    oyOptions_SetFromString(&options,
                                   "//" OY_TYPE_STD "/config/command",
                                   "properties", OY_CREATE_NEW);
 
@@ -1170,7 +1170,7 @@ QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
     QString taxiIdString = QString( getTaxiString(device, "TAXI_id") + "/0" );
     
     QByteArray raw_string( taxiIdString.toLocal8Bit() );
-    error = oyOptions_SetFromText(&options,
+    error = oyOptions_SetFromString(&options,
                                  "//" OY_TYPE_STD "/argv/TAXI_id",
                                  raw_string.data(),
                                  OY_CREATE_NEW);
@@ -1180,7 +1180,7 @@ QString SyDevicesModule::downloadTaxiProfile(oyConfig_s * device)
     {
       ip = oyProfile_FromTaxiDB(options, NULL);  
       
-      oyOptions_SetFromText(&options,
+      oyOptions_SetFromString(&options,
 			  "////device", "1",
 			  OY_CREATE_NEW);
 
