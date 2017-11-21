@@ -8,11 +8,13 @@ SET (TARGET_INCLUDE_FOLDER
                 "Optional folder below system include folder to install include files."
     )
 
-SET (TARGET_CMAKE_FOLDER
-                "share/cmake-${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}/Modules"
-                CACHE STRING
-                "The folder below system prefix where to install cmake files."
+IF(NOT CMAKE_MODULES_INSTALL_DIR)
+  SET (CMAKE_MODULES_INSTALL_DIR
+		"${CMAKE_INSTALL_LIBDIR}/cmake/${PACKAGE_NAME}"
+		CACHE STRING
+		"The folder where to install cmake files."
     )
+ENDIF(NOT CMAKE_MODULES_INSTALL_DIR)
 
 SET (TARGET_PLUGIN_FOLDER "synnefo"
                 CACHE STRING
@@ -45,11 +47,11 @@ CONFIGURE_FILE (
                 "${CMAKE_CURRENT_SOURCE_DIR}/SynnefoConfig.cmake.in"
                 "${CMAKE_CURRENT_BINARY_DIR}/SynnefoConfig.cmake"
                 @ONLY
-        )
+               )
 
 INSTALL ( FILES
                 "${CMAKE_CURRENT_BINARY_DIR}/SynnefoConfig.cmake"
-                DESTINATION lib${LIB_SUFFIX}/cmake/synnefo
+                DESTINATION ${CMAKE_MODULES_INSTALL_DIR}
                 COMPONENT dev
                 RENAME FindSynnefo.cmake
         )
