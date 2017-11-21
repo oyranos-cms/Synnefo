@@ -53,6 +53,5 @@ INSTALL ( FILES
                 "${CMAKE_CURRENT_BINARY_DIR}/SynnefoConfig.cmake"
                 DESTINATION ${CMAKE_MODULES_INSTALL_DIR}
                 COMPONENT dev
-                RENAME FindSynnefo.cmake
         )
 
