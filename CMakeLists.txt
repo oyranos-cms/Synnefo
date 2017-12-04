@@ -124,3 +124,7 @@ ADD_CUSTOM_TARGET( debsrc
                 COMMENT Make a ${PROJECT_NAME} DEB source package
                 VERBATIM
                 )
+
+INCLUDE(FeatureSummary)
+FEATURE_SUMMARY(WHAT ALL INCLUDE_QUIET_PACKAGES FATAL_ON_MISSING_REQUIRED_PACKAGES)
+
