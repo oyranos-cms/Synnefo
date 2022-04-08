@@ -17,8 +17,8 @@ Build-Depends: debhelper (>= 8.0.0),
 Standards-Version: 3.9.3
 Section: graphics
 Homepage: http://www.oyranos.org/synnefo
-Vcs-Git: git://github.com/oyranos-cms/synnefo
-Vcs-Browser: http://github.com/oyranos-cms/synnefo
+Vcs-Git: git://gitlab.com/oyranos/synnefo
+Vcs-Browser: http://gitlab.com/oyranos/synnefo
 
 Package: synnefo
 Section: graphics
