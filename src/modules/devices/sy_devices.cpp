@@ -361,7 +361,7 @@ void SyDevicesModule::changeDeviceItem(QTreeWidgetItem * selected_device, int po
       while(init)
          SySleep::sleep(0.3);
       init = true;
-      oyConfig_s * c = oyConfig_Copy( device, oyObject_New() );
+      oyConfig_s * c = oyConfig_Copy( device, oyObject_New("oyConfig_s") );
       TaxiLoad * loader = new TaxiLoad( c );
       connect(loader, SIGNAL(finishedSignal( char *, oyConfigs_s * )), this, SLOT( getTaxiSlot( char*, oyConfigs_s* )));
       loader->start();

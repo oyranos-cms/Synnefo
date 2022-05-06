@@ -39,11 +39,8 @@ void SyInfoDialog::launchICCExamin()
 {
 
     QString exec;
-    
-    // NOTE: This needs double-checking.
-    oyProfile_s * p = (oyProfile_s *) ui->descriptionTagLabel->text().toULongLong();
-    
-    //v.toULongLong()
+    bool is_qml = false;
+    QString execOption;
     
     if (!iccExaminIsInstalled(iccExaminCommand))
     {
@@ -52,10 +49,20 @@ void SyInfoDialog::launchICCExamin()
       return;
     }
 
+    if(iccExaminCommand.contains("iccExaminQml", Qt::CaseInsensitive))
+      is_qml = true;
+    if(is_qml == false)
+      execOption = " -g";
+
     if(!ui->directoryListingTag->text().isNull())
-      exec = iccExaminCommand + " -g \"" + ui->directoryListingTag->text() + "\"&";
+      exec = iccExaminCommand + execOption + " \"" + ui->directoryListingTag->text() + "\"&";
     else
     {
+      // NOTE: This needs double-checking.
+      oyProfile_s * p = (oyProfile_s *) ui->descriptionTagLabel->text().toULongLong();
+    
+      //v.toULongLong()
+
       // Write to a temporary file.
       size_t size = 0;
       oyPointer data = oyProfile_GetMem( p, &size, 0, malloc );
@@ -69,7 +76,7 @@ void SyInfoDialog::launchICCExamin()
         file.flush();
         file.close();
         free(data); data = 0;
-        exec = iccExaminCommand + " -g " + "/tmp/icc_examin_temp.icc" + "&";
+        exec = iccExaminCommand + execOption + " " + "/tmp/icc_examin_temp.icc" + "&";
       } else
         return;
     }
@@ -182,7 +189,7 @@ bool SyInfoDialog::iccExaminIsInstalled(QString &iccExaminPath)
      QString iccExamin = QString::fromLocal8Bit("ICCExamin.app/Contents/MacOS/ICCExamin");
 # else
      QChar pathSep(':');  
-     QString iccExamin = QString::fromLocal8Bit("iccexamin");
+     QString iccExamin = QString::fromLocal8Bit("iccExaminQml");
 # endif /* __WIN32__ */
 
      bool found;
